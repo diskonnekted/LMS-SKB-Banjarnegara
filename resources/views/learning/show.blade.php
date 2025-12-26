@@ -102,7 +102,7 @@
                                 if (Str::contains($lesson->content, 'iframe')) {
                                     $match = [];
                                     if (preg_match('/src=["\']([^"\']+)["\']/', $lesson->content, $match)) {
-                                        $iframeSrc = $match[1] ?? null;
+                                        $iframeSrc = trim(str_replace(['`', ' '], '', $match[1] ?? ''));
                                     }
                                 }
                                 $content = trim($lesson->content ?? '');
@@ -121,14 +121,22 @@
                                 $embedUrl = $iframeSrc ?: ($videoId ? ('https://www.youtube.com/embed/' . $videoId) : null);
                                 $isYoutube = $embedUrl && (Str::contains($embedUrl, 'youtube.com') || Str::contains($embedUrl, 'youtube-nocookie.com'));
                                 if ($isYoutube) {
+                                    // Pastikan URL bersih dari karakter aneh
+                                    $embedUrl = trim($embedUrl);
+                                    
+                                    // Tambahkan parameter wajib untuk API
                                     $separator = Str::contains($embedUrl, '?') ? '&' : '?';
                                     $origin = request()->getSchemeAndHttpHost();
-                                    $embedUrl = $embedUrl . $separator . 'enablejsapi=1&origin=' . urlencode($origin);
+                                    
+                                    // Cek apakah parameter origin/enablejsapi sudah ada untuk menghindari duplikasi
+                                    if (!Str::contains($embedUrl, 'origin=')) {
+                                        $embedUrl .= $separator . 'enablejsapi=1&origin=' . urlencode($origin);
+                                    }
                                 }
                             @endphp
                             <div class="relative mb-6 bg-black rounded-lg overflow-hidden" style="padding-top:56.25%;">
                                 @if($embedUrl)
-                                    <iframe id="lesson-player" class="absolute inset-0 w-full h-full" src="{{ $embedUrl }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                                    <iframe id="lesson-player" class="absolute inset-0 w-full h-full" src="{{ $embedUrl }}" title="{{ $lesson->title }}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
                                 @elseif($lesson->file_path)
                                     <video id="lesson-video" controls class="absolute inset-0 w-full h-full object-contain">
                                         <source src="{{ Storage::url($lesson->file_path) }}" type="video/mp4">

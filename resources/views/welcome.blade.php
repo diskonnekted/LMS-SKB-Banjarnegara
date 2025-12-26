@@ -272,7 +272,7 @@
                         <div x-data="{ open: false }" class="h-full">
                             <article class="flex flex-col h-full bg-gray-50 rounded-3xl overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100">
                                 <div class="h-48 w-full overflow-hidden">
-                                    @if($item->thumbnail)
+                                    @if($item->thumbnail && \Illuminate\Support\Facades\Storage::disk('public')->exists($item->thumbnail))
                                         <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ Storage::url($item->thumbnail) }}" alt="{{ $item->title }}">
                                     @else
                                         <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ asset('images/skb3.jpg') }}" alt="{{ $item->title }}">
