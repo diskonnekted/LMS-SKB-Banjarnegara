@@ -43,7 +43,7 @@
 
             <!-- Questions List -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
-                <div class="p-6 text-gray-900">
+                <div class="p-6 text-gray-900 quiz-questions-container" id="questions-list">
                     <h3 class="text-lg font-bold mb-4">Questions ({{ $quiz->questions->count() }})</h3>
                     @if($quiz->questions->isEmpty())
                         <p class="text-gray-500">No questions yet.</p>
@@ -170,7 +170,11 @@
 
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Question Text / Instruction</label>
-                            <textarea name="question" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required></textarea>
+                            <textarea name="question" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX"></textarea>
+                            <div class="mt-2 p-3 rounded border bg-gray-50">
+                                <div class="text-xs text-gray-500 mb-2">Preview</div>
+                                <div id="question-preview" class="prose"></div>
+                            </div>
                         </div>
 
                         <!-- Options for MC and MR -->
@@ -178,18 +182,34 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Option A</label>
                                 <input type="text" name="option_a" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :required="type === 'multiple_choice' || type === 'multiple_response'">
+                                <div class="mt-2 p-2 rounded border bg-gray-50">
+                                    <div class="text-xs text-gray-500 mb-1">Preview</div>
+                                    <div class="option-preview" data-option="a"></div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Option B</label>
                                 <input type="text" name="option_b" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :required="type === 'multiple_choice' || type === 'multiple_response'">
+                                <div class="mt-2 p-2 rounded border bg-gray-50">
+                                    <div class="text-xs text-gray-500 mb-1">Preview</div>
+                                    <div class="option-preview" data-option="b"></div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Option C</label>
                                 <input type="text" name="option_c" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <div class="mt-2 p-2 rounded border bg-gray-50">
+                                    <div class="text-xs text-gray-500 mb-1">Preview</div>
+                                    <div class="option-preview" data-option="c"></div>
+                                </div>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Option D</label>
                                 <input type="text" name="option_d" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <div class="mt-2 p-2 rounded border bg-gray-50">
+                                    <div class="text-xs text-gray-500 mb-1">Preview</div>
+                                    <div class="option-preview" data-option="d"></div>
+                                </div>
                             </div>
                         </div>
 
@@ -286,4 +306,80 @@
             </div>
         </div>
     </div>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        (function(){
+            const ta = document.querySelector('textarea[name="question"]');
+            const pv = document.getElementById('question-preview');
+            const update = () => {
+                if (!pv || !ta) return;
+                pv.textContent = ta.value || '';
+                try {
+                    renderMathInElement(pv, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "\\[", right: "\\]", display: true},
+                            {left: "$", right: "$", display: false},
+                            {left: "\\(", right: "\\)", display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch(e){}
+            };
+            if (ta) {
+                ta.addEventListener('input', update);
+                update();
+            }
+            const optionInputs = {
+                a: document.querySelector('input[name="option_a"]'),
+                b: document.querySelector('input[name="option_b"]'),
+                c: document.querySelector('input[name="option_c"]'),
+                d: document.querySelector('input[name="option_d"]'),
+            };
+            const optionPreviews = {
+                a: document.querySelector('.option-preview[data-option="a"]'),
+                b: document.querySelector('.option-preview[data-option="b"]'),
+                c: document.querySelector('.option-preview[data-option="c"]'),
+                d: document.querySelector('.option-preview[data-option="d"]'),
+            };
+            const renderOption = (key) => {
+                const inp = optionInputs[key], out = optionPreviews[key];
+                if (!inp || !out) return;
+                out.textContent = inp.value || '';
+                try {
+                    renderMathInElement(out, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "\\[", right: "\\]", display: true},
+                            {left: "$", right: "$", display: false},
+                            {left: "\\(", right: "\\)", display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch(e){}
+            };
+            ['a','b','c','d'].forEach(k => {
+                if (optionInputs[k]) {
+                    optionInputs[k].addEventListener('input', () => renderOption(k));
+                    renderOption(k);
+                }
+            });
+            const list = document.getElementById('questions-list');
+            if (list) {
+                try {
+                    renderMathInElement(list, {
+                        delimiters: [
+                            {left: "$$", right: "$$", display: true},
+                            {left: "\\[", right: "\\]", display: true},
+                            {left: "$", right: "$", display: false},
+                            {left: "\\(", right: "\\)", display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch(e){}
+            }
+        })();
+    </script>
 </x-app-layout>
