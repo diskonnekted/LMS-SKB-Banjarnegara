@@ -1,0 +1,1 @@
+<img src="{{ asset('skb.png') }}" alt="{{ config('app.name') }}" {{ $attributes }} />
