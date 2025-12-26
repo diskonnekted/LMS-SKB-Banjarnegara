@@ -1,0 +1,25 @@
+pada sidebar buatkan menu dan halaman :
+1. master data (crud)
+- data tutor
+- data siswa
+- data mata pelajaran -> ssuaikan dengan mata pelajaran sd dan smp. 
+- kategori mata pelajaran 
+
+Application
+Laravel 12
+Domain Name
+elearning.skb-banjarnegara.sch.id
+PHP Version
+Site User
+skb
+The main SSH User for the site.
+Site User Password
+psuoKrWSJnDoogvF8MzK
+Generate new password
+
+- admin@skb.com — password: password
+- guru@skb.com — password: password
+- student@skb.com — password: password
+
+buatkan user manual untuk admin dalam bentuk halaman dan tempatkan dalam menu di dasbor admin. manual ini termasuk cara penggunaan dasbir dan semua fasilitas yang dikelola oleh admin
+

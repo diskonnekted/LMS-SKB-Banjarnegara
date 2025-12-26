@@ -56,6 +56,66 @@
                             @error('role') <p class="text-sm text-red-600 mt-1">{{ $message }}</p> @enderror
                         </div>
 
+                        @if($roleName === 'student')
+                        <div class="border-t pt-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Informasi Kelas Siswa</h3>
+                            @if(isset($enrolledCourses) && $enrolledCourses->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Pelajaran</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Kelas</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Guru</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-100">
+                                            @foreach($enrolledCourses as $course)
+                                            <tr>
+                                                <td class="px-4 py-2 text-sm text-gray-900">{{ $course->title }}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-600">{{ $course->grade_level ?? '-' }}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-600">{{ optional($course->teacher)->name ?? '-' }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-600">Belum ada kelas/pelajaran yang diikuti.</p>
+                            @endif
+                        </div>
+                        @endif
+
+                        @if($roleName === 'teacher')
+                        <div class="border-t pt-6">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-3">Pelajaran Diampu Guru</h3>
+                            @if(isset($teachingCourses) && $teachingCourses->count() > 0)
+                                <div class="overflow-x-auto">
+                                    <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Pelajaran</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Kategori</th>
+                                                <th class="px-4 py-2 text-left text-xs font-medium text-gray-600 uppercase tracking-wider">Kelas</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-100">
+                                            @foreach($teachingCourses as $course)
+                                            <tr>
+                                                <td class="px-4 py-2 text-sm text-gray-900">{{ $course->title }}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-600">{{ optional($course->category)->name ?? '-' }}</td>
+                                                <td class="px-4 py-2 text-sm text-gray-600">{{ $course->grade_level ?? '-' }}</td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            @else
+                                <p class="text-sm text-gray-600">Belum ada pelajaran yang diampu.</p>
+                            @endif
+                        </div>
+                        @endif
+
                         <div class="flex justify-end gap-3">
                             <a href="{{ route('admin.users.index') }}" class="px-4 py-2 bg-gray-100 rounded-md text-gray-700 hover:bg-gray-200">Batal</a>
                             <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700">Simpan</button>
@@ -66,4 +126,3 @@
         </div>
     </div>
 </x-app-layout>
-

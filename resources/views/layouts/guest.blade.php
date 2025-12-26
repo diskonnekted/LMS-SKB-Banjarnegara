@@ -26,11 +26,11 @@
         <div class="min-h-screen flex flex-col justify-center items-center p-6 relative">
             <div class="mb-8">
                 <a href="/">
-                    <x-application-logo theme="dark" class="w-auto h-28" />
+                    <x-application-logo :theme="$logoTheme" class="w-auto h-28" />
                 </a>
             </div>
 
-            <div class="w-full max-w-md bg-white shadow-xl rounded-[2.5rem] p-8 space-y-6 border border-gray-100 relative z-10">
+            <div class="w-full {{ $maxWidth ?? 'max-w-md' }} bg-white shadow-xl rounded-[2.5rem] p-8 space-y-6 border border-gray-100 relative z-10">
                 {{ $slot }}
             </div>
         </div>

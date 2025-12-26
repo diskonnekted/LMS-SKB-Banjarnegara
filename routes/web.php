@@ -92,6 +92,7 @@ Route::get('/dashboard', function () {
         $data['enrolled_courses_count'] = $user->enrolledCourses()->count();
         $data['completed_courses_count'] = $user->enrolledCourses()->wherePivotNotNull('completed_at')->count();
         $data['my_courses'] = $user->enrolledCourses()->with('teacher')->get();
+        $data['student_grade_levels'] = $user->enrolledCourses()->pluck('grade_level')->filter()->unique()->values();
     }
 
     return view('dashboard', $data);
@@ -109,6 +110,10 @@ Route::middleware('auth')->group(function () {
 
     // Admin & Teacher Routes
     Route::middleware(['role:admin|teacher'])->group(function () {
+        Route::get('/teacher/manual', function () {
+            return view('teacher.manual.index');
+        })->name('teacher.manual.index');
+
         Route::resource('courses.modules', ModuleController::class)->shallow();
         Route::resource('modules.lessons', LessonController::class)->shallow();
         Route::resource('lessons.quizzes', QuizController::class)->shallow();
@@ -117,6 +122,10 @@ Route::middleware('auth')->group(function () {
 
     // Admin Only
     Route::middleware(['role:admin'])->group(function () {
+        Route::get('/admin/manual', function () {
+            return view('admin.manual.index');
+        })->name('admin.manual.index');
+
         Route::resource('categories', CategoryController::class)->except(['show']);
         Route::get('/settings', [App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
         Route::put('/settings', [App\Http\Controllers\SettingController::class, 'update'])->name('settings.update');
@@ -132,6 +141,10 @@ Route::middleware('auth')->group(function () {
     });
 
     // Student / Learning Routes
+    Route::get('/student/manual', function () {
+        return view('student.manual.index');
+    })->middleware(['role:student'])->name('student.manual.index');
+
     Route::resource('courses', CourseController::class)->except(['show']);
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
     

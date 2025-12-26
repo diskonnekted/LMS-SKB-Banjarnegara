@@ -28,6 +28,9 @@
                     <x-nav-link theme="dark" :href="route('profiles.public', Auth::user())" :active="request()->routeIs('profiles.public')">
                         Sertifikat
                     </x-nav-link>
+                    <x-nav-link theme="dark" :href="route('student.manual.index')" :active="request()->routeIs('student.manual.*')">
+                        Manual Siswa
+                    </x-nav-link>
                     @endrole
 
                     <x-nav-link theme="dark" :href="route('profile.show')" :active="request()->routeIs('profile.show')">
@@ -45,11 +48,17 @@
                     <x-nav-link theme="dark" :href="route('settings.index')" :active="request()->routeIs('settings.*')">
                         Pengaturan
                     </x-nav-link>
+                    <x-nav-link theme="dark" :href="route('admin.manual.index')" :active="request()->routeIs('admin.manual.*')">
+                        Manual Admin
+                    </x-nav-link>
                     @endrole
                     
                     @hasrole('admin|teacher')
                     <x-nav-link theme="dark" :href="route('news.index')" :active="request()->routeIs('news.*')">
                         Berita
+                    </x-nav-link>
+                    <x-nav-link theme="dark" :href="route('teacher.manual.index')" :active="request()->routeIs('teacher.manual.*')">
+                        Manual Guru
                     </x-nav-link>
                     @endhasrole
                 </div>
@@ -123,6 +132,9 @@
             <x-responsive-nav-link theme="dark" :href="route('profiles.public', Auth::user())" :active="request()->routeIs('profiles.public')">
                 Sertifikat
             </x-responsive-nav-link>
+            <x-responsive-nav-link theme="dark" :href="route('student.manual.index')" :active="request()->routeIs('student.manual.*')">
+                Manual Siswa
+            </x-responsive-nav-link>
             @endrole
 
             @auth
@@ -138,11 +150,17 @@
             <x-responsive-nav-link theme="dark" :href="route('settings.index')" :active="request()->routeIs('settings.*')">
                 Pengaturan
             </x-responsive-nav-link>
+            <x-responsive-nav-link theme="dark" :href="route('admin.manual.index')" :active="request()->routeIs('admin.manual.*')">
+                Manual Admin
+            </x-responsive-nav-link>
             @endrole
             
             @hasrole('admin|teacher')
             <x-responsive-nav-link theme="dark" :href="route('news.index')" :active="request()->routeIs('news.*')">
                 Berita
+            </x-responsive-nav-link>
+            <x-responsive-nav-link theme="dark" :href="route('teacher.manual.index')" :active="request()->routeIs('teacher.manual.*')">
+                Manual Guru
             </x-responsive-nav-link>
             @endhasrole
         </div>

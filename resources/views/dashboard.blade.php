@@ -260,6 +260,24 @@
             @endrole
 
             @role('student')
+            @if(isset($student_grade_levels) && count($student_grade_levels) > 0)
+            <div class="mb-6">
+                <div class="relative rounded-xl overflow-hidden p-4 text-text-light shadow bg-gradient-to-br from-secondary to-tertiary">
+                    <div class="absolute inset-0 bg-black/10"></div>
+                    <div class="relative flex items-center gap-4">
+                        <div class="h-12 w-12 rounded-full bg-white/15 flex items-center justify-center">
+                            <x-heroicon name="academic-cap" class="h-7 w-7" />
+                        </div>
+                        <div>
+                            <div class="text-xs uppercase">Kelas Saya</div>
+                            <div class="text-lg font-bold">
+                                {{ implode(', ', $student_grade_levels->toArray()) }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <x-stat-card title="Pelajaran Diikuti" :value="$enrolled_courses_count ?? 0" icon="book-open" scheme="info-tertiary" />
                 <x-stat-card title="Pelajaran Selesai" :value="$completed_courses_count ?? 0" icon="rectangle-stack" scheme="success-secondary" />

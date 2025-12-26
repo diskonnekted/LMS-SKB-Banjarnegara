@@ -46,7 +46,9 @@ class AdminUserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $enrolledCourses = $user->enrolledCourses()->with(['teacher', 'category'])->get();
+        $teachingCourses = $user->teachingCourses()->with(['category'])->get();
+        return view('admin.users.edit', compact('user', 'enrolledCourses', 'teachingCourses'));
     }
 
     public function update(Request $request, User $user)
