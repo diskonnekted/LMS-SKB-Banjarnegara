@@ -63,5 +63,11 @@
             {{ __('Belum punya akun?') }}
             <a href="{{ route('register') }}" class="text-orange-600 font-bold hover:underline">{{ __('Daftar sekarang') }}</a>
         </p>
+        
+        <div class="mt-4">
+            <a href="{{ route('home') }}" class="block w-full text-center bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold py-3 rounded-full transition">
+                Kembali ke Beranda
+            </a>
+        </div>
     </form>
 </x-guest-layout>

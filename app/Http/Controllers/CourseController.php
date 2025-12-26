@@ -53,6 +53,8 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'basic_competency' => 'nullable|string',
+            'learning_objectives' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:2048',
             'category_id' => 'required|exists:categories,id',
             'grade_level' => 'required|string',
@@ -73,6 +75,8 @@ class CourseController extends Controller
             'title' => $request->title,
             'slug' => $slug,
             'description' => $request->description,
+            'basic_competency' => $request->basic_competency,
+            'learning_objectives' => $request->learning_objectives,
             'thumbnail' => $thumbnailPath,
             'teacher_id' => Auth::id(),
             'is_published' => $request->has('is_published'),
@@ -85,8 +89,35 @@ class CourseController extends Controller
 
     public function show(Course $course)
     {
-        $course->load(['modules.lessons']);
-        return view('courses.show', compact('course'));
+        $course->load(['modules.lessons.quiz', 'students']);
+        $lessons = $course->modules->flatMap->lessons;
+        $lessonIds = $lessons->pluck('id');
+        $quizIds = $lessons->pluck('quiz.id')->filter();
+        $students = $course->students->unique('id');
+        $studentStats = $students->map(function ($student) use ($lessonIds, $quizIds, $lessons) {
+            $completedCount = \DB::table('lesson_user')
+                ->where('user_id', $student->id)
+                ->whereIn('lesson_id', $lessonIds)
+                ->where('completed', true)
+                ->count();
+            $totalLessons = $lessonIds->count();
+            $progress = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+            $attempts = \App\Models\QuizAttempt::where('user_id', $student->id)
+                ->whereIn('quiz_id', $quizIds)
+                ->orderByDesc('created_at')
+                ->get();
+            $avg = $attempts->isNotEmpty() ? round($attempts->avg('score')) : null;
+            $latest = $attempts->first();
+            return [
+                'user' => $student,
+                'progress' => $progress,
+                'attempts' => $attempts->count(),
+                'avg' => $avg,
+                'latest' => $latest ? round($latest->score) : null,
+                'passed_latest' => $latest ? (bool) $latest->passed : null,
+            ];
+        });
+        return view('courses.show', compact('course', 'studentStats'));
     }
 
     public function edit(Course $course)
@@ -107,6 +138,8 @@ class CourseController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
+            'basic_competency' => 'nullable|string',
+            'learning_objectives' => 'nullable|string',
             'thumbnail' => 'nullable|image|max:2048',
             'category_id' => 'required|exists:categories,id',
             'grade_level' => 'required|string',
@@ -120,6 +153,8 @@ class CourseController extends Controller
         $course->update([
             'title' => $request->title,
             'description' => $request->description,
+            'basic_competency' => $request->basic_competency,
+            'learning_objectives' => $request->learning_objectives,
             'is_published' => $request->has('is_published'),
             'category_id' => $request->category_id,
             'grade_level' => $request->grade_level,

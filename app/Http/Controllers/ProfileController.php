@@ -27,6 +27,19 @@ class ProfileController extends Controller
     }
 
     /**
+     * Display the user's profile (read-only).
+     */
+    public function show(Request $request): View
+    {
+        $user = $request->user();
+        $certificates = Certificate::with('course')
+            ->where('user_id', $user->id)
+            ->orderByDesc('created_at')
+            ->get();
+        return view('profile.show', compact('user', 'certificates'));
+    }
+
+    /**
      * Update the user's profile information.
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse

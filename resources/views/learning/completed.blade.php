@@ -14,7 +14,7 @@
                     </h2>
                     
                     <p class="text-xl text-gray-600 mb-8">
-                        Anda telah berhasil menyelesaikan kursus <span class="font-bold text-indigo-600">{{ $course->title }}</span>.
+                        Anda telah berhasil menyelesaikan pelajaran <span class="font-bold text-indigo-600">{{ $course->title }}</span>.
                     </p>
                     
                     <div class="space-y-4">
@@ -25,7 +25,7 @@
                         
                         <div class="block">
                             <a href="{{ route('courses.index') }}" class="text-indigo-600 hover:text-indigo-800 font-medium">
-                                Lihat Kursus Lainnya
+                                Lihat Pelajaran Lainnya
                             </a>
                         </div>
                     </div>

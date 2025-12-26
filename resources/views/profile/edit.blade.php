@@ -40,7 +40,7 @@
                                     <div class="p-4">
                                         <div class="text-sm text-gray-500">Kode</div>
                                         <div class="text-base font-semibold text-gray-900">{{ $cert->certificate_code }}</div>
-                                        <div class="mt-2 text-sm text-gray-500">Kursus</div>
+                                        <div class="mt-2 text-sm text-gray-500">Pelajaran</div>
                                         <div class="text-base text-gray-900">{{ $cert->course->title }}</div>
                                         <div class="mt-2 text-sm text-gray-500">Diterbitkan</div>
                                         <div class="text-sm text-gray-700">{{ $cert->created_at->format('d M Y') }}</div>

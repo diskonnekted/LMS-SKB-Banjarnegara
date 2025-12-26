@@ -38,13 +38,13 @@
                     <div class="flex items-center">
                         <!-- Logo -->
                         <div class="shrink-0 flex items-center gap-2">
-                            <img src="{{ asset('skb.png') }}" alt="{{ $organizerName }}" class="w-32 h-auto object-contain">
+                            <x-application-logo theme="dark" class="w-32 h-auto object-contain" />
                         </div>
                     </div>
                     <div class="flex items-center space-x-6">
                         <div class="hidden md:flex space-x-8">
                             <a href="#home" class="text-sm font-medium text-white hover:text-gray-200 transition">Beranda</a>
-                            <a href="#courses" class="text-sm font-medium text-white hover:text-gray-200 transition">Kursus</a>
+                            <a href="#courses" class="text-sm font-medium text-white hover:text-gray-200 transition">Pelajaran</a>
                             <a href="#news" class="text-sm font-medium text-white hover:text-gray-200 transition">Berita</a>
                         </div>
                         
@@ -80,7 +80,7 @@
                     <div class="lg:col-span-6 text-center lg:text-left">
                         <div class="inline-flex items-center px-4 py-2 rounded-full bg-indigo-50 text-indigo-600 text-sm font-medium mb-6 border border-indigo-100">
                             <span class="flex h-2 w-2 rounded-full bg-indigo-600 mr-2 animate-pulse"></span>
-                            Kursus Baru Tersedia
+                            Pelajaran Baru Tersedia
                         </div>
                         <h1 class="text-5xl lg:text-7xl font-extrabold tracking-tight text-gray-900 mb-6 leading-tight">
                             {{ $heroTitle }}
@@ -90,7 +90,7 @@
                         </p>
                         <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                             <a href="#courses" class="px-8 py-4 rounded-full bg-indigo-600 text-white font-semibold shadow-xl shadow-indigo-500/30 hover:bg-indigo-700 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
-                                Jelajahi Kursus
+                                Jelajahi Pelajaran
                                 <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
                             </a>
                             <a href="{{ route('register') }}" class="px-8 py-4 rounded-full bg-white text-gray-900 border border-gray-200 font-semibold hover:bg-gray-50 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center">
@@ -102,7 +102,7 @@
                         <div class="mt-12 grid grid-cols-3 gap-8 border-t border-gray-200 pt-8">
                             <div>
                                 <p class="text-3xl font-bold text-gray-900">100+</p>
-                                <p class="text-sm text-gray-500">Kursus Online</p>
+                                <p class="text-sm text-gray-500">Pelajaran Online</p>
                             </div>
                             <div>
                                 <p class="text-3xl font-bold text-gray-900">50+</p>
@@ -182,7 +182,7 @@
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-3">Keahlian Bersertifikat</h3>
                         <p class="text-gray-600 leading-relaxed">
-                            Dapatkan sertifikat setelah menyelesaikan kursus untuk menunjukkan pencapaian Anda.
+                            Dapatkan sertifikat setelah menyelesaikan pelajaran untuk menunjukkan pencapaian Anda.
                         </p>
                     </div>
                 </div>
@@ -194,13 +194,13 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
                     <div>
-                        <h2 class="text-3xl font-bold text-gray-900">Kursus Unggulan</h2>
+                        <h2 class="text-3xl font-bold text-gray-900">Pelajaran Unggulan</h2>
                         <p class="mt-4 text-gray-600 max-w-2xl">
                             Jelajahi jalur pembelajaran terpopuler yang dirancang untuk Anda.
                         </p>
                     </div>
-                    <a href="#" class="text-indigo-600 font-semibold hover:text-indigo-700 flex items-center group">
-                        Lihat Semua Kursus
+                    <a href="{{ route('courses.catalog') }}" class="text-indigo-600 font-semibold hover:text-indigo-700 flex items-center group">
+                        Lihat Semua Pelajaran
                         <svg class="w-5 h-5 ml-1 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                     </a>
                 </div>
@@ -215,15 +215,19 @@
                                     <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" src="{{ asset('images/skb2.jpg') }}" alt="{{ $course->title }}">
                                 @endif
                                 <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-indigo-600 shadow-lg">
-                                    KURSUS
+                                    PELAJARAN
                                 </div>
                             </div>
                             
                             <div class="p-8">
                                 <div class="flex items-center gap-2 mb-4">
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600">
-                                        {{ substr($course->teacher->name ?? 'T', 0, 1) }}
-                                    </div>
+                                    @if($course->teacher && $course->teacher->avatar)
+                                        <img src="{{ Storage::url($course->teacher->avatar) }}" alt="{{ $course->teacher->name }}" class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                    @else
+                                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200">
+                                            {{ substr($course->teacher->name ?? 'T', 0, 1) }}
+                                        </div>
+                                    @endif
                                     <span class="text-sm font-medium text-gray-500">{{ $course->teacher->name ?? 'Instruktur' }}</span>
                                 </div>
                                 
@@ -240,13 +244,15 @@
                                         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                         {{ $course->created_at->format('d M Y') }}
                                     </div>
-                                    <a href="{{ route('courses.show', $course) }}" class="text-indigo-600 font-semibold text-sm hover:underline">Daftar Sekarang</a>
+                                    <a href="{{ route('courses.show', $course) }}" class="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition">
+                                        Lihat Pelajaran
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     @empty
                         <div class="col-span-3 py-12 text-center bg-white rounded-3xl border border-dashed border-gray-300">
-                            <p class="text-gray-500">Belum ada kursus yang tersedia saat ini.</p>
+                            <p class="text-gray-500">Belum ada pelajaran yang tersedia saat ini.</p>
                         </div>
                     @endforelse
                 </div>
@@ -263,40 +269,131 @@
 
                 <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                     @forelse($news as $item)
-                        <article class="flex flex-col bg-gray-50 rounded-3xl overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100">
-                            <div class="h-48 w-full overflow-hidden">
-                                @if($item->thumbnail)
-                                    <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ Storage::url($item->thumbnail) }}" alt="{{ $item->title }}">
-                                @else
-                                    <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ asset('images/skb3.jpg') }}" alt="{{ $item->title }}">
-                                @endif
-                            </div>
-                            
-                            <div class="p-8 flex flex-col flex-1">
-                                <div class="flex items-center gap-3 text-xs font-medium text-indigo-600 mb-4">
-                                    <span class="px-2 py-1 rounded-md bg-indigo-50 border border-indigo-100">BERITA</span>
-                                    <span class="text-gray-400">&bull;</span>
-                                    <span class="text-gray-500">{{ $item->created_at->format('d M Y') }}</span>
+                        <div x-data="{ open: false }" class="h-full">
+                            <article class="flex flex-col h-full bg-gray-50 rounded-3xl overflow-hidden hover:bg-white hover:shadow-xl transition-all duration-300 border border-transparent hover:border-gray-100">
+                                <div class="h-48 w-full overflow-hidden">
+                                    @if($item->thumbnail)
+                                        <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ Storage::url($item->thumbnail) }}" alt="{{ $item->title }}">
+                                    @else
+                                        <img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" src="{{ asset('images/skb3.jpg') }}" alt="{{ $item->title }}">
+                                    @endif
                                 </div>
                                 
-                                <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2">
-                                    <a href="{{ route('news.show', $item) }}">
-                                        {{ $item->title }}
-                                    </a>
-                                </h3>
-                                
-                                <p class="text-gray-600 leading-relaxed mb-6 line-clamp-3">
-                                    {{ Str::limit(strip_tags($item->content), 100) }}
-                                </p>
-                                
-                                <div class="mt-auto pt-6 border-t border-gray-100">
-                                    <a href="{{ route('news.show', $item) }}" class="inline-flex items-center text-indigo-600 font-semibold text-sm hover:underline group-hover:translate-x-1 transition-transform">
-                                        Baca Selengkapnya
-                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
-                                    </a>
+                                <div class="p-8 flex flex-col flex-1">
+                                    <div class="flex items-center gap-3 text-xs font-medium text-indigo-600 mb-4">
+                                        <span class="px-2 py-1 rounded-md bg-indigo-50 border border-indigo-100">BERITA</span>
+                                        <span class="text-gray-400">&bull;</span>
+                                        <span class="text-gray-500">{{ $item->created_at->format('d M Y') }}</span>
+                                    </div>
+                                    
+                                    <h3 class="text-xl font-bold text-gray-900 mb-3 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                                        <button @click="open = true" class="text-left hover:text-indigo-600 transition-colors">
+                                            {{ $item->title }}
+                                        </button>
+                                    </h3>
+                                    
+                                    <p class="text-gray-600 leading-relaxed mb-6 line-clamp-3">
+                                        {{ Str::limit(strip_tags($item->content), 100) }}
+                                    </p>
+                                    
+                                    <div class="mt-auto pt-6 border-t border-gray-100">
+                                        <button @click="open = true" class="inline-flex items-center text-indigo-600 font-semibold text-sm hover:underline group-hover:translate-x-1 transition-transform">
+                                            Baca Selengkapnya
+                                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        </article>
+                            </article>
+
+                            <!-- Modal -->
+                            <template x-teleport="body">
+                                <div x-show="open" class="relative z-[9999]" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                                    <!-- Backdrop -->
+                                    <div x-show="open" 
+                                         x-transition:enter="ease-out duration-300" 
+                                         x-transition:enter-start="opacity-0" 
+                                         x-transition:enter-end="opacity-100" 
+                                         x-transition:leave="ease-in duration-200" 
+                                         x-transition:leave-start="opacity-100" 
+                                         x-transition:leave-end="opacity-0" 
+                                         class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm transition-opacity"></div>
+
+                                    <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+                                        <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                                            <!-- Modal Panel -->
+                                            <div x-show="open" 
+                                                 @click.away="open = false" 
+                                                 x-transition:enter="ease-out duration-300" 
+                                                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                                                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" 
+                                                 x-transition:leave="ease-in duration-200" 
+                                                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" 
+                                                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" 
+                                                 class="relative transform overflow-hidden rounded-3xl bg-white text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl border border-gray-100">
+                                                
+                                                <!-- Close Button -->
+                                                <div class="absolute right-4 top-4 z-50">
+                                                    <button type="button" @click="open = false" class="rounded-full bg-white/80 backdrop-blur p-2 text-gray-400 hover:text-gray-500 hover:bg-gray-100 transition-all focus:outline-none shadow-sm border border-gray-200">
+                                                        <span class="sr-only">Close</span>
+                                                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
+
+                                                <!-- Modal Content -->
+                                                <div class="bg-white">
+                                                    @if($item->thumbnail)
+                                                        <div class="aspect-video w-full overflow-hidden bg-gray-100">
+                                                            <img src="{{ Storage::url($item->thumbnail) }}" alt="{{ $item->title }}" class="w-full h-full object-cover">
+                                                        </div>
+                                                    @endif
+
+                                                    <div class="px-6 py-8 sm:p-10">
+                                                        <div class="flex flex-wrap items-center gap-4 mb-6">
+                                                            @if($item->category)
+                                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-indigo-100 text-indigo-700 tracking-wide uppercase">
+                                                                    {{ $item->category->name }}
+                                                                </span>
+                                                            @endif
+                                                            <span class="flex items-center text-gray-500 text-sm font-medium">
+                                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                                {{ $item->created_at->format('d F Y') }}
+                                                            </span>
+                                                            <span class="flex items-center text-gray-500 text-sm font-medium">
+                                                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                                                                {{ $item->user->name ?? 'Admin' }}
+                                                            </span>
+                                                        </div>
+
+                                                        <h3 class="text-2xl sm:text-3xl font-extrabold text-gray-900 mb-6 leading-tight">
+                                                            {{ $item->title }}
+                                                        </h3>
+
+                                                        <div class="prose prose-indigo max-w-none text-gray-600 space-y-6 leading-relaxed">
+                                                            {!! nl2br(e($item->content)) !!}
+                                                        </div>
+                                                        
+                                                        @if($item->course)
+                                                            <div class="mt-10 p-6 bg-gradient-to-br from-indigo-50 to-white rounded-2xl border border-indigo-100 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                                                                <div>
+                                                                    <h4 class="text-lg font-bold text-indigo-900 mb-1">Tertarik mendalami topik ini?</h4>
+                                                                    <p class="text-indigo-600">Pelajari selengkapnya di pelajaran: <span class="font-bold text-indigo-800">{{ $item->course->title }}</span></p>
+                                                                </div>
+                                                                <a href="{{ route('courses.show', $item->course) }}" class="shrink-0 inline-flex items-center px-6 py-3 bg-indigo-600 border border-transparent rounded-xl font-bold text-sm text-white uppercase tracking-wider hover:bg-indigo-700 hover:-translate-y-0.5 transition-all shadow-lg shadow-indigo-200">
+                                                                    Lihat Pelajaran
+                                                                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
+                                                                </a>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
                     @empty
                         <div class="col-span-3 text-center py-12">
                             <p class="text-gray-500">Belum ada berita terbaru.</p>
@@ -317,7 +414,7 @@
                     <div class="relative z-10">
                         <h2 class="text-3xl md:text-4xl font-bold text-white mb-6">Siap untuk mulai belajar?</h2>
                         <p class="text-indigo-100 text-lg mb-8 max-w-2xl mx-auto">
-                            Bergabunglah dengan ribuan siswa dan mulailah perjalanan Anda hari ini. Dapatkan akses tak terbatas ke semua kursus.
+                            Bergabunglah dengan ribuan siswa dan mulailah perjalanan Anda hari ini. Dapatkan akses tak terbatas ke semua pelajaran.
                         </p>
                         @auth
                             <a href="{{ route('dashboard') }}" class="inline-block px-8 py-4 bg-white text-indigo-600 font-bold rounded-full shadow-lg hover:bg-gray-50 hover:scale-105 transition-all duration-300">
@@ -338,18 +435,18 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                     <div class="col-span-1 md:col-span-2">
-                        <a href="{{ route('home') }}" class="text-2xl font-bold text-indigo-600 mb-6 inline-block">
-                            {{ $organizerName }}
+                        <a href="{{ route('home') }}" class="mb-6 inline-block" aria-label="{{ $organizerName }}">
+                            <img src="{{ asset('images/black.png') }}" alt="{{ $organizerName }}" class="h-12 w-auto">
                         </a>
                         <p class="text-gray-500 max-w-sm leading-relaxed">
-                            Memberdayakan pembelajar dengan kursus berkualitas tinggi dan bimbingan ahli. Bangun masa depan Anda bersama kami hari ini.
+                            Memberdayakan pembelajar dengan pelajaran berkualitas tinggi dan bimbingan ahli. Bangun masa depan Anda bersama kami hari ini.
                         </p>
                     </div>
                     <div>
                         <h4 class="text-lg font-bold text-gray-900 mb-6">Tautan Cepat</h4>
                         <ul class="space-y-4">
                             <li><a href="#home" class="hover:text-indigo-600 transition-colors">Beranda</a></li>
-                            <li><a href="#courses" class="hover:text-indigo-600 transition-colors">Kursus</a></li>
+                            <li><a href="#courses" class="hover:text-indigo-600 transition-colors">Pelajaran</a></li>
                             <li><a href="#news" class="hover:text-indigo-600 transition-colors">Berita</a></li>
                         </ul>
                     </div>

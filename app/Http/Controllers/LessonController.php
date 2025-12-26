@@ -29,6 +29,8 @@ class LessonController extends Controller
             'type' => 'required|in:video,text,pdf,ppt,doc,xls',
             'content' => 'nullable|string', // For text or embed code
             'file' => 'nullable|file|max:10240', // 10MB limit
+            'basic_competency' => 'nullable|string',
+            'learning_objectives' => 'nullable|string',
         ]);
 
         $slug = Str::slug($request->title);
@@ -50,6 +52,8 @@ class LessonController extends Controller
             'slug' => $slug,
             'type' => $request->type,
             'content' => $content,
+            'basic_competency' => $request->basic_competency,
+            'learning_objectives' => $request->learning_objectives,
             'file_path' => $filePath,
             'order' => $module->lessons()->count() + 1,
         ]);
@@ -76,6 +80,8 @@ class LessonController extends Controller
             'type' => 'required|in:video,text,pdf,ppt,doc,xls',
             'content' => 'nullable|string',
             'file' => 'nullable|file|max:10240',
+            'basic_competency' => 'nullable|string',
+            'learning_objectives' => 'nullable|string',
         ]);
 
         if ($request->hasFile('file')) {
@@ -94,6 +100,8 @@ class LessonController extends Controller
             'title' => $request->title,
             'type' => $request->type,
             'content' => $content,
+            'basic_competency' => $request->basic_competency,
+            'learning_objectives' => $request->learning_objectives,
         ]);
 
         return redirect()->route('courses.modules.index', $lesson->module->course)->with('success', 'Lesson updated successfully.');

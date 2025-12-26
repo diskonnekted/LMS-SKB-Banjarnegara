@@ -9,7 +9,7 @@ class News extends Model
 {
     use HasFactory;
 
-    protected $table = 'posts';
+    protected $table = 'news';
 
     protected $fillable = [
         'title',
@@ -17,10 +17,23 @@ class News extends Model
         'content',
         'thumbnail',
         'is_published',
+        'category_id',
+        'course_id',
+        'user_id',
     ];
 
     public function user()
     {
-        return $this->belongsTo(User::class); // Migration didn't add user_id to posts, let's check.
+        return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 }

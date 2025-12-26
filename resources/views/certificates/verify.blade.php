@@ -23,7 +23,7 @@
                     </div>
                     
                     <div class="mt-4">
-                        <div class="text-sm text-gray-500">Kursus</div>
+                        <div class="text-sm text-gray-500">Pelajaran</div>
                         <div class="text-lg font-medium">{{ $course->title }}</div>
                     </div>
 
@@ -37,7 +37,7 @@
                             Unduh Sertifikat PDF
                         </a>
                         <a href="{{ route('learning.course', $course) }}" class="inline-flex items-center ml-3 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium rounded-md shadow-sm">
-                            Lihat Kursus
+                            Lihat Pelajaran
                         </a>
                     </div>
                 </div>

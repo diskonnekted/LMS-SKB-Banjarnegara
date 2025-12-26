@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\News;
+use App\Models\Category;
+use App\Models\Course;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -12,13 +14,15 @@ class NewsController extends Controller
 {
     public function index()
     {
-        $news = News::latest()->paginate(10);
+        $news = News::with('category')->latest()->paginate(10);
         return view('news.index', compact('news'));
     }
 
     public function create()
     {
-        return view('news.create');
+        $categories = Category::all();
+        $courses = Course::all();
+        return view('news.create', compact('categories', 'courses'));
     }
 
     public function store(Request $request)
@@ -27,9 +31,11 @@ class NewsController extends Controller
             'title' => 'required|string|max:255',
             'content' => 'required',
             'thumbnail' => 'nullable|image|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'course_id' => 'nullable|exists:courses,id',
         ]);
 
-        $data = $request->only('title', 'content');
+        $data = $request->only('title', 'content', 'category_id', 'course_id');
         $data['slug'] = Str::slug($request->title);
         $data['user_id'] = auth()->id();
         $data['is_published'] = $request->has('is_published');
@@ -48,42 +54,35 @@ class NewsController extends Controller
         if (!$news->is_published && auth()->id() !== $news->user_id && !auth()->user()->hasRole('admin')) {
             abort(404);
         }
-        return view('news.show', compact('news'));
+        $recentNews = News::where('id', '!=', $news->id)
+            ->where('is_published', true)
+            ->latest()
+            ->take(5)
+            ->get();
+            
+        return view('news.show', compact('news', 'recentNews'));
     }
 
     public function edit(News $news)
     {
-        return view('news.edit', compact('news'));
+        $categories = Category::all();
+        $courses = Course::all();
+        return view('news.edit', compact('news', 'categories', 'courses'));
     }
 
     public function update(Request $request, News $news)
     {
         Log::info('News Update Request (All):', $request->all());
-        Log::info('News Update Request (Files):', $request->allFiles());
-        if (isset($_FILES)) {
-            Log::info('Raw _FILES:', $_FILES);
-        }
         
-        if ($request->hasFile('thumbnail')) {
-             $file = $request->file('thumbnail');
-             Log::info('File details:', [
-                 'original_name' => $file->getClientOriginalName(),
-                 'mime_type' => $file->getMimeType(),
-                 'size' => $file->getSize(),
-                 'valid' => $file->isValid(),
-                 'error' => $file->getError(),
-             ]);
-        } else {
-             Log::info('No thumbnail file detected in request.');
-        }
-
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required',
             'thumbnail' => 'nullable|image|max:2048',
+            'category_id' => 'required|exists:categories,id',
+            'course_id' => 'nullable|exists:courses,id',
         ]);
 
-        $data = $request->only('title', 'content');
+        $data = $request->only('title', 'content', 'category_id', 'course_id');
         $data['slug'] = Str::slug($request->title);
         $data['is_published'] = $request->has('is_published');
 

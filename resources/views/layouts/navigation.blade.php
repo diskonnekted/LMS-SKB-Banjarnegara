@@ -6,7 +6,7 @@
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
-                        <x-application-logo class="block h-9 w-auto fill-current text-white" />
+                        <x-application-logo theme="dark" class="block h-9 w-auto" />
                     </a>
                 </div>
 
@@ -21,7 +21,7 @@
                     </x-nav-link>
 
                     <x-nav-link theme="dark" :href="route('courses.index')" :active="request()->routeIs('courses.*')">
-                        Kursus
+                        Pelajaran
                     </x-nav-link>
 
                     @role('student')
@@ -30,53 +30,66 @@
                     </x-nav-link>
                     @endrole
 
-                    <x-nav-link theme="dark" :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
+                    <x-nav-link theme="dark" :href="route('profile.show')" :active="request()->routeIs('profile.show')">
                         Profil
                     </x-nav-link>
 
                     @role('admin')
+                    <x-nav-link theme="dark" :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                        Manajemen Pengguna
+                    </x-nav-link>
+                    <x-nav-link theme="dark" :href="route('categories.index')" :active="request()->routeIs('categories.*')">
+                        Kategori
+                    </x-nav-link>
+
                     <x-nav-link theme="dark" :href="route('settings.index')" :active="request()->routeIs('settings.*')">
                         Pengaturan
                     </x-nav-link>
+                    @endrole
+                    
+                    @hasrole('admin|teacher')
                     <x-nav-link theme="dark" :href="route('news.index')" :active="request()->routeIs('news.*')">
                         Berita
                     </x-nav-link>
-                    @endrole
+                    @endhasrole
                 </div>
             </div>
 
-            <!-- Settings Dropdown -->
+            <!-- Settings / Auth -->
             <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <x-dropdown align="right" width="48">
-                    <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-100 hover:text-white focus:outline-none transition ease-in-out duration-150" style="background-color: #6C5CE7;">
-                            <div>{{ Auth::user()->name }}</div>
-
-                            <div class="ms-1">
-                                <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-                    </x-slot>
-
-                    <x-slot name="content">
-                        <x-dropdown-link :href="route('profile.edit')">
-                            Profil
-                        </x-dropdown-link>
-
-                        <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
-                                Keluar
+                @auth
+                    <x-dropdown align="right" width="48">
+                        <x-slot name="trigger">
+                            <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-indigo-100 hover:text-white focus:outline-none transition ease-in-out duration-150" style="background-color: #6C5CE7;">
+                                <div>{{ Auth::user()->name }}</div>
+                                <div class="ms-1">
+                                    <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </x-slot>
+                        <x-slot name="content">
+                            <x-dropdown-link :href="route('profile.show')">
+                                Profil
                             </x-dropdown-link>
-                        </form>
-                    </x-slot>
-                </x-dropdown>
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <x-dropdown-link :href="route('logout')"
+                                        onclick="event.preventDefault(); this.closest('form').submit();">
+                                    Keluar
+                                </x-dropdown-link>
+                            </form>
+                        </x-slot>
+                    </x-dropdown>
+                @else
+                    <div class="flex items-center gap-3">
+                        <a href="{{ route('login') }}" class="text-sm font-medium text-indigo-100 hover:text-white">Masuk</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}" class="px-3 py-1.5 rounded-md bg-white text-indigo-700 text-sm font-semibold hover:bg-indigo-50">Daftar</a>
+                        @endif
+                    </div>
+                @endauth
             </div>
 
             <!-- Hamburger -->
@@ -103,7 +116,7 @@
             </x-responsive-nav-link>
             
             <x-responsive-nav-link theme="dark" :href="route('courses.index')" :active="request()->routeIs('courses.*')">
-                Kursus
+                Pelajaran
             </x-responsive-nav-link>
 
             @role('student')
@@ -112,43 +125,63 @@
             </x-responsive-nav-link>
             @endrole
 
-            <x-responsive-nav-link theme="dark" :href="route('profile.edit')" :active="request()->routeIs('profile.edit')">
-                Profil
-            </x-responsive-nav-link>
+            @auth
+                <x-responsive-nav-link theme="dark" :href="route('profile.show')" :active="request()->routeIs('profile.show')">
+                    Profil
+                </x-responsive-nav-link>
+            @endauth
 
             @role('admin')
+            <x-responsive-nav-link theme="dark" :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
+                Manajemen Pengguna
+            </x-responsive-nav-link>
             <x-responsive-nav-link theme="dark" :href="route('settings.index')" :active="request()->routeIs('settings.*')">
                 Pengaturan
             </x-responsive-nav-link>
+            @endrole
+            
+            @hasrole('admin|teacher')
             <x-responsive-nav-link theme="dark" :href="route('news.index')" :active="request()->routeIs('news.*')">
                 Berita
             </x-responsive-nav-link>
-            @endrole
+            @endhasrole
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-indigo-500">
-            <div class="px-4">
-                <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-indigo-200">{{ Auth::user()->email }}</div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <x-responsive-nav-link theme="dark" :href="route('profile.edit')">
-                    Profil
-                </x-responsive-nav-link>
-
-                <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-
-                    <x-responsive-nav-link theme="dark" :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
-                        Keluar
+            @auth
+                <div class="px-4">
+                    <div class="font-medium text-base text-white">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-indigo-200">{{ Auth::user()->email }}</div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link theme="dark" :href="route('profile.show')">
+                        Profil
                     </x-responsive-nav-link>
-                </form>
-            </div>
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <x-responsive-nav-link theme="dark" :href="route('logout')"
+                                onclick="event.preventDefault(); this.closest('form').submit();">
+                            Keluar
+                        </x-responsive-nav-link>
+                    </form>
+                </div>
+            @else
+                <div class="px-4">
+                    <div class="font-medium text-base text-white">Tamu</div>
+                    <div class="font-medium text-sm text-indigo-200">Silakan masuk untuk akses lengkap</div>
+                </div>
+                <div class="mt-3 space-y-1">
+                    <x-responsive-nav-link theme="dark" :href="route('login')">
+                        Masuk
+                    </x-responsive-nav-link>
+                    @if (Route::has('register'))
+                        <x-responsive-nav-link theme="dark" :href="route('register')">
+                            Daftar
+                        </x-responsive-nav-link>
+                    @endif
+                </div>
+            @endauth
         </div>
     </div>
 </nav>

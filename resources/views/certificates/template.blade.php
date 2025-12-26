@@ -71,7 +71,7 @@
 </head>
 <body>
     <div class="kop">
-        <img class="logo" src="{{ public_path('images/skb.png') }}" alt="SKB Banjarnegara">
+        <img class="logo" src="{{ public_path('images/black.png') }}" alt="SKB Banjarnegara">
         <div>
             <div class="header">Certificate of Completion</div>
             <div class="subheader">This is to certify that</div>

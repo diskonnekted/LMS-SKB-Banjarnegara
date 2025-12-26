@@ -20,6 +20,31 @@
                             <x-input-error :messages="$errors->get('title')" class="mt-2" />
                         </div>
 
+                        <!-- Category -->
+                        <div class="mb-4">
+                            <label for="category_id" class="block text-sm font-medium text-gray-700">Kategori</label>
+                            <select name="category_id" id="category_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                                <option value="">Pilih Kategori</option>
+                                @foreach($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('category_id')" class="mt-2" />
+                        </div>
+
+                        <!-- Related Course -->
+                        <div class="mb-4">
+                            <label for="course_id" class="block text-sm font-medium text-gray-700">Tautkan ke Pelajaran (Opsional)</label>
+                            <select name="course_id" id="course_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">Tidak ada</option>
+                                @foreach($courses as $course)
+                                    <option value="{{ $course->id }}">{{ $course->title }}</option>
+                                @endforeach
+                            </select>
+                            <p class="text-xs text-gray-500 mt-1">Jika berita ini berkaitan dengan pelajaran tertentu, pilih di sini.</p>
+                            <x-input-error :messages="$errors->get('course_id')" class="mt-2" />
+                        </div>
+
                         <!-- Content -->
                         <div class="mb-4">
                             <label for="content" class="block text-sm font-medium text-gray-700">Konten</label>

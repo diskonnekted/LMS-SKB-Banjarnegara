@@ -22,7 +22,7 @@
 
                 <div class="space-x-4">
                     <a href="{{ route('learning.course', $course) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                        Kembali ke Kursus
+                        Kembali ke Pelajaran
                     </a>
                     @if(!$passed)
                         <a href="{{ route('learning.quiz', [$course, $module, $quiz]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
