@@ -55,13 +55,17 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
-                    'correct_answer' => 'required|in:a,b,c,d',
+                    'option_c' => 'required|string',
+                    'option_d' => 'required|string',
+                    'option_e' => 'required|string',
+                    'correct_answer' => 'required|in:a,b,c,d,e',
                 ]);
                 $options = [
                     'a' => $request->option_a,
                     'b' => $request->option_b,
                     'c' => $request->option_c,
                     'd' => $request->option_d,
+                    'e' => $request->option_e,
                 ];
                 $correct_answer = $request->correct_answer;
                 break;
@@ -70,13 +74,18 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
+                    'option_c' => 'required|string',
+                    'option_d' => 'required|string',
+                    'option_e' => 'required|string',
                     'correct_answers' => 'required|array',
+                    'correct_answers.*' => 'in:a,b,c,d,e|distinct',
                 ]);
                 $options = [
                     'a' => $request->option_a,
                     'b' => $request->option_b,
                     'c' => $request->option_c,
                     'd' => $request->option_d,
+                    'e' => $request->option_e,
                 ];
                 $correct_answer = json_encode($request->correct_answers);
                 break;
@@ -157,13 +166,17 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
-                    'correct_answer' => 'required|in:a,b,c,d',
+                    'option_c' => 'required|string',
+                    'option_d' => 'required|string',
+                    'option_e' => 'required|string',
+                    'correct_answer' => 'required|in:a,b,c,d,e',
                 ]);
                 $options = [
                     'a' => $request->option_a,
                     'b' => $request->option_b,
                     'c' => $request->option_c,
                     'd' => $request->option_d,
+                    'e' => $request->option_e,
                 ];
                 $correct_answer = $request->correct_answer;
                 break;
@@ -172,13 +185,18 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
+                    'option_c' => 'required|string',
+                    'option_d' => 'required|string',
+                    'option_e' => 'required|string',
                     'correct_answers' => 'required|array',
+                    'correct_answers.*' => 'in:a,b,c,d,e|distinct',
                 ]);
                 $options = [
                     'a' => $request->option_a,
                     'b' => $request->option_b,
                     'c' => $request->option_c,
                     'd' => $request->option_d,
+                    'e' => $request->option_e,
                 ];
                 $correct_answer = json_encode($request->correct_answers);
                 break;

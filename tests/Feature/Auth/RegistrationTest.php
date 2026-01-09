@@ -20,14 +20,12 @@ class RegistrationTest extends TestCase
     public function test_new_users_can_register(): void
     {
         Role::create(['name' => 'student']);
-        Role::create(['name' => 'teacher']);
 
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
-            'role' => 'student',
         ]);
 
         $this->assertAuthenticated();

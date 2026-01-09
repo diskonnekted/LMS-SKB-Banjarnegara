@@ -19,19 +19,13 @@
                 </div>
 
                 <div>
-                    <strong class="text-gray-900 block mb-1">3. Pilih Peran (Role)</strong>
-                    <ul class="list-disc list-inside ml-2">
-                        <li><strong>Siswa:</strong> Pilih ini jika Anda adalah peserta didik yang ingin mengikuti pembelajaran.</li>
-                        <li><strong>Guru:</strong> Pilih ini jika Anda adalah pengajar atau tutor.</li>
-                    </ul>
+                    <strong class="text-gray-900 block mb-1">3. Pendaftaran Akun</strong>
+                    <p>Akun yang dibuat melalui halaman ini adalah akun <strong>Siswa</strong>.</p>
                 </div>
 
                 <div>
                     <strong class="text-gray-900 block mb-1">4. Pilih Pelajaran (Opsional)</strong>
-                    <p>
-                        Jika Anda siswa, pilih pelajaran yang ingin diikuti (bisa lebih dari satu).<br>
-                        Jika Anda guru, pilih pelajaran yang Anda ampu.
-                    </p>
+                    <p>Pilih pelajaran yang ingin diikuti (bisa lebih dari satu).</p>
                 </div>
 
                 <div class="bg-blue-50 p-3 rounded text-blue-800 text-xs mt-4">
@@ -82,21 +76,10 @@
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
                 </div>
 
-                <!-- Role -->
-                <div class="mt-4">
-                    <x-input-label style="color: black !important;" for="role" :value="__('Daftar sebagai')" />
-                    <select id="role" name="role" class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500" required>
-                        <option value="">-- Pilih Peran --</option>
-                        <option value="student" @selected(old('role')=='student')>Siswa</option>
-                        <option value="teacher" @selected(old('role')=='teacher')>Guru</option>
-                    </select>
-                    <x-input-error :messages="$errors->get('role')" class="mt-2" />
-                </div>
-
                 @if(isset($courses) && $courses->count() > 0)
                 <!-- Student: Enroll Courses -->
                 <div class="mt-4">
-                    <x-input-label style="color: black !important;" for="enroll_courses" :value="__('Pilih Pelajaran untuk Diikuti (Siswa)')" />
+                    <x-input-label style="color: black !important;" for="enroll_courses" :value="__('Pilih Pelajaran untuk Diikuti')" />
                     <select id="enroll_courses" name="enroll_courses[]" multiple class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
                         @foreach($courses as $course)
                             <option value="{{ $course->id }}">
@@ -104,22 +87,8 @@
                             </option>
                         @endforeach
                     </select>
-                    <p class="text-xs text-gray-500 mt-1">Opsional. Abaikan jika daftar sebagai guru.</p>
+                    <p class="text-xs text-gray-500 mt-1">Opsional.</p>
                     <x-input-error :messages="$errors->get('enroll_courses')" class="mt-2" />
-                </div>
-
-                <!-- Teacher: Teach Courses -->
-                <div class="mt-4">
-                    <x-input-label style="color: black !important;" for="teach_courses" :value="__('Pilih Pelajaran yang Diampu (Guru)')" />
-                    <select id="teach_courses" name="teach_courses[]" multiple class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
-                        @foreach($courses as $course)
-                            <option value="{{ $course->id }}">
-                                {{ $course->title }} {{ $course->grade_level ? '— '.$course->grade_level : '' }}
-                            </option>
-                        @endforeach
-                    </select>
-                    <p class="text-xs text-gray-500 mt-1">Opsional. Abaikan jika daftar sebagai siswa.</p>
-                    <x-input-error :messages="$errors->get('teach_courses')" class="mt-2" />
                 </div>
                 @endif
 

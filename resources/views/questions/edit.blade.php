@@ -87,6 +87,10 @@
                                 <label class="block text-sm font-medium text-gray-700">Option D</label>
                                 <input type="text" name="option_d" value="{{ old('option_d', $options['d'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Option E</label>
+                                <input type="text" name="option_e" value="{{ old('option_e', $options['e'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
                         </div>
 
                         <div class="mb-4" x-show="type === 'multiple_choice'">
@@ -97,6 +101,7 @@
                                 <option value="b" @selected($picked==='b')>Option B</option>
                                 <option value="c" @selected($picked==='c')>Option C</option>
                                 <option value="d" @selected($picked==='d')>Option D</option>
+                                <option value="e" @selected($picked==='e')>Option E</option>
                             </select>
                         </div>
 
@@ -104,7 +109,7 @@
                             <label class="block text-sm font-medium text-gray-700">Kunci Jawaban (Boleh Lebih dari 1)</label>
                             @php $picked = old('correct_answers', $correctAnswers); @endphp
                             <div class="flex flex-wrap gap-4 mt-2">
-                                @foreach(['a','b','c','d'] as $k)
+                                @foreach(['a','b','c','d','e'] as $k)
                                     <label class="inline-flex items-center">
                                         <input type="checkbox" name="correct_answers[]" value="{{ $k }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" @checked(is_array($picked) && in_array($k, $picked, true))>
                                         <span class="ml-2">Option {{ strtoupper($k) }}</span>

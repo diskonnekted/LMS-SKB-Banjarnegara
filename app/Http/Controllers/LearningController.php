@@ -212,7 +212,7 @@ class LearningController extends Controller
                 default:
                     // Fallback for legacy data
                     $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
-                    $isLetter = in_array($submitted, ['a', 'b', 'c', 'd'], true);
+                    $isLetter = in_array($submitted, ['a', 'b', 'c', 'd', 'e'], true);
                     $submittedText = $isLetter ? ($options[$submitted] ?? null) : $submitted;
                     if ($submitted === $question->correct_answer || $submittedText === $question->correct_answer) {
                         $isCorrect = true;

@@ -36,11 +36,8 @@ class RegisteredUserController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-            'role' => ['required', 'in:student,teacher'],
             'enroll_courses' => ['nullable', 'array'],
             'enroll_courses.*' => ['integer', 'exists:courses,id'],
-            'teach_courses' => ['nullable', 'array'],
-            'teach_courses.*' => ['integer', 'exists:courses,id'],
         ]);
 
         $user = User::create([
@@ -49,18 +46,11 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $user->assignRole($request->role);
+        $user->assignRole('student');
 
-        if ($request->role === 'student') {
-            $courseIds = collect($request->input('enroll_courses', []))->unique()->values();
-            foreach ($courseIds as $cid) {
-                $user->enrolledCourses()->syncWithoutDetaching([$cid]);
-            }
-        } elseif ($request->role === 'teacher') {
-            $teachIds = collect($request->input('teach_courses', []))->unique()->values();
-            if ($teachIds->count() > 0) {
-                Course::whereIn('id', $teachIds)->update(['teacher_id' => $user->id]);
-            }
+        $courseIds = collect($request->input('enroll_courses', []))->unique()->values();
+        foreach ($courseIds as $cid) {
+            $user->enrolledCourses()->syncWithoutDetaching([$cid]);
         }
 
         event(new Registered($user));
