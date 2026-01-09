@@ -28,16 +28,21 @@
                             <label class="block text-sm font-medium text-gray-700">Kelas</label>
                             <select name="grade_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                 <option value="">Pilih Kelas</option>
-                                <optgroup label="Sekolah Dasar (SD)">
-                                    <option value="Kelas 3 SD">Kelas 3 SD</option>
-                                    <option value="Kelas 4 SD">Kelas 4 SD</option>
-                                    <option value="Kelas 5 SD">Kelas 5 SD</option>
-                                    <option value="Kelas 6 SD">Kelas 6 SD</option>
+                                <optgroup label="Kejar Paket A">
+                                    <option value="Kejar Paket A Kelas 3" @selected(old('grade_level')=='Kejar Paket A Kelas 3')>Kelas 3</option>
+                                    <option value="Kejar Paket A Kelas 4" @selected(old('grade_level')=='Kejar Paket A Kelas 4')>Kelas 4</option>
+                                    <option value="Kejar Paket A Kelas 5" @selected(old('grade_level')=='Kejar Paket A Kelas 5')>Kelas 5</option>
+                                    <option value="Kejar Paket A Kelas 6" @selected(old('grade_level')=='Kejar Paket A Kelas 6')>Kelas 6</option>
                                 </optgroup>
-                                <optgroup label="Sekolah Menengah Pertama (SMP)">
-                                    <option value="Kelas 7 SMP">Kelas 7 SMP</option>
-                                    <option value="Kelas 8 SMP">Kelas 8 SMP</option>
-                                    <option value="Kelas 9 SMP">Kelas 9 SMP</option>
+                                <optgroup label="Kejar Paket B">
+                                    <option value="Kejar Paket B Kelas 7" @selected(old('grade_level')=='Kejar Paket B Kelas 7')>Kelas 7</option>
+                                    <option value="Kejar Paket B Kelas 8" @selected(old('grade_level')=='Kejar Paket B Kelas 8')>Kelas 8</option>
+                                    <option value="Kejar Paket B Kelas 9" @selected(old('grade_level')=='Kejar Paket B Kelas 9')>Kelas 9</option>
+                                </optgroup>
+                                <optgroup label="Kejar Paket C">
+                                    <option value="Kejar Paket C Kelas 10" @selected(old('grade_level')=='Kejar Paket C Kelas 10')>Kelas 10</option>
+                                    <option value="Kejar Paket C Kelas 11" @selected(old('grade_level')=='Kejar Paket C Kelas 11')>Kelas 11</option>
+                                    <option value="Kejar Paket C Kelas 12" @selected(old('grade_level')=='Kejar Paket C Kelas 12')>Kelas 12</option>
                                 </optgroup>
                             </select>
                         </div>

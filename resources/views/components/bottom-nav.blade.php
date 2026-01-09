@@ -2,24 +2,21 @@
     $items = [];
     if (!auth()->check()) {
         $items = [
-            ['label' => 'Beranda', 'href' => url('/#home'), 'active' => request()->is('/')],
-            ['label' => 'Pelajaran', 'href' => url('/#courses'), 'active' => str_contains(request()->url(), '#courses')],
-            ['label' => 'Berita', 'href' => url('/#news'), 'active' => str_contains(request()->url(), '#news')],
-            ['label' => 'Masuk', 'href' => route('login'), 'active' => request()->routeIs('login')],
+            ['label' => 'Pelajaran', 'href' => route('courses.catalog'), 'active' => request()->routeIs('courses.catalog')],
+            ['label' => 'Daftar', 'href' => route('register'), 'active' => request()->routeIs('register')],
+            ['label' => 'Akun', 'href' => route('login'), 'active' => request()->routeIs('login')],
         ];
     } elseif (auth()->user()->hasRole('student')) {
         $items = [
             ['label' => 'Beranda', 'href' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
             ['label' => 'Pelajaran', 'href' => route('courses.index'), 'active' => request()->routeIs('courses.*')],
-            ['label' => 'Berita', 'href' => url('/#news'), 'active' => str_contains(request()->url(), '#news')],
-            ['label' => 'Profil', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.edit')],
+            ['label' => 'Akun', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.edit')],
         ];
     } elseif (auth()->user()->hasRole('teacher')) {
         $items = [
             ['label' => 'Dasbor', 'href' => route('dashboard'), 'active' => request()->routeIs('dashboard')],
             ['label' => 'Pelajaran', 'href' => route('courses.index'), 'active' => request()->routeIs('courses.*')],
-            ['label' => 'Berita', 'href' => url('/#news'), 'active' => str_contains(request()->url(), '#news')],
-            ['label' => 'Profil', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.edit')],
+            ['label' => 'Akun', 'href' => route('profile.edit'), 'active' => request()->routeIs('profile.edit')],
         ];
     } else {
         $items = [
@@ -42,9 +39,9 @@
                         <x-heroicon name="home" class="h-6 w-6" />
                     @elseif($label === 'Pelajaran')
                         <x-heroicon name="book-open" class="h-6 w-6" />
-                    @elseif($label === 'Berita')
-                        <x-heroicon name="newspaper" class="h-6 w-6" />
-                    @elseif($label === 'Profil' || $label === 'Masuk')
+                    @elseif($label === 'Daftar')
+                        <x-heroicon name="clipboard-list" class="h-6 w-6" />
+                    @elseif($label === 'Profil' || $label === 'Masuk' || $label === 'Akun')
                         <x-heroicon name="user" class="h-6 w-6" />
                     @elseif($label === 'Pengguna')
                         <x-heroicon name="user-group" class="h-6 w-6" />

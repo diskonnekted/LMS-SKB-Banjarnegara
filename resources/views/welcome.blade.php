@@ -29,7 +29,7 @@
             }
         </style>
     </head>
-    <body class="font-sans antialiased bg-white text-gray-900 overflow-x-hidden">
+    <body class="font-sans antialiased bg-white text-gray-900 overflow-x-hidden pb-16 md:pb-0">
         
         <!-- Navbar -->
         <nav class="glass-nav fixed w-full z-50 transition-all duration-300">
@@ -45,6 +45,7 @@
                         <div class="hidden md:flex space-x-8">
                             <a href="#home" class="text-sm font-medium text-white hover:text-gray-200 transition">Beranda</a>
                             <a href="#courses" class="text-sm font-medium text-white hover:text-gray-200 transition">Pelajaran</a>
+                            <a href="{{ route('courses.catalog') }}" class="text-sm font-medium text-white hover:text-gray-200 transition">Semua Pelajaran</a>
                             <a href="#news" class="text-sm font-medium text-white hover:text-gray-200 transition">Berita</a>
                         </div>
                         
@@ -236,7 +237,7 @@
                                 </h3>
                                 
                                 <p class="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-6">
-                                    {{ $course->description }}
+                                    {{ Str::limit(strip_tags($course->description), 150) }}
                                 </p>
                                 
                                 <div class="pt-6 border-t border-gray-100 flex items-center justify-between">

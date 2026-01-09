@@ -182,7 +182,7 @@
                         
                         @if($lesson->type !== 'video')
                             <div class="prose max-w-none mt-6">
-                                {!! $lesson->content !!}
+                                {!! \App\Helpers\ContentParser::parse($lesson->content) !!}
                             </div>
                         @endif
 

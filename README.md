@@ -1,59 +1,140 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LMS SKB Banjarnegara
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi Learning Management System (LMS) berbasis Laravel untuk kebutuhan SKB Banjarnegara.
 
-## About Laravel
+Repo: https://github.com/diskonnekted/LMS-SKB-Banjarnegara
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Manajemen pengguna berbasis peran: Admin, Guru, Siswa
+- Pelajaran (Course): judul, kategori, tingkat kelas (grade level), thumbnail, publish/unpublish
+- Struktur materi: Modul → Pelajaran (teks/video/pdf/ppt) → Kuis → Soal
+- Enroll siswa ke pelajaran dan pelacakan progres belajar
+- Sertifikat (download + verifikasi kode)
+- Berita (News) dan pengaitan berita ke pelajaran
+- Katalog pelajaran publik + filter kategori dan kelas
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Teknologi
 
-## Learning Laravel
+- Laravel 12 + Breeze (auth)
+- Tailwind CSS + Vite
+- Spatie Laravel Permission (role)
+- PHPUnit (testing), Laravel Pint (formatting)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+## Struktur Singkat
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `routes/web.php`: routing utama (publik, dashboard, admin/teacher/student)
+- `app/Http/Controllers`: controller untuk Course, Learning, Quiz, News, dll.
+- `resources/views`: Blade UI (admin/teacher/student/public)
+- `database/migrations`: struktur tabel LMS (courses/modules/lessons/quizzes, dsb.)
+- `database/seeders`: data awal user/role dan dummy course
 
-## Laravel Sponsors
+## Grade Level (Kejar Paket)
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Nilai `grade_level` pada course menggunakan format:
 
-### Premium Partners
+- Kejar Paket A: Kelas 3–6
+- Kejar Paket B: Kelas 7–9
+- Kejar Paket C: Kelas 10–12
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Input lama seperti `Kelas 3 SD`, `Kelas 7 SMP`, `Kelas 10 SMA` dinormalisasi otomatis menjadi format Kejar Paket.
 
-## Contributing
+## Kebutuhan Sistem
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- PHP 8.2+
+- Composer
+- Node.js + npm
+- Database:
+  - Default `.env.example` memakai SQLite (`DB_CONNECTION=sqlite`)
+  - Bisa diganti ke MySQL/MariaDB sesuai kebutuhan
 
-## Code of Conduct
+## Instalasi Cepat
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+### 1) Install dependency
 
-## Security Vulnerabilities
+```bash
+composer install
+npm install
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+### 2) Konfigurasi environment
 
-## License
+```bash
+copy .env.example .env
+php artisan key:generate
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Jika memakai SQLite, buat file `database/database.sqlite` lalu pastikan `.env`:
+
+```env
+DB_CONNECTION=sqlite
+```
+
+Jika memakai MySQL/MariaDB, set `DB_CONNECTION`, `DB_HOST`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`.
+
+### 3) Migrasi & seeding
+
+```bash
+php artisan migrate --seed
+```
+
+Seeder utama: `DatabaseSeeder` (membuat roles + akun default + dummy course).
+
+## Menjalankan Aplikasi
+
+### Opsi A (minimal)
+
+```bash
+php artisan serve
+npm run dev
+```
+
+### Opsi B (mode dev terintegrasi)
+
+```bash
+composer run dev
+```
+
+Script ini menjalankan server, queue listener, log viewer (pail), dan vite bersamaan.
+
+## Akun Default
+
+Dari `DatabaseSeeder`:
+
+- Admin: `admin@skb.com` / `password`
+- Guru: `guru@skb.com` / `password`
+- Siswa: `student@skb.com` / `password`
+
+Login URL:
+
+- `http://localhost/skb/public/login` (jika dipasang di XAMPP/htdocs)
+
+## URL Penting
+
+- Beranda: `/`
+- Katalog publik: `/courses/all`
+- Dashboard: `/dashboard` (butuh login)
+
+## Testing & Quality
+
+Jalankan test:
+
+```bash
+composer test
+```
+
+Jalankan formatter:
+
+```bash
+php vendor/bin/pint
+```
+
+Build aset:
+
+```bash
+npm run build
+```
+
+## Lisensi
+
+MIT

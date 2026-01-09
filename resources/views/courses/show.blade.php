@@ -75,7 +75,9 @@
                             
                             <div class="prose max-w-none text-gray-600 mb-8">
                                 <h3 class="text-lg font-semibold text-gray-800 mb-2">Deskripsi</h3>
-                                <p class="whitespace-pre-line">{{ $course->description }}</p>
+                                <div class="description-content">
+                                    {!! \App\Helpers\ContentParser::parse($course->description) !!}
+                                </div>
                             </div>
                             
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

@@ -1,33 +1,33 @@
 <x-app-layout>
-    <x-slot name="header">
-        <div class="relative overflow-hidden rounded-xl">
-            <div class="relative bg-gradient-to-r from-tertiary to-secondary h-28 w-full flex items-center px-6">
-                <div class="absolute inset-0 bg-black/20"></div>
-                <div class="relative flex items-center justify-between w-full">
-                    <div class="text-text-light drop-shadow-md">
-                        <div class="text-sm opacity-90">Selamat datang</div>
-                        <div class="text-2xl font-bold capitalize">{{ Auth::user()->name }}</div>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        @php
-                            $avatar = Auth::user()->avatar ?? null;
-                            $avatarUrl = $avatar ? asset('storage/'.$avatar) : null;
-                        @endphp
-                        @if($avatarUrl)
-                            <img src="{{ $avatarUrl }}" alt="Foto Guru" class="relative h-20 w-20 rounded-full object-cover ring-4 ring-white/70 shadow-lg" />
-                        @else
-                            <span class="relative h-20 w-20 rounded-full bg-white/20 flex items-center justify-center text-text-light ring-4 ring-white/70 shadow-lg">
-                                <x-heroicon name="user" class="h-10 w-10" />
-                            </span>
-                        @endif
+    <div class="py-12">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="mb-6">
+                <div class="relative overflow-hidden rounded-xl">
+                    <div class="relative bg-gradient-to-r from-tertiary to-secondary h-28 w-full flex items-center px-6">
+                        <div class="absolute inset-0 bg-black/20"></div>
+                        <div class="relative flex items-center justify-between w-full">
+                            <div class="text-text-light drop-shadow-md">
+                                <div class="text-sm opacity-90">Selamat datang</div>
+                                <div class="text-2xl font-bold capitalize">{{ Auth::user()->name }}</div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                @php
+                                    $avatar = Auth::user()->avatar ?? null;
+                                    $avatarUrl = $avatar ? asset('storage/'.$avatar) : null;
+                                @endphp
+                                @if($avatarUrl)
+                                    <img src="{{ $avatarUrl }}" alt="Foto Guru" class="relative h-20 w-20 rounded-full object-cover ring-4 ring-white/70 shadow-lg" />
+                                @else
+                                    <span class="relative h-20 w-20 rounded-full bg-white/20 flex items-center justify-center text-text-light ring-4 ring-white/70 shadow-lg">
+                                        <x-heroicon name="user" class="h-10 w-10" />
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="mb-6">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div class="relative rounded-xl overflow-hidden p-4 text-text-light shadow hover:shadow-lg transition bg-gradient-to-br from-primary to-primary">

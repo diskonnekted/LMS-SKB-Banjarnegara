@@ -29,16 +29,21 @@
                             <label class="block text-sm font-medium text-gray-700">Kelas</label>
                             <select name="grade_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                 <option value="">Pilih Kelas</option>
-                                <optgroup label="Sekolah Dasar (SD)">
-                                    <option value="Kelas 3 SD" {{ (old('grade_level', $course->grade_level) == 'Kelas 3 SD') ? 'selected' : '' }}>Kelas 3 SD</option>
-                                    <option value="Kelas 4 SD" {{ (old('grade_level', $course->grade_level) == 'Kelas 4 SD') ? 'selected' : '' }}>Kelas 4 SD</option>
-                                    <option value="Kelas 5 SD" {{ (old('grade_level', $course->grade_level) == 'Kelas 5 SD') ? 'selected' : '' }}>Kelas 5 SD</option>
-                                    <option value="Kelas 6 SD" {{ (old('grade_level', $course->grade_level) == 'Kelas 6 SD') ? 'selected' : '' }}>Kelas 6 SD</option>
+                                <optgroup label="Kejar Paket A">
+                                    <option value="Kejar Paket A Kelas 3" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket A Kelas 3') ? 'selected' : '' }}>Kelas 3</option>
+                                    <option value="Kejar Paket A Kelas 4" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket A Kelas 4') ? 'selected' : '' }}>Kelas 4</option>
+                                    <option value="Kejar Paket A Kelas 5" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket A Kelas 5') ? 'selected' : '' }}>Kelas 5</option>
+                                    <option value="Kejar Paket A Kelas 6" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket A Kelas 6') ? 'selected' : '' }}>Kelas 6</option>
                                 </optgroup>
-                                <optgroup label="Sekolah Menengah Pertama (SMP)">
-                                    <option value="Kelas 7 SMP" {{ (old('grade_level', $course->grade_level) == 'Kelas 7 SMP') ? 'selected' : '' }}>Kelas 7 SMP</option>
-                                    <option value="Kelas 8 SMP" {{ (old('grade_level', $course->grade_level) == 'Kelas 8 SMP') ? 'selected' : '' }}>Kelas 8 SMP</option>
-                                    <option value="Kelas 9 SMP" {{ (old('grade_level', $course->grade_level) == 'Kelas 9 SMP') ? 'selected' : '' }}>Kelas 9 SMP</option>
+                                <optgroup label="Kejar Paket B">
+                                    <option value="Kejar Paket B Kelas 7" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket B Kelas 7') ? 'selected' : '' }}>Kelas 7</option>
+                                    <option value="Kejar Paket B Kelas 8" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket B Kelas 8') ? 'selected' : '' }}>Kelas 8</option>
+                                    <option value="Kejar Paket B Kelas 9" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket B Kelas 9') ? 'selected' : '' }}>Kelas 9</option>
+                                </optgroup>
+                                <optgroup label="Kejar Paket C">
+                                    <option value="Kejar Paket C Kelas 10" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket C Kelas 10') ? 'selected' : '' }}>Kelas 10</option>
+                                    <option value="Kejar Paket C Kelas 11" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket C Kelas 11') ? 'selected' : '' }}>Kelas 11</option>
+                                    <option value="Kejar Paket C Kelas 12" {{ (old('grade_level', $course->grade_level) == 'Kejar Paket C Kelas 12') ? 'selected' : '' }}>Kelas 12</option>
                                 </optgroup>
                             </select>
                         </div>

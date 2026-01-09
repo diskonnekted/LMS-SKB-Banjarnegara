@@ -99,7 +99,7 @@
                                     </div>
 
                                     <h3 class="text-lg font-bold mb-2 text-gray-900 line-clamp-1" title="{{ $course->title }}">{{ $course->title }}</h3>
-                                    <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ $course->description }}</p>
+                                    <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ Str::limit(strip_tags($course->description), 150) }}</p>
                                     
                                     <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
                                         @role('admin|teacher')

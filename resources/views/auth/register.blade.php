@@ -100,7 +100,7 @@
                     <select id="enroll_courses" name="enroll_courses[]" multiple class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
                         @foreach($courses as $course)
                             <option value="{{ $course->id }}">
-                                {{ $course->title }} {{ $course->grade_level ? '— Kelas '.$course->grade_level : '' }}
+                                {{ $course->title }} {{ $course->grade_level ? '— '.$course->grade_level : '' }}
                             </option>
                         @endforeach
                     </select>
@@ -114,7 +114,7 @@
                     <select id="teach_courses" name="teach_courses[]" multiple class="block mt-1 w-full rounded-md border-gray-300 shadow-sm focus:border-orange-500 focus:ring-orange-500">
                         @foreach($courses as $course)
                             <option value="{{ $course->id }}">
-                                {{ $course->title }} {{ $course->grade_level ? '— Kelas '.$course->grade_level : '' }}
+                                {{ $course->title }} {{ $course->grade_level ? '— '.$course->grade_level : '' }}
                             </option>
                         @endforeach
                     </select>

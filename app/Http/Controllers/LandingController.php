@@ -20,7 +20,7 @@ class LandingController extends Controller
         }
         $courses = Course::where('is_published', true)->latest()->take(6)->get();
         $news = News::latest()->take(3)->get();
-        
+
         // Fetch settings or use defaults
         // Since we might not have settings populated yet, use defaults
         $heroTitle = Setting::where('key', 'hero_title')->value('value') ?? 'Welcome to Our LMS';
@@ -30,6 +30,7 @@ class LandingController extends Controller
         if ($isMobile) {
             return view('mobile.home', compact('courses', 'news'));
         }
+
         return view('welcome', compact('courses', 'news', 'heroTitle', 'heroDescription', 'organizerName'));
     }
 
@@ -40,7 +41,7 @@ class LandingController extends Controller
             $s = $request->string('search')->toString();
             $query->where(function ($q) use ($s) {
                 $q->where('title', 'like', "%{$s}%")
-                  ->orWhere('description', 'like', "%{$s}%");
+                    ->orWhere('description', 'like', "%{$s}%");
             });
         }
         if ($request->filled('category_id')) {
@@ -51,7 +52,19 @@ class LandingController extends Controller
         }
         $courses = $query->latest()->paginate(9)->withQueryString();
         $categories = \App\Models\Category::orderBy('name')->get();
-        $gradeLevels = Course::select('grade_level')->distinct()->orderBy('grade_level')->pluck('grade_level');
+        $gradeLevels = collect([
+            'Kejar Paket A Kelas 3',
+            'Kejar Paket A Kelas 4',
+            'Kejar Paket A Kelas 5',
+            'Kejar Paket A Kelas 6',
+            'Kejar Paket B Kelas 7',
+            'Kejar Paket B Kelas 8',
+            'Kejar Paket B Kelas 9',
+            'Kejar Paket C Kelas 10',
+            'Kejar Paket C Kelas 11',
+            'Kejar Paket C Kelas 12',
+        ]);
+
         return view('courses.catalog', compact('courses', 'categories', 'gradeLevels'));
     }
 }

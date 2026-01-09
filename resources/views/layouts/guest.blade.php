@@ -22,20 +22,25 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans text-gray-900 antialiased" style="background-color: #4ECDC4;">
-        <div class="min-h-screen flex flex-col justify-center items-center p-6 relative">
+    <body class="font-sans antialiased {{ request()->routeIs('login') ? 'text-gray-900 bg-gradient-to-br from-white via-indigo-50 to-slate-50' : 'text-gray-900' }}" @if(!request()->routeIs('login')) style="background-color: #4ECDC4;" @endif>
+        <div class="min-h-screen flex flex-col justify-center items-center p-6 relative overflow-hidden">
+            @if(request()->routeIs('login'))
+                <div class="absolute -top-24 -left-24 h-80 w-80 rounded-full bg-tertiary/15 blur-3xl"></div>
+                <div class="absolute -bottom-24 -right-24 h-80 w-80 rounded-full bg-secondary/15 blur-3xl"></div>
+                <div class="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgba(99,102,241,0.12)_1px,transparent_0)] bg-[length:22px_22px] opacity-60"></div>
+            @endif
             <div class="mb-8">
                 <a href="/">
                     <x-application-logo :theme="$logoTheme" class="w-auto h-28" />
                 </a>
             </div>
 
-            <div class="w-full {{ $maxWidth ?? 'max-w-md' }} bg-white shadow-xl rounded-[2.5rem] p-8 space-y-6 border border-gray-100 relative z-10">
+            <div class="w-full {{ $maxWidth ?? 'max-w-md' }} rounded-[2.5rem] p-8 space-y-6 relative z-10 {{ request()->routeIs('login') ? 'bg-white/90 backdrop-blur-xl shadow-2xl shadow-indigo-500/10 border border-gray-200 ring-1 ring-indigo-100' : 'bg-white shadow-xl border border-gray-100' }}">
                 {{ $slot }}
             </div>
         </div>
-        @if(!empty($isMobile) && $isMobile && !request()->routeIs('login'))
+        @unless(request()->routeIs('login'))
             @include('components.bottom-nav')
-        @endif
+        @endunless
     </body>
 </html>

@@ -13,7 +13,7 @@
         <!-- Email Address -->
         <div>
             <x-input-label for="email" :value="__('Email')" class="block text-sm font-medium mb-1 text-gray-700" />
-            <x-text-input id="email" class="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="contoh@email.com" />
+            <x-text-input id="email" class="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-tertiary focus:border-transparent transition" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" placeholder="contoh@email.com" />
             <x-input-error :messages="$errors->get('email')" class="mt-2" />
         </div>
 
@@ -22,13 +22,13 @@
             <div class="flex justify-between items-center mb-1">
                 <x-input-label for="password" :value="__('Kata Sandi')" class="block text-sm font-medium text-gray-700" />
                 @if (Route::has('password.request'))
-                    <a class="text-sm text-orange-600 hover:text-orange-700 font-medium transition" href="{{ route('password.request') }}">
+                    <a class="text-sm text-tertiary hover:text-indigo-700 font-medium transition" href="{{ route('password.request') }}">
                         {{ __('Lupa kata sandi?') }}
                     </a>
                 @endif
             </div>
 
-            <x-text-input id="password" class="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent transition"
+            <x-text-input id="password" class="w-full px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-tertiary focus:border-transparent transition"
                             type="password"
                             name="password"
                             required autocomplete="current-password"
@@ -40,13 +40,13 @@
         <!-- Remember Me -->
         <div class="flex items-center">
             <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-orange-600 shadow-sm focus:ring-orange-500" name="remember">
+                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-tertiary shadow-sm focus:ring-tertiary" name="remember">
                 <span class="ms-2 text-sm text-gray-600">{{ __('Ingat saya') }}</span>
             </label>
         </div>
 
         <div>
-            <x-primary-button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 px-4 rounded-full transition shadow-lg shadow-orange-500/30 justify-center">
+            <x-primary-button class="w-full bg-gradient-to-r from-tertiary to-secondary hover:brightness-110 text-white font-bold py-3 px-4 rounded-full transition shadow-lg shadow-tertiary/20 justify-center">
                 {{ __('Masuk') }}
             </x-primary-button>
         </div>
@@ -61,7 +61,7 @@
         <!-- Sign Up Link -->
         <p class="text-center text-sm text-gray-600">
             {{ __('Belum punya akun?') }}
-            <a href="{{ route('register') }}" class="text-orange-600 font-bold hover:underline">{{ __('Daftar sekarang') }}</a>
+            <a href="{{ route('register') }}" class="text-tertiary font-bold hover:underline">{{ __('Daftar sekarang') }}</a>
         </p>
         
         <div class="mt-4">

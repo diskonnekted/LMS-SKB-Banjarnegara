@@ -40,13 +40,11 @@
             @endif
 
             <!-- Page Content -->
-            <main class="flex-grow">
+            <main class="flex-grow pb-16 md:pb-0">
                 {{ $slot }}
             </main>
 
-            @if(!empty($isMobile) && $isMobile)
-                @include('components.bottom-nav')
-            @endif
+            @include('components.bottom-nav')
 
             <!-- Footer -->
             <footer style="background-color: #FF6B6B;" class="border-t border-red-300">

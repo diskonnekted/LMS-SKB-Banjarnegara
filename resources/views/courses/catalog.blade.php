@@ -67,7 +67,7 @@
                                 <span class="text-xs font-medium text-gray-500">{{ $course->teacher->name ?? 'Instruktur' }}</span>
                             </div>
                             <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-indigo-600 transition-colors">{{ $course->title }}</h3>
-                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ $course->description }}</p>
+                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ Str::limit(strip_tags($course->description), 150) }}</p>
                             <div class="flex items-center justify-between">
                                 <span class="text-xs text-gray-500">{{ $course->grade_level }}</span>
                                 <a href="{{ route('courses.show', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
