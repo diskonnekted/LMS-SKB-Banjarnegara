@@ -2,25 +2,29 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Category;
+use App\Models\Course;
+use App\Models\Lesson;
+use App\Models\Module;
+use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\File;
-use App\Models\User;
-use App\Models\Course;
-use App\Models\Module;
-use App\Models\Lesson;
-use App\Models\Category;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class ImportOldLmsData extends Command
 {
     protected $signature = 'import:old-lms';
+
     protected $description = 'Import data from old LearnPress database (skb_import)';
 
     protected $userMap = []; // old_id => new_id
+
     protected $courseMap = []; // old_id => new_id
+
     protected $sectionMap = []; // old_id => new_id
+
     protected $categoryMap = []; // old_term_taxonomy_id => new_id
 
     public function handle()
@@ -45,7 +49,8 @@ class ImportOldLmsData extends Command
             DB::connection('old_skb')->getPdo();
             $this->info('Connected to old database successfully.');
         } catch (\Exception $e) {
-            $this->error('Could not connect to old database: ' . $e->getMessage());
+            $this->error('Could not connect to old database: '.$e->getMessage());
+
             return 1;
         }
 
@@ -58,22 +63,24 @@ class ImportOldLmsData extends Command
         });
 
         $this->info('Import completed successfully!');
+
         return 0;
     }
 
     private function importAttachments()
     {
         $this->info('Syncing Attachments...');
-        
+
         $sourceDir = base_path('arsip/uploads');
         $destDir = storage_path('app/public/uploads');
 
-        if (!File::exists($sourceDir)) {
+        if (! File::exists($sourceDir)) {
             $this->warn("Source directory {$sourceDir} does not exist. Skipping attachment sync.");
+
             return;
         }
 
-        if (!File::exists($destDir)) {
+        if (! File::exists($destDir)) {
             File::makeDirectory($destDir, 0755, true);
         }
 
@@ -83,7 +90,9 @@ class ImportOldLmsData extends Command
 
     private function processContent($content)
     {
-        if (empty($content)) return $content;
+        if (empty($content)) {
+            return $content;
+        }
 
         // Replace old URLs with new local paths
         $search = [
@@ -110,11 +119,12 @@ class ImportOldLmsData extends Command
                 ->where('post_id', $thumbnailId)
                 ->where('meta_key', '_wp_attached_file')
                 ->value('meta_value');
-            
+
             if ($attachmentMeta) {
-                return 'uploads/' . $attachmentMeta;
+                return 'uploads/'.$attachmentMeta;
             }
         }
+
         return null;
     }
 
@@ -156,17 +166,18 @@ class ImportOldLmsData extends Command
     private function importUsers()
     {
         $this->info('Importing Users...');
-        
+
         $oldUsers = DB::connection('old_skb')->table('users')->get();
         $bar = $this->output->createProgressBar($oldUsers->count());
 
         foreach ($oldUsers as $oldUser) {
             // Check if user exists by email
             $existingUser = User::where('email', $oldUser->user_email)->first();
-            
+
             if ($existingUser) {
                 $this->userMap[$oldUser->ID] = $existingUser->id;
                 $bar->advance();
+
                 continue;
             }
 
@@ -181,7 +192,7 @@ class ImportOldLmsData extends Command
             // Assign Roles
             $capabilities = DB::connection('old_skb')->table('usermeta')
                 ->where('user_id', $oldUser->ID)
-                ->where('meta_key', 'wp_capabilities') 
+                ->where('meta_key', 'wp_capabilities')
                 ->value('meta_value');
 
             if ($capabilities) {
@@ -195,7 +206,7 @@ class ImportOldLmsData extends Command
                         $newUser->assignRole('student');
                     }
                 } else {
-                     $newUser->assignRole('student');
+                    $newUser->assignRole('student');
                 }
             } else {
                 $newUser->assignRole('student');
@@ -224,6 +235,7 @@ class ImportOldLmsData extends Command
             // Check for duplicates
             if (\App\Models\News::where('slug', $oldPost->post_name)->exists()) {
                 $bar->advance();
+
                 continue;
             }
 
@@ -236,7 +248,7 @@ class ImportOldLmsData extends Command
                 ->where('tr.object_id', $oldPost->ID)
                 ->where('tt.taxonomy', 'category')
                 ->first();
-            
+
             if ($termRel) {
                 $categoryId = $this->categoryMap[$termRel->term_taxonomy_id] ?? null;
             }
@@ -279,7 +291,7 @@ class ImportOldLmsData extends Command
             $originalSlug = $slug;
             $count = 1;
             while (Course::where('slug', $slug)->exists()) {
-                $slug = $originalSlug . '-' . $count++;
+                $slug = $originalSlug.'-'.$count++;
             }
 
             // Get Category
@@ -289,13 +301,13 @@ class ImportOldLmsData extends Command
                 ->where('tr.object_id', $oldCourse->ID)
                 ->where('tt.taxonomy', 'course_category')
                 ->first();
-            
+
             if ($termRel) {
                 $categoryId = $this->categoryMap[$termRel->term_taxonomy_id] ?? null;
             }
 
             // Fallback category if none found
-            if (!$categoryId) {
+            if (! $categoryId) {
                 $categoryId = Category::firstOrCreate(['name' => 'Umum', 'slug' => 'umum'])->id;
             }
 
@@ -305,7 +317,7 @@ class ImportOldLmsData extends Command
                 'description' => $this->processContent($oldCourse->post_content),
                 'teacher_id' => $teacherId,
                 'is_published' => true,
-                'price' => 0, 
+                'price' => 0,
                 'level' => 'beginner',
                 'category_id' => $categoryId,
                 'thumbnail' => $this->getFeaturedImage($oldCourse->ID),
@@ -334,7 +346,7 @@ class ImportOldLmsData extends Command
             $newModule = Module::create([
                 'course_id' => $newCourseId,
                 'title' => $oldSection->section_name,
-                'slug' => Str::slug($oldSection->section_name) . '-' . uniqid(),
+                'slug' => Str::slug($oldSection->section_name).'-'.uniqid(),
                 'order' => $oldSection->section_order,
                 'is_published' => true,
             ]);
@@ -357,25 +369,27 @@ class ImportOldLmsData extends Command
                 ->where('ID', $item->item_id)
                 ->first();
 
-            if (!$post) continue;
+            if (! $post) {
+                continue;
+            }
 
             if ($post->post_type === 'lp_lesson') {
-                 Lesson::create([
+                Lesson::create([
                     'module_id' => $newModuleId,
                     'title' => $post->post_title,
-                    'slug' => $post->post_name . '-' . uniqid(),
+                    'slug' => $post->post_name.'-'.uniqid(),
                     'content' => $this->processContent($post->post_content),
                     'is_published' => true,
                     'is_free' => false,
                     'order' => $item->item_order,
                     'type' => 'text', // Default to text
-                 ]);
+                ]);
             } elseif ($post->post_type === 'lp_quiz') {
                 // Handle Quiz as a Lesson Wrapper
                 $newLesson = Lesson::create([
                     'module_id' => $newModuleId,
                     'title' => $post->post_title,
-                    'slug' => $post->post_name . '-' . uniqid(),
+                    'slug' => $post->post_name.'-'.uniqid(),
                     'content' => 'Silakan kerjakan kuis di bawah ini.',
                     'is_published' => true,
                     'is_free' => false,
@@ -392,7 +406,9 @@ class ImportOldLmsData extends Command
     private function importQuiz($oldQuizId, $newLessonId)
     {
         $oldQuizPost = DB::connection('old_skb')->table('posts')->where('ID', $oldQuizId)->first();
-        if (!$oldQuizPost) return;
+        if (! $oldQuizPost) {
+            return;
+        }
 
         $newQuiz = \App\Models\Quiz::create([
             'lesson_id' => $newLessonId,
@@ -415,7 +431,9 @@ class ImportOldLmsData extends Command
     private function importQuestion($oldQuestionId, $newQuizId)
     {
         $oldQuestionPost = DB::connection('old_skb')->table('posts')->where('ID', $oldQuestionId)->first();
-        if (!$oldQuestionPost) return;
+        if (! $oldQuestionPost) {
+            return;
+        }
 
         // Fetch Answers
         $answers = DB::connection('old_skb')->table('learnpress_question_answers')
@@ -425,14 +443,14 @@ class ImportOldLmsData extends Command
 
         $options = [];
         $correctAnswer = '';
-        
+
         $letters = range('a', 'z');
         $i = 0;
 
         foreach ($answers as $ans) {
             $key = $letters[$i] ?? $i;
             $options[$key] = $ans->title;
-            
+
             if ($ans->is_true === 'yes' || $ans->is_true === 'on' || $ans->is_true == 1) {
                 $correctAnswer = $key;
             }
@@ -440,7 +458,7 @@ class ImportOldLmsData extends Command
         }
 
         // If no correct answer found, default to 'a'
-        if (empty($correctAnswer) && !empty($options)) {
+        if (empty($correctAnswer) && ! empty($options)) {
             $correctAnswer = array_key_first($options);
         }
 
@@ -451,7 +469,7 @@ class ImportOldLmsData extends Command
 
         \App\Models\Question::create([
             'quiz_id' => $newQuizId,
-            'question' => $oldQuestionPost->post_title . ' ' . $this->processContent($oldQuestionPost->post_content),
+            'question' => $oldQuestionPost->post_title.' '.$this->processContent($oldQuestionPost->post_content),
             'options' => $options, // Casts to JSON automatically in model?
             // Need to check Question model casts
             'correct_answer' => $correctAnswer,
