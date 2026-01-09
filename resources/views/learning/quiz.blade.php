@@ -62,7 +62,7 @@
                                 @endphp
 
                                 @if($q->type === 'multiple_choice' || !$q->type)
-                                    @foreach(['a','b','c','d'] as $key)
+                                    @foreach(['a','b','c','d','e'] as $key)
                                         @if(isset($options[$key]))
                                             <label class="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-sm cursor-pointer transition">
                                                 <input type="radio" name="q_{{ $q->id }}" value="{{ $key }}" class="form-radio h-5 w-5 text-blue-600">
@@ -72,7 +72,7 @@
                                     @endforeach
 
                                 @elseif($q->type === 'multiple_response')
-                                    @foreach(['a','b','c','d'] as $key)
+                                    @foreach(['a','b','c','d','e'] as $key)
                                         @if(isset($options[$key]))
                                             <label class="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-sm cursor-pointer transition">
                                                 <input type="checkbox" name="q_{{ $q->id }}[]" value="{{ $key }}" class="form-checkbox h-5 w-5 text-blue-600 rounded">

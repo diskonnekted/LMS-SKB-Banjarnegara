@@ -78,7 +78,7 @@
                                     @if($question->type === 'multiple_choice' || $question->type === 'multiple_choice') 
                                     {{-- Handle legacy or default --}}
                                         <div class="grid grid-cols-2 gap-2 text-sm">
-                                            @foreach(['a', 'b', 'c', 'd'] as $opt)
+                                            @foreach(['a', 'b', 'c', 'd', 'e'] as $opt)
                                                 @if(isset($question->options[$opt]))
                                                     <div class="{{ $question->correct_answer == $opt ? 'text-green-600 font-bold' : '' }}">
                                                         {{ strtoupper($opt) }}: {{ $question->options[$opt] }}
@@ -90,7 +90,7 @@
                                     @elseif($question->type === 'multiple_response')
                                          <div class="grid grid-cols-2 gap-2 text-sm">
                                             @php $corrects = json_decode($question->correct_answer, true) ?? []; @endphp
-                                            @foreach(['a', 'b', 'c', 'd'] as $opt)
+                                            @foreach(['a', 'b', 'c', 'd', 'e'] as $opt)
                                                 @if(isset($question->options[$opt]))
                                                     <div class="{{ in_array($opt, $corrects) ? 'text-green-600 font-bold' : '' }}">
                                                         <span class="inline-block w-4 h-4 border border-gray-400 rounded-sm mr-1 {{ in_array($opt, $corrects) ? 'bg-green-500 border-green-500' : '' }}"></span>
@@ -223,6 +223,14 @@
                                     <div class="option-preview" data-option="d"></div>
                                 </div>
                             </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700">Option E</label>
+                                <input type="text" name="option_e" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <div class="mt-2 p-2 rounded border bg-gray-50">
+                                    <div class="text-xs text-gray-500 mb-1">Preview</div>
+                                    <div class="option-preview" data-option="e"></div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Correct Answer for MC -->
@@ -233,6 +241,7 @@
                                 <option value="b">Option B</option>
                                 <option value="c">Option C</option>
                                 <option value="d">Option D</option>
+                                <option value="e">Option E</option>
                             </select>
                         </div>
 
@@ -255,6 +264,10 @@
                                 <label class="inline-flex items-center">
                                     <input type="checkbox" name="correct_answers[]" value="d" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
                                     <span class="ml-2">Option D</span>
+                                </label>
+                                <label class="inline-flex items-center">
+                                    <input type="checkbox" name="correct_answers[]" value="e" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                    <span class="ml-2">Option E</span>
                                 </label>
                             </div>
                         </div>
@@ -349,12 +362,14 @@
                 b: document.querySelector('input[name="option_b"]'),
                 c: document.querySelector('input[name="option_c"]'),
                 d: document.querySelector('input[name="option_d"]'),
+                e: document.querySelector('input[name="option_e"]'),
             };
             const optionPreviews = {
                 a: document.querySelector('.option-preview[data-option="a"]'),
                 b: document.querySelector('.option-preview[data-option="b"]'),
                 c: document.querySelector('.option-preview[data-option="c"]'),
                 d: document.querySelector('.option-preview[data-option="d"]'),
+                e: document.querySelector('.option-preview[data-option="e"]'),
             };
             const renderOption = (key) => {
                 const inp = optionInputs[key], out = optionPreviews[key];
@@ -372,7 +387,7 @@
                     });
                 } catch(e){}
             };
-            ['a','b','c','d'].forEach(k => {
+            ['a','b','c','d','e'].forEach(k => {
                 if (optionInputs[k]) {
                     optionInputs[k].addEventListener('input', () => renderOption(k));
                     renderOption(k);
