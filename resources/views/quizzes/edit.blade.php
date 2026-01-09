@@ -181,7 +181,10 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Question Text / Instruction</label>
+                            <div class="flex items-center justify-between gap-3">
+                                <label class="block text-sm font-medium text-gray-700">Question Text / Instruction</label>
+                                <a href="{{ route('teacher.latex-guide') }}" target="_blank" rel="noopener" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Contoh LaTeX</a>
+                            </div>
                             <textarea name="question" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX"></textarea>
                             <div class="mt-2 p-3 rounded border bg-gray-50">
                                 <div class="text-xs text-gray-500 mb-2">Preview</div>

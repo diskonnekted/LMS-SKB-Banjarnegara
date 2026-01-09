@@ -115,6 +115,10 @@ Route::middleware('auth')->group(function () {
             return view('teacher.manual.index');
         })->name('teacher.manual.index');
 
+        Route::get('/teacher/latex-guide', function () {
+            return view('teacher.latex-guide');
+        })->name('teacher.latex-guide');
+
         Route::resource('courses.modules', ModuleController::class)->shallow();
         Route::resource('modules.lessons', LessonController::class)->shallow();
         Route::resource('lessons.quizzes', QuizController::class)->shallow();
