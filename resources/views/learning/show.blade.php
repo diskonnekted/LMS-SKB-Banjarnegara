@@ -192,7 +192,7 @@
                                 <div class="rounded-xl border border-gray-200 bg-background p-5">
                                     <div class="flex items-center gap-2 mb-2">
                                         <x-heroicon name="academic-cap" class="h-5 w-5 text-tertiary" />
-                                        <h3 class="text-base font-semibold text-text-dark">Kompetensi Dasar (KD)</h3>
+                                        <h3 class="text-base font-semibold text-text-dark">Capaian Pembelajaran (CP)</h3>
                                     </div>
                                     <div class="text-sm text-gray-700 whitespace-pre-line">{{ $lesson->basic_competency }}</div>
                                 </div>

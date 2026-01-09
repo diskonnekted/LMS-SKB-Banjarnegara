@@ -30,18 +30,24 @@ class Course extends Model
             return null;
         }
 
-        if (preg_match('/^Kejar\s*Paket\s*([ABC])\s*(?:-|)\s*Kelas\s*(\d{1,2})$/i', $value, $m)) {
+        if (preg_match('/^(?:Kejar|Kesetaraan)\s*Paket\s*([ABC])\s*(?:-|)\s*Kelas\s*(\d{1,2})$/i', $value, $m)) {
             $paket = strtoupper($m[1]);
             $kelas = (int) $m[2];
 
-            return "Kejar Paket {$paket} Kelas {$kelas}";
+            return "Kesetaraan Paket {$paket} Kelas {$kelas}";
         }
 
         if (preg_match('/^Paket\s*([ABC])\s*(?:-|)\s*Kelas\s*(\d{1,2})$/i', $value, $m)) {
             $paket = strtoupper($m[1]);
             $kelas = (int) $m[2];
 
-            return "Kejar Paket {$paket} Kelas {$kelas}";
+            return "Kesetaraan Paket {$paket} Kelas {$kelas}";
+        }
+
+        if (preg_match('/^(?:(?:Kejar|Kesetaraan)\s*)?Paket\s*([ABC])$/i', $value, $m)) {
+            $paket = strtoupper($m[1]);
+
+            return "Kesetaraan Paket {$paket}";
         }
 
         if (preg_match('/^Kelas\s*(\d{1,2})(?:\s*(SD|SMP|SMA))?$/i', $value, $m)) {
@@ -64,7 +70,7 @@ class Course extends Model
             }
 
             if ($paket !== null) {
-                return "Kejar Paket {$paket} Kelas {$kelas}";
+                return "Kesetaraan Paket {$paket} Kelas {$kelas}";
             }
         }
 

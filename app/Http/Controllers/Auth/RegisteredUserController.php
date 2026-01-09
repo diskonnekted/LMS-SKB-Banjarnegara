@@ -21,6 +21,7 @@ class RegisteredUserController extends Controller
     public function create(): View
     {
         $courses = Course::with('category')->where('is_published', true)->orderBy('title')->get();
+
         return view('auth.register', compact('courses'));
     }
 

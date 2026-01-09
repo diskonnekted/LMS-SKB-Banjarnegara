@@ -8,6 +8,7 @@ use Illuminate\View\View;
 class GuestLayout extends Component
 {
     public $maxWidth;
+
     public $logoTheme;
 
     /**

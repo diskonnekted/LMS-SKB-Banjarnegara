@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Certificate;
 use App\Http\Requests\ProfileUpdateRequest;
+use App\Models\Certificate;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +36,7 @@ class ProfileController extends Controller
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')
             ->get();
+
         return view('profile.show', compact('user', 'certificates'));
     }
 

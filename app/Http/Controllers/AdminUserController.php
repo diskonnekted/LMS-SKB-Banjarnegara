@@ -11,6 +11,7 @@ class AdminUserController extends Controller
     public function index()
     {
         $users = User::latest()->paginate(12);
+
         return view('admin.users.index', compact('users'));
     }
 
@@ -48,6 +49,7 @@ class AdminUserController extends Controller
     {
         $enrolledCourses = $user->enrolledCourses()->with(['teacher', 'category'])->get();
         $teachingCourses = $user->teachingCourses()->with(['category'])->get();
+
         return view('admin.users.edit', compact('user', 'enrolledCourses', 'teachingCourses'));
     }
 
@@ -80,6 +82,7 @@ class AdminUserController extends Controller
         }
 
         $user->delete();
+
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil dihapus.');
     }
 }

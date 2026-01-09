@@ -8,6 +8,11 @@ Alpine.start();
 
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/sw.js');
+        const appUrlMeta = document.querySelector('meta[name="app-url"]');
+        const appUrl = appUrlMeta?.getAttribute('content')?.replace(/\/$/, '');
+
+        const swUrl = appUrl ? `${appUrl}/sw.js` : '/sw.js';
+
+        navigator.serviceWorker.register(swUrl);
     });
 }

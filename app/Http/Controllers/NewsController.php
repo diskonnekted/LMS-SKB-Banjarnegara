@@ -2,19 +2,20 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\News;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\News;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Log;
 
 class NewsController extends Controller
 {
     public function index()
     {
         $news = News::with('category')->latest()->paginate(10);
+
         return view('news.index', compact('news'));
     }
 
@@ -22,6 +23,7 @@ class NewsController extends Controller
     {
         $categories = Category::all();
         $courses = Course::all();
+
         return view('news.create', compact('categories', 'courses'));
     }
 
@@ -51,7 +53,7 @@ class NewsController extends Controller
 
     public function show(News $news)
     {
-        if (!$news->is_published && auth()->id() !== $news->user_id && !auth()->user()->hasRole('admin')) {
+        if (! $news->is_published && auth()->id() !== $news->user_id && ! auth()->user()->hasRole('admin')) {
             abort(404);
         }
         $recentNews = News::where('id', '!=', $news->id)
@@ -59,7 +61,7 @@ class NewsController extends Controller
             ->latest()
             ->take(5)
             ->get();
-            
+
         return view('news.show', compact('news', 'recentNews'));
     }
 
@@ -67,13 +69,14 @@ class NewsController extends Controller
     {
         $categories = Category::all();
         $courses = Course::all();
+
         return view('news.edit', compact('news', 'categories', 'courses'));
     }
 
     public function update(Request $request, News $news)
     {
         Log::info('News Update Request (All):', $request->all());
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required',
@@ -104,6 +107,7 @@ class NewsController extends Controller
             Storage::disk('public')->delete($news->thumbnail);
         }
         $news->delete();
+
         return redirect()->route('news.index')->with('success', 'News deleted successfully.');
     }
 }

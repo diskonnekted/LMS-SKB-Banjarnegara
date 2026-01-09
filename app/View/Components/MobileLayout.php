@@ -15,4 +15,3 @@ class MobileLayout extends Component
         return view('layouts.mobile');
     }
 }
-

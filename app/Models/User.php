@@ -10,7 +10,7 @@ use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, HasRoles;
+    use HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
@@ -36,8 +36,8 @@ class User extends Authenticatable
     public function enrolledCourses()
     {
         return $this->belongsToMany(Course::class, 'course_user')
-                    ->withPivot('enrolled_at', 'completed_at')
-                    ->withTimestamps();
+            ->withPivot('enrolled_at', 'completed_at')
+            ->withTimestamps();
     }
 
     public function teachingCourses()
@@ -48,7 +48,7 @@ class User extends Authenticatable
     public function completedLessons()
     {
         return $this->belongsToMany(Lesson::class, 'lesson_user')
-                    ->withPivot('completed')
-                    ->withTimestamps();
+            ->withPivot('completed')
+            ->withTimestamps();
     }
 }

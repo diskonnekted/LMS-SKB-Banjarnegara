@@ -6,7 +6,6 @@ use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Setting;
 use Barryvdh\DomPDF\Facade\Pdf;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -16,6 +15,7 @@ class CertificateController extends Controller
     public function verify(string $code)
     {
         $certificate = Certificate::with(['user', 'course'])->where('certificate_code', $code)->firstOrFail();
+
         return view('certificates.verify', [
             'certificate' => $certificate,
             'user' => $certificate->user,
@@ -41,20 +41,20 @@ class CertificateController extends Controller
         // 2. Get or Create Certificate
         $certificate = Certificate::firstOrCreate(
             ['user_id' => $user->id, 'course_id' => $course->id],
-            ['certificate_code' => 'CERT-' . strtoupper(Str::random(10))]
+            ['certificate_code' => 'CERT-'.strtoupper(Str::random(10))]
         );
 
         // 3. Generate PDF
         $organizerName = Setting::where('key', 'organizer_name')->value('value') ?? 'SKB LMS';
         $verifyUrl = route('certificates.verify', ['code' => $certificate->certificate_code]);
-        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' . urlencode($verifyUrl);
+        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.urlencode($verifyUrl);
         $qrResponse = Http::get($qrUrl);
         $qrBase64 = base64_encode($qrResponse->body());
-        
+
         \Barryvdh\DomPDF\Facade\Pdf::setOptions(['isRemoteEnabled' => true]);
-        
+
         $pdf = Pdf::loadView('certificates.template', compact('certificate', 'course', 'user', 'organizerName', 'qrBase64'));
-        
-        return $pdf->download('certificate-' . $course->slug . '.pdf');
+
+        return $pdf->download('certificate-'.$course->slug.'.pdf');
     }
 }

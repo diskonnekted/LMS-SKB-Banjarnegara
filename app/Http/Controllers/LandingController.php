@@ -53,16 +53,16 @@ class LandingController extends Controller
         $courses = $query->latest()->paginate(9)->withQueryString();
         $categories = \App\Models\Category::orderBy('name')->get();
         $gradeLevels = collect([
-            'Kejar Paket A Kelas 3',
-            'Kejar Paket A Kelas 4',
-            'Kejar Paket A Kelas 5',
-            'Kejar Paket A Kelas 6',
-            'Kejar Paket B Kelas 7',
-            'Kejar Paket B Kelas 8',
-            'Kejar Paket B Kelas 9',
-            'Kejar Paket C Kelas 10',
-            'Kejar Paket C Kelas 11',
-            'Kejar Paket C Kelas 12',
+            'Kesetaraan Paket A Kelas 3',
+            'Kesetaraan Paket A Kelas 4',
+            'Kesetaraan Paket A Kelas 5',
+            'Kesetaraan Paket A Kelas 6',
+            'Kesetaraan Paket B Kelas 7',
+            'Kesetaraan Paket B Kelas 8',
+            'Kesetaraan Paket B Kelas 9',
+            'Kesetaraan Paket C Kelas 10',
+            'Kesetaraan Paket C Kelas 11',
+            'Kesetaraan Paket C Kelas 12',
         ]);
 
         return view('courses.catalog', compact('courses', 'categories', 'gradeLevels'));

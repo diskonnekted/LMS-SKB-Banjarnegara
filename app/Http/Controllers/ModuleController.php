@@ -11,16 +11,17 @@ class ModuleController extends Controller
 {
     public function index(Course $course)
     {
-        if (!Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $course->load(['modules.lessons']);
+
         return view('modules.index', compact('course'));
     }
 
     public function store(Request $request, Course $course)
     {
-        if (!Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -38,7 +39,7 @@ class ModuleController extends Controller
 
     public function update(Request $request, Module $module)
     {
-        if (!Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -53,10 +54,11 @@ class ModuleController extends Controller
 
     public function destroy(Module $module)
     {
-        if (!Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $module->delete();
+
         return back()->with('success', 'Module deleted.');
     }
 }

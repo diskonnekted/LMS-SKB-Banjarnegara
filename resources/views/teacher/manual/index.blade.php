@@ -40,7 +40,7 @@
                                         <li>Klik tombol <strong>"Buat Pelajaran Baru"</strong>.</li>
                                         <li>Isi <strong>Judul Pelajaran</strong>, <strong>Deskripsi</strong>, dan upload <strong>Gambar Sampul</strong> (Thumbnail).</li>
                                         <li>Pilih <strong>Kategori</strong> dan <strong>Tingkat Kelas</strong> (misal: Kelas 10, Paket A).</li>
-                                        <li>Isi Kompetensi Dasar (KD) dan Tujuan Pembelajaran jika diperlukan.</li>
+                                        <li>Isi Capaian Pembelajaran (CP) dan Tujuan Pembelajaran jika diperlukan.</li>
                                         <li>Klik <strong>Simpan</strong>.</li>
                                     </ol>
                                     

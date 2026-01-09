@@ -109,7 +109,7 @@ return new class extends Migration
             $table->string('file_path')->nullable();
             $table->timestamps();
         });
-        
+
         // News/Posts
         Schema::create('posts', function (Blueprint $table) {
             $table->id();

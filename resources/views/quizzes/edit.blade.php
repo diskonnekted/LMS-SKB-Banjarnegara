@@ -13,7 +13,21 @@
             <!-- Edit Quiz Details -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
-                    <h3 class="text-lg font-bold mb-4">Quiz Details</h3>
+                    <div class="flex items-center justify-between gap-4 mb-4">
+                        <h3 class="text-lg font-bold">Quiz Details</h3>
+                        <div class="flex items-center gap-3">
+                            <a href="{{ route('teacher.quizzes.attempts.index', $quiz) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50">
+                                Lihat Jawaban Siswa
+                            </a>
+                            <form action="{{ route('quizzes.destroy', $quiz) }}" method="POST" onsubmit="return confirm('Delete entire quiz?');" class="inline">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="inline-flex items-center px-4 py-2 bg-white border border-red-300 rounded-md font-semibold text-xs text-red-700 uppercase tracking-widest shadow-sm hover:bg-red-50">
+                                    Delete Quiz
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                     <form method="POST" action="{{ route('quizzes.update', $quiz) }}">
                         @csrf
                         @method('PUT')
@@ -27,12 +41,7 @@
                                 <input type="number" name="passing_score" value="{{ $quiz->passing_score }}" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                             </div>
                         </div>
-                        <div class="flex justify-between">
-                            <form action="{{ route('quizzes.destroy', $quiz) }}" method="POST" onsubmit="return confirm('Delete entire quiz?');" class="inline">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-red-500 hover:text-red-700">Delete Quiz</button>
-                            </form>
+                        <div class="flex justify-end">
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Update Details
                             </button>
@@ -51,16 +60,19 @@
                         <ul class="space-y-4">
                             @foreach($quiz->questions as $index => $question)
                                 <li class="border p-4 rounded bg-gray-50">
-                                    <div class="flex justify-between">
+                                    <div class="flex justify-between gap-2">
                                         <p class="font-bold mb-2">
                                             {{ $index + 1 }}. {{ $question->question }}
                                             <span class="text-xs font-normal text-gray-500 ml-2">({{ ucfirst(str_replace('_', ' ', $question->type ?? 'multiple_choice')) }})</span>
                                         </p>
-                                        <form action="{{ route('questions.destroy', $question) }}" method="POST" onsubmit="return confirm('Delete question?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
-                                        </form>
+                                        <div class="flex items-center gap-3">
+                                            <a href="{{ route('questions.edit', $question) }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</a>
+                                            <form action="{{ route('questions.destroy', $question) }}" method="POST" onsubmit="return confirm('Delete question?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                                            </form>
+                                        </div>
                                     </div>
 
                                     @if($question->type === 'multiple_choice' || $question->type === 'multiple_choice') 

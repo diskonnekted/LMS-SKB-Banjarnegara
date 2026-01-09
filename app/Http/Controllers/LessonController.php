@@ -5,22 +5,23 @@ namespace App\Http\Controllers;
 use App\Models\Lesson;
 use App\Models\Module;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class LessonController extends Controller
 {
     public function create(Module $module)
     {
-        if (!Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
+
         return view('lessons.create', compact('module'));
     }
 
     public function store(Request $request, Module $module)
     {
-        if (!Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -34,7 +35,7 @@ class LessonController extends Controller
         ]);
 
         $slug = Str::slug($request->title);
-        
+
         $filePath = null;
         if ($request->hasFile('file')) {
             $filePath = $request->file('file')->store('lessons', 'public');
@@ -42,7 +43,7 @@ class LessonController extends Controller
 
         $content = $request->content;
         if ($request->type === 'video' && $content) {
-            if (!Str::contains($content, '<iframe')) {
+            if (! Str::contains($content, '<iframe')) {
                 $content = $this->youtubeEmbedHtml($content);
             }
         }
@@ -63,15 +64,16 @@ class LessonController extends Controller
 
     public function edit(Lesson $lesson)
     {
-         if (!Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
+
         return view('lessons.edit', compact('lesson'));
     }
 
     public function update(Request $request, Lesson $lesson)
     {
-        if (!Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -91,7 +93,7 @@ class LessonController extends Controller
 
         $content = $request->content;
         if ($request->type === 'video' && $content) {
-            if (!Str::contains($content, '<iframe')) {
+            if (! Str::contains($content, '<iframe')) {
                 $content = $this->youtubeEmbedHtml($content);
             }
         }
@@ -109,10 +111,11 @@ class LessonController extends Controller
 
     public function destroy(Lesson $lesson)
     {
-        if (!Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $lesson->delete();
+
         return back()->with('success', 'Lesson deleted.');
     }
 
@@ -130,9 +133,11 @@ class LessonController extends Controller
             $videoId = trim(Str::after($url, 'embed/'));
         }
         if ($videoId) {
-            $embedUrl = 'https://www.youtube.com/embed/' . $videoId;
-            return '<iframe width="100%" height="100%" src="' . e($embedUrl) . '" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+            $embedUrl = 'https://www.youtube.com/embed/'.$videoId;
+
+            return '<iframe width="100%" height="100%" src="'.e($embedUrl).'" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
         }
+
         return $input;
     }
 }

@@ -28,21 +28,21 @@
                             <label class="block text-sm font-medium text-gray-700">Kelas</label>
                             <select name="grade_level" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                 <option value="">Pilih Kelas</option>
-                                <optgroup label="Kejar Paket A">
-                                    <option value="Kejar Paket A Kelas 3" @selected(old('grade_level')=='Kejar Paket A Kelas 3')>Kelas 3</option>
-                                    <option value="Kejar Paket A Kelas 4" @selected(old('grade_level')=='Kejar Paket A Kelas 4')>Kelas 4</option>
-                                    <option value="Kejar Paket A Kelas 5" @selected(old('grade_level')=='Kejar Paket A Kelas 5')>Kelas 5</option>
-                                    <option value="Kejar Paket A Kelas 6" @selected(old('grade_level')=='Kejar Paket A Kelas 6')>Kelas 6</option>
+                                <optgroup label="Kesetaraan Paket A">
+                                    <option value="Kesetaraan Paket A Kelas 3" @selected(old('grade_level')=='Kesetaraan Paket A Kelas 3')>Kelas 3</option>
+                                    <option value="Kesetaraan Paket A Kelas 4" @selected(old('grade_level')=='Kesetaraan Paket A Kelas 4')>Kelas 4</option>
+                                    <option value="Kesetaraan Paket A Kelas 5" @selected(old('grade_level')=='Kesetaraan Paket A Kelas 5')>Kelas 5</option>
+                                    <option value="Kesetaraan Paket A Kelas 6" @selected(old('grade_level')=='Kesetaraan Paket A Kelas 6')>Kelas 6</option>
                                 </optgroup>
-                                <optgroup label="Kejar Paket B">
-                                    <option value="Kejar Paket B Kelas 7" @selected(old('grade_level')=='Kejar Paket B Kelas 7')>Kelas 7</option>
-                                    <option value="Kejar Paket B Kelas 8" @selected(old('grade_level')=='Kejar Paket B Kelas 8')>Kelas 8</option>
-                                    <option value="Kejar Paket B Kelas 9" @selected(old('grade_level')=='Kejar Paket B Kelas 9')>Kelas 9</option>
+                                <optgroup label="Kesetaraan Paket B">
+                                    <option value="Kesetaraan Paket B Kelas 7" @selected(old('grade_level')=='Kesetaraan Paket B Kelas 7')>Kelas 7</option>
+                                    <option value="Kesetaraan Paket B Kelas 8" @selected(old('grade_level')=='Kesetaraan Paket B Kelas 8')>Kelas 8</option>
+                                    <option value="Kesetaraan Paket B Kelas 9" @selected(old('grade_level')=='Kesetaraan Paket B Kelas 9')>Kelas 9</option>
                                 </optgroup>
-                                <optgroup label="Kejar Paket C">
-                                    <option value="Kejar Paket C Kelas 10" @selected(old('grade_level')=='Kejar Paket C Kelas 10')>Kelas 10</option>
-                                    <option value="Kejar Paket C Kelas 11" @selected(old('grade_level')=='Kejar Paket C Kelas 11')>Kelas 11</option>
-                                    <option value="Kejar Paket C Kelas 12" @selected(old('grade_level')=='Kejar Paket C Kelas 12')>Kelas 12</option>
+                                <optgroup label="Kesetaraan Paket C">
+                                    <option value="Kesetaraan Paket C Kelas 10" @selected(old('grade_level')=='Kesetaraan Paket C Kelas 10')>Kelas 10</option>
+                                    <option value="Kesetaraan Paket C Kelas 11" @selected(old('grade_level')=='Kesetaraan Paket C Kelas 11')>Kelas 11</option>
+                                    <option value="Kesetaraan Paket C Kelas 12" @selected(old('grade_level')=='Kesetaraan Paket C Kelas 12')>Kelas 12</option>
                                 </optgroup>
                             </select>
                         </div>
@@ -52,8 +52,8 @@
                         </div>
                         <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Kompetensi Dasar (KD)</label>
-                                <textarea name="basic_competency" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Tuliskan KD yang terkait dengan pelajaran ini"></textarea>
+                                <label class="block text-sm font-medium text-gray-700">Capaian Pembelajaran (CP)</label>
+                                <textarea name="basic_competency" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="Tuliskan CP yang terkait dengan pelajaran ini"></textarea>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Tujuan Pembelajaran</label>

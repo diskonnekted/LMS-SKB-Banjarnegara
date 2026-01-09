@@ -6,6 +6,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use App\Models\Module;
 use App\Models\Quiz;
+use App\Models\QuizAttempt;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,9 +16,9 @@ class LearningController extends Controller
     public function index(Course $course)
     {
         $user = Auth::user();
-        
+
         // Ensure user is enrolled
-        if (!$user->enrolledCourses()->where('course_id', $course->id)->exists()) {
+        if (! $user->enrolledCourses()->where('course_id', $course->id)->exists()) {
             return redirect()->route('courses.show', $course);
         }
 
@@ -33,15 +34,15 @@ class LearningController extends Controller
 
         // Get the first lesson of the first module to redirect to
         $firstModule = $course->modules()->orderBy('order')->first();
-        
-        if (!$firstModule) {
-             return redirect()->route('courses.show', $course)->with('error', 'This course has no content yet.');
+
+        if (! $firstModule) {
+            return redirect()->route('courses.show', $course)->with('error', 'This course has no content yet.');
         }
-        
+
         $firstLesson = $firstModule->lessons()->orderBy('order')->first();
-        
-        if (!$firstLesson) {
-             return redirect()->route('courses.show', $course)->with('error', 'This course has no content yet.');
+
+        if (! $firstLesson) {
+            return redirect()->route('courses.show', $course)->with('error', 'This course has no content yet.');
         }
 
         // Ideally redirect to last accessed lesson, but for now first is fine or first incomplete
@@ -53,12 +54,12 @@ class LearningController extends Controller
         $user = Auth::user();
 
         // 1. Authorization: Enrolled?
-        if (!$user->enrolledCourses()->where('course_id', $course->id)->exists()) {
-             return redirect()->route('courses.show', $course);
+        if (! $user->enrolledCourses()->where('course_id', $course->id)->exists()) {
+            return redirect()->route('courses.show', $course);
         }
 
         // 2. Sequential Access Logic
-        if (!$this->canAccessModule($user, $course, $module)) {
+        if (! $this->canAccessModule($user, $course, $module)) {
             return redirect()->back()->with('error', 'You must complete previous modules first.');
         }
 
@@ -76,29 +77,29 @@ class LearningController extends Controller
     public function complete(Course $course, Module $module, Lesson $lesson)
     {
         $user = Auth::user();
-        if (!$user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
+        if (! $user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
             $user->completedLessons()->attach($lesson->id, ['completed' => true]);
         }
 
         // Find next lesson
         $nextLesson = $module->lessons()->where('order', '>', $lesson->order)->orderBy('order')->first();
-        
+
         if ($nextLesson) {
             return redirect()->route('learning.lesson', [$course, $module, $nextLesson]);
         }
 
         // If no next lesson in module, check for quiz
         if ($lesson->quiz) {
-             return redirect()->route('learning.quiz', [$course, $module, $lesson->quiz]);
+            return redirect()->route('learning.quiz', [$course, $module, $lesson->quiz]);
         }
-        
+
         // If no quiz, check next module
         $nextModule = $course->modules()->where('order', '>', $module->order)->orderBy('order')->first();
-        
+
         if ($nextModule) {
             $nextModuleLesson = $nextModule->lessons()->orderBy('order')->first();
             if ($nextModuleLesson) {
-                 return redirect()->route('learning.lesson', [$course, $nextModule, $nextModuleLesson]);
+                return redirect()->route('learning.lesson', [$course, $nextModule, $nextModuleLesson]);
             }
         }
 
@@ -107,13 +108,13 @@ class LearningController extends Controller
 
     public function quiz(Course $course, Module $module, Quiz $quiz)
     {
-         $user = Auth::user();
-         // Check access
-         if (!$this->canAccessModule($user, $course, $module)) {
+        $user = Auth::user();
+        // Check access
+        if (! $this->canAccessModule($user, $course, $module)) {
             return redirect()->route('learning.course', $course)->with('error', 'Access denied.');
-         }
+        }
 
-         return view('learning.quiz', compact('course', 'module', 'quiz'));
+        return view('learning.quiz', compact('course', 'module', 'quiz'));
     }
 
     public function submitQuiz(Request $request, Course $course, Module $module, Quiz $quiz)
@@ -122,20 +123,24 @@ class LearningController extends Controller
         $questions = $quiz->questions;
         $score = 0;
         $total = $questions->count();
-        
-        if ($total == 0) return back()->with('error', 'Quiz has no questions.');
+        $answerRows = [];
+        $now = now();
+
+        if ($total == 0) {
+            return back()->with('error', 'Quiz has no questions.');
+        }
 
         foreach ($questions as $question) {
-            $submitted = $request->input('q_' . $question->id);
+            $submitted = $request->input('q_'.$question->id);
             $isCorrect = false;
 
             switch ($question->type) {
                 case 'multiple_choice':
                 case 'true_false':
-                     if ($submitted == $question->correct_answer) {
-                         $isCorrect = true;
-                     }
-                     break;
+                    if ($submitted == $question->correct_answer) {
+                        $isCorrect = true;
+                    }
+                    break;
 
                 case 'multiple_response':
                     $corrects = json_decode($question->correct_answer, true) ?? [];
@@ -150,7 +155,7 @@ class LearningController extends Controller
 
                 case 'short_answer':
                 case 'numeric':
-                    if (strcasecmp(trim((string)$submitted), trim((string)$question->correct_answer)) === 0) {
+                    if (strcasecmp(trim((string) $submitted), trim((string) $question->correct_answer)) === 0) {
                         $isCorrect = true;
                     }
                     break;
@@ -167,67 +172,95 @@ class LearningController extends Controller
                                 break;
                             }
                         }
-                        if ($allMatch) $isCorrect = true;
+                        if ($allMatch) {
+                            $isCorrect = true;
+                        }
                     }
                     break;
 
                 case 'sequencing':
-                     $correctOrder = json_decode($question->correct_answer, true) ?? [];
-                     $allCorrect = true;
-                     if (is_array($submitted)) {
-                         foreach ($correctOrder as $index => $item) {
-                             $expectedOrder = $index + 1;
-                             // Handle PHP's input name mangling (spaces/dots to underscores)
-                             $lookupKey = str_replace([' ', '.'], '_', $item);
-                             // Try both mangled and raw just in case
-                             $userOrder = $submitted[$lookupKey] ?? $submitted[$item] ?? null;
-                             
-                             if ($userOrder != $expectedOrder) {
-                                 $allCorrect = false;
-                                 break;
-                             }
-                         }
-                         if ($allCorrect) $isCorrect = true;
-                     } else {
-                         $allCorrect = false;
-                     }
-                     break;
+                    $correctOrder = json_decode($question->correct_answer, true) ?? [];
+                    $allCorrect = true;
+                    if (is_array($submitted)) {
+                        foreach ($correctOrder as $index => $item) {
+                            $expectedOrder = $index + 1;
+                            // Handle PHP's input name mangling (spaces/dots to underscores)
+                            $lookupKey = str_replace([' ', '.'], '_', $item);
+                            // Try both mangled and raw just in case
+                            $userOrder = $submitted[$lookupKey] ?? $submitted[$item] ?? null;
+
+                            if ($userOrder != $expectedOrder) {
+                                $allCorrect = false;
+                                break;
+                            }
+                        }
+                        if ($allCorrect) {
+                            $isCorrect = true;
+                        }
+                    } else {
+                        $allCorrect = false;
+                    }
+                    break;
 
                 case 'essay':
                     // Auto-grade participation for now
-                    if (!empty(trim($submitted)) && strlen(trim($submitted)) > 5) {
+                    if (! empty(trim($submitted)) && strlen(trim($submitted)) > 5) {
                         $isCorrect = true;
                     }
                     break;
-                    
+
                 default:
-                     // Fallback for legacy data
-                     $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
-                     $isLetter = in_array($submitted, ['a','b','c','d'], true);
-                     $submittedText = $isLetter ? ($options[$submitted] ?? null) : $submitted;
-                     if ($submitted === $question->correct_answer || $submittedText === $question->correct_answer) {
+                    // Fallback for legacy data
+                    $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
+                    $isLetter = in_array($submitted, ['a', 'b', 'c', 'd'], true);
+                    $submittedText = $isLetter ? ($options[$submitted] ?? null) : $submitted;
+                    if ($submitted === $question->correct_answer || $submittedText === $question->correct_answer) {
                         $isCorrect = true;
-                     }
+                    }
                     break;
             }
 
             if ($isCorrect) {
                 $score++;
             }
+
+            $storedAnswer = null;
+            if (is_array($submitted)) {
+                $storedAnswer = json_encode($submitted);
+            } elseif ($submitted !== null) {
+                $storedAnswer = (string) $submitted;
+            }
+
+            $answerRows[] = [
+                'question_id' => $question->id,
+                'answer' => $storedAnswer,
+                'is_correct' => $isCorrect,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
         }
 
         $percentage = ($score / $total) * 100;
         $passed = $percentage >= $quiz->passing_score;
 
-        // Record Attempt
-        \DB::table('quiz_attempts')->insert([
-            'user_id' => $user->id,
-            'quiz_id' => $quiz->id,
-            'score' => $percentage,
-            'passed' => $passed,
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        \DB::transaction(function () use ($user, $quiz, $percentage, $passed, $answerRows) {
+            $attempt = QuizAttempt::create([
+                'user_id' => $user->id,
+                'quiz_id' => $quiz->id,
+                'score' => $percentage,
+                'passed' => $passed,
+            ]);
+
+            if (! empty($answerRows)) {
+                $rows = array_map(function (array $row) use ($attempt) {
+                    $row['quiz_attempt_id'] = $attempt->id;
+
+                    return $row;
+                }, $answerRows);
+
+                \DB::table('quiz_attempt_answers')->insert($rows);
+            }
+        });
 
         return view('learning.quiz-result', compact('course', 'module', 'quiz', 'percentage', 'passed'));
     }
@@ -239,11 +272,12 @@ class LearningController extends Controller
 
         foreach ($previousModules as $mod) {
             foreach ($mod->lessons as $lesson) {
-                if (!$user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
+                if (! $user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
                     return false;
                 }
             }
         }
+
         return true;
     }
 }

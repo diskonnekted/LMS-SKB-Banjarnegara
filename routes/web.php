@@ -1,27 +1,28 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\CourseController;
-use App\Http\Controllers\ModuleController;
-use App\Http\Controllers\LessonController;
-use App\Http\Controllers\QuizController;
-use App\Http\Controllers\QuestionController;
-use App\Http\Controllers\EnrollmentController;
-use App\Http\Controllers\LearningController;
-use Illuminate\Support\Facades\Route;
-
-use App\Http\Controllers\LandingController;
-use App\Http\Controllers\NewsController;
-use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\AdminUserController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\EnrollmentController;
 use App\Http\Controllers\IconController;
+use App\Http\Controllers\LandingController;
+use App\Http\Controllers\LearningController;
+use App\Http\Controllers\LessonController;
+use App\Http\Controllers\ModuleController;
+use App\Http\Controllers\NewsController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuestionController;
+use App\Http\Controllers\QuizController;
+use App\Http\Controllers\TeacherQuizAttemptController;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [LandingController::class, 'index'])->name('home');
 Route::get('/icons/icon-{size}.png', [IconController::class, 'icon'])->whereNumber('size')->name('icons.dynamic');
 Route::get('/mobile/home', function () {
     $courses = \App\Models\Course::where('is_published', true)->latest()->take(6)->get();
     $news = \App\Models\News::latest()->take(3)->get();
+
     return view('mobile.home', compact('courses', 'news'));
 })->name('mobile.home');
 
@@ -45,45 +46,45 @@ Route::get('/dashboard', function () {
     if ($isMobile && $user && $user->hasRole('student')) {
         return redirect()->route('student.mobile');
     }
-        $data = [];
+    $data = [];
 
-        if ($user->hasRole('admin')) {
-            $data['total_students'] = \App\Models\User::role('student')->count();
-            $data['total_teachers'] = \App\Models\User::role('teacher')->count();
-            $data['total_courses'] = \App\Models\Course::count();
-            $data['users'] = \App\Models\User::latest()->paginate(10);
-            $data['recent_courses'] = \App\Models\Course::with('teacher')->latest()->take(6)->get();
-        } elseif ($user->hasRole('teacher')) {
-            $teacherCourses = \App\Models\Course::where('teacher_id', $user->id)
-                ->with(['modules.lessons.quiz', 'students'])
-                ->get();
+    if ($user->hasRole('admin')) {
+        $data['total_students'] = \App\Models\User::role('student')->count();
+        $data['total_teachers'] = \App\Models\User::role('teacher')->count();
+        $data['total_courses'] = \App\Models\Course::count();
+        $data['users'] = \App\Models\User::latest()->paginate(10);
+        $data['recent_courses'] = \App\Models\Course::with('teacher')->latest()->take(6)->get();
+    } elseif ($user->hasRole('teacher')) {
+        $teacherCourses = \App\Models\Course::where('teacher_id', $user->id)
+            ->with(['modules.lessons.quiz', 'students'])
+            ->get();
 
         $data['my_courses'] = $teacherCourses->count();
-        
+
         // Calculate progress and grades for each student in each course
         foreach ($teacherCourses as $course) {
-             $courseLessons = $course->modules->flatMap->lessons;
-             $courseLessonIds = $courseLessons->pluck('id');
-             $totalLessons = $courseLessonIds->count();
-             $quizIds = $courseLessons->pluck('quiz.id')->filter();
-             
-             foreach ($course->students as $student) {
-                 // Progress
-                 $completedCount = \DB::table('lesson_user')
+            $courseLessons = $course->modules->flatMap->lessons;
+            $courseLessonIds = $courseLessons->pluck('id');
+            $totalLessons = $courseLessonIds->count();
+            $quizIds = $courseLessons->pluck('quiz.id')->filter();
+
+            foreach ($course->students as $student) {
+                // Progress
+                $completedCount = \DB::table('lesson_user')
                     ->where('user_id', $student->id)
                     ->whereIn('lesson_id', $courseLessonIds)
                     ->where('completed', true)
                     ->count();
-                    
-                 $student->progress = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
-                 
-                 // Grades (Average of all quizzes in course)
-                 $attempts = \App\Models\QuizAttempt::where('user_id', $student->id)
+
+                $student->progress = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+
+                // Grades (Average of all quizzes in course)
+                $attempts = \App\Models\QuizAttempt::where('user_id', $student->id)
                     ->whereIn('quiz_id', $quizIds)
                     ->get();
-                 
-                 $student->quiz_average = $attempts->isNotEmpty() ? round($attempts->avg('score')) : '-';
-             }
+
+                $student->quiz_average = $attempts->isNotEmpty() ? round($attempts->avg('score')) : '-';
+            }
         }
 
         $data['teacher_courses'] = $teacherCourses;
@@ -118,6 +119,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('modules.lessons', LessonController::class)->shallow();
         Route::resource('lessons.quizzes', QuizController::class)->shallow();
         Route::resource('quizzes.questions', QuestionController::class)->shallow();
+
+        Route::get('/teacher/quizzes/{quiz}/attempts', [TeacherQuizAttemptController::class, 'index'])->name('teacher.quizzes.attempts.index');
+        Route::get('/teacher/quiz-attempts/{attempt}', [TeacherQuizAttemptController::class, 'show'])->name('teacher.quizzes.attempts.show');
     });
 
     // Admin Only
@@ -147,11 +151,11 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('courses', CourseController::class)->except(['show']);
     Route::post('/courses/{course}/enroll', [EnrollmentController::class, 'store'])->name('courses.enroll');
-    
+
     Route::get('/learning/{course}', [LearningController::class, 'index'])->name('learning.course');
     Route::get('/learning/{course}/modules/{module}/lessons/{lesson}', [LearningController::class, 'show'])->name('learning.lesson');
     Route::post('/learning/{course}/modules/{module}/lessons/{lesson}/complete', [LearningController::class, 'complete'])->name('learning.complete');
-    
+
     Route::get('/learning/{course}/modules/{module}/quizzes/{quiz}', [LearningController::class, 'quiz'])->name('learning.quiz');
     Route::post('/learning/{course}/modules/{module}/quizzes/{quiz}', [LearningController::class, 'submitQuiz'])->name('learning.quiz.submit');
 
@@ -165,5 +169,6 @@ Route::get('/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
+
     return redirect()->route('home');
 })->middleware('auth')->name('logout.get');

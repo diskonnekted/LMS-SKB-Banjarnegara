@@ -3,10 +3,11 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+        <meta name="app-url" content="{{ rtrim(url('/'), '/') }}">
         <meta name="theme-color" content="#6C5CE7">
         <meta name="mobile-web-app-capable" content="yes">
-        <link rel="manifest" href="{{ asset('manifest.webmanifest') }}">
-        <link rel="apple-touch-icon" href="{{ url('/icons/icon-192.png') }}">
+        <link rel="manifest" href="{{ rtrim(url('/'), '/') }}/manifest.webmanifest">
+        <link rel="apple-touch-icon" href="{{ rtrim(url('/'), '/') }}/icons/icon-192.png">
         <title>{{ config('app.name', 'LMS') }}</title>
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <style>

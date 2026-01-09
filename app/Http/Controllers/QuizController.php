@@ -11,19 +11,20 @@ class QuizController extends Controller
 {
     public function create(Lesson $lesson)
     {
-        if (!Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
         // Check if quiz already exists for this lesson
         if ($lesson->quiz) {
             return redirect()->route('quizzes.edit', $lesson->quiz);
         }
+
         return view('quizzes.create', compact('lesson'));
     }
 
     public function store(Request $request, Lesson $lesson)
     {
-        if (!Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -42,16 +43,17 @@ class QuizController extends Controller
 
     public function edit(Quiz $quiz)
     {
-        if (!Auth::user()->hasRole('admin') && $quiz->lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $quiz->lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $quiz->load('questions');
+
         return view('quizzes.edit', compact('quiz'));
     }
 
     public function update(Request $request, Quiz $quiz)
     {
-        if (!Auth::user()->hasRole('admin') && $quiz->lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $quiz->lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -67,11 +69,12 @@ class QuizController extends Controller
 
     public function destroy(Quiz $quiz)
     {
-        if (!Auth::user()->hasRole('admin') && $quiz->lesson->module->course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $quiz->lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $course = $quiz->lesson->module->course;
         $quiz->delete();
+
         return redirect()->route('courses.modules.index', $course)->with('success', 'Quiz deleted.');
     }
 }

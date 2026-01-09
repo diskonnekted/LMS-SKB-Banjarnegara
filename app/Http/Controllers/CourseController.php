@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Course;
 use App\Models\Category;
+use App\Models\Course;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class CourseController extends Controller
 {
@@ -25,29 +25,30 @@ class CourseController extends Controller
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
         $courses = $query->latest()->paginate(9)->withQueryString();
-        
+
         return view('courses.index', compact('courses'));
     }
 
     public function create()
     {
-        if (!Auth::user()->hasRole('admin|teacher')) {
+        if (! Auth::user()->hasRole('admin|teacher')) {
             abort(403);
         }
         $categories = Category::all();
+
         return view('courses.create', compact('categories'));
     }
 
     public function store(Request $request)
     {
-        if (!Auth::user()->hasRole('admin|teacher')) {
+        if (! Auth::user()->hasRole('admin|teacher')) {
             abort(403);
         }
         $request->validate([
@@ -63,7 +64,7 @@ class CourseController extends Controller
         $slug = Str::slug($request->title);
         $count = Course::where('slug', 'LIKE', "{$slug}%")->count();
         if ($count > 0) {
-            $slug .= '-' . ($count + 1);
+            $slug .= '-'.($count + 1);
         }
 
         $thumbnailPath = null;
@@ -94,7 +95,7 @@ class CourseController extends Controller
         $lessonIds = $lessons->pluck('id');
         $quizIds = $lessons->pluck('quiz.id')->filter();
         $students = $course->students->unique('id');
-        $studentStats = $students->map(function ($student) use ($lessonIds, $quizIds, $lessons) {
+        $studentStats = $students->map(function ($student) use ($lessonIds, $quizIds) {
             $completedCount = \DB::table('lesson_user')
                 ->where('user_id', $student->id)
                 ->whereIn('lesson_id', $lessonIds)
@@ -108,6 +109,7 @@ class CourseController extends Controller
                 ->get();
             $avg = $attempts->isNotEmpty() ? round($attempts->avg('score')) : null;
             $latest = $attempts->first();
+
             return [
                 'user' => $student,
                 'progress' => $progress,
@@ -117,21 +119,23 @@ class CourseController extends Controller
                 'passed_latest' => $latest ? (bool) $latest->passed : null,
             ];
         });
+
         return view('courses.show', compact('course', 'studentStats'));
     }
 
     public function edit(Course $course)
     {
-        if (!Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $categories = Category::all();
+
         return view('courses.edit', compact('course', 'categories'));
     }
 
     public function update(Request $request, Course $course)
     {
-        if (!Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
 
@@ -159,9 +163,9 @@ class CourseController extends Controller
             'category_id' => $request->category_id,
             'grade_level' => $request->grade_level,
         ]);
-        
+
         // Save thumbnail if updated
-        if(isset($thumbnailPath)) {
+        if (isset($thumbnailPath)) {
             $course->save();
         }
 
@@ -170,10 +174,11 @@ class CourseController extends Controller
 
     public function destroy(Course $course)
     {
-        if (!Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
+        if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
         $course->delete();
+
         return redirect()->route('courses.index')->with('success', 'Course deleted successfully.');
     }
 }

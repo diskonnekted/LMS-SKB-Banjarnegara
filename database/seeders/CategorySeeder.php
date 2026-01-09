@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Category;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
@@ -24,7 +24,7 @@ class CategorySeeder extends Seeder
             'Seni Budaya',
             'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)',
             'Prakarya',
-            'Informatika'
+            'Informatika',
         ];
 
         foreach ($categories as $category) {

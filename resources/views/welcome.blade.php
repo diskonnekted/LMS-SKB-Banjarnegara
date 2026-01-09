@@ -237,7 +237,7 @@
                                 </h3>
                                 
                                 <p class="text-gray-600 text-sm leading-relaxed line-clamp-2 mb-6">
-                                    {{ Str::limit(strip_tags($course->description), 150) }}
+                                    {{ \App\Helpers\ContentParser::excerpt($course->description, 150) }}
                                 </p>
                                 
                                 <div class="pt-6 border-t border-gray-100 flex items-center justify-between">

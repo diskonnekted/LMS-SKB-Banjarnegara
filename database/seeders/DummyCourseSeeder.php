@@ -2,14 +2,13 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
-use App\Models\User;
 use App\Models\Course;
-use App\Models\Module;
 use App\Models\Lesson;
-use App\Models\Quiz;
+use App\Models\Module;
 use App\Models\Question;
+use App\Models\Quiz;
+use App\Models\User;
+use Illuminate\Database\Seeder;
 
 class DummyCourseSeeder extends Seeder
 {
@@ -20,7 +19,7 @@ class DummyCourseSeeder extends Seeder
     {
         // Ensure we have a teacher
         $teacher = User::role('teacher')->first();
-        if (!$teacher) {
+        if (! $teacher) {
             $teacher = User::create([
                 'name' => 'Guru Teladan',
                 'email' => 'guru@skb.com',
@@ -31,8 +30,8 @@ class DummyCourseSeeder extends Seeder
 
         // Create Course
         // Use a unique slug to avoid duplication errors during multiple seed runs
-        $slug = 'pemrograman-web-dasar-' . time();
-        
+        $slug = 'pemrograman-web-dasar-'.time();
+
         $course = Course::create([
             'title' => 'Pemrograman Web Dasar',
             'slug' => $slug,
@@ -46,7 +45,7 @@ class DummyCourseSeeder extends Seeder
         $module1 = Module::create([
             'course_id' => $course->id,
             'title' => 'Modul 1: Pengenalan HTML',
-            'slug' => 'modul-1-pengenalan-html-' . time(),
+            'slug' => 'modul-1-pengenalan-html-'.time(),
             'order' => 1,
         ]);
 
@@ -54,7 +53,7 @@ class DummyCourseSeeder extends Seeder
         $lesson1 = Lesson::create([
             'module_id' => $module1->id,
             'title' => 'Apa itu HTML?',
-            'slug' => 'apa-itu-html-' . time(),
+            'slug' => 'apa-itu-html-'.time(),
             'type' => 'text',
             'content' => '<h1>Apa itu HTML?</h1><p>HTML adalah singkatan dari <strong>HyperText Markup Language</strong>. Ini adalah bahasa standar untuk membuat halaman web.</p><p>Dengan HTML, Anda dapat membuat struktur website Anda sendiri.</p>',
             'order' => 1,
@@ -64,7 +63,7 @@ class DummyCourseSeeder extends Seeder
         $lesson2 = Lesson::create([
             'module_id' => $module1->id,
             'title' => 'Struktur Dasar HTML',
-            'slug' => 'struktur-dasar-html-' . time(),
+            'slug' => 'struktur-dasar-html-'.time(),
             'type' => 'video',
             'content' => 'https://www.youtube.com/embed/UB1O30fR-EE', // Example video
             'order' => 2,
@@ -76,7 +75,7 @@ class DummyCourseSeeder extends Seeder
             'title' => 'Kuis HTML Dasar',
             'passing_score' => 70,
         ]);
-        
+
         // Questions for Quiz 1
         Question::create([
             'quiz_id' => $quiz1->id,
@@ -91,7 +90,6 @@ class DummyCourseSeeder extends Seeder
             'options' => json_encode(['<p>', '<par>', '<text>']),
             'correct_answer' => '<p>',
         ]);
-
 
         // Module 2: CSS
         $module2 = Module::create([

@@ -26,6 +26,32 @@ class ContentParser
         return $content;
     }
 
+    public static function excerpt($content, $limit = 150)
+    {
+        $text = self::toPlainText($content);
+
+        return \Illuminate\Support\Str::limit($text, $limit);
+    }
+
+    public static function toPlainText($content)
+    {
+        if (empty($content)) {
+            return '';
+        }
+
+        $content = self::parse($content);
+
+        $text = strip_tags((string) $content);
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = str_replace(["\xC2\xA0", "\u{00A0}"], ' ', $text);
+        $text = preg_replace('/\x{FFFD}/u', '', $text);
+        $text = preg_replace('/[\x00-\x1F\x7F]/u', ' ', $text);
+        $text = preg_replace('/\s+/u', ' ', $text);
+
+        return trim($text);
+    }
+
     private static function generateEmbed($url)
     {
         // Youtube
