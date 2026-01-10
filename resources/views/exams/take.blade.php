@@ -32,8 +32,17 @@
                                     </div>
 
                                     @if($question->media_url)
+                                        @php
+                                            $isRemote = \Illuminate\Support\Str::startsWith($question->media_url, ['http://', 'https://']);
+                                            $url = $isRemote ? $question->media_url : \Illuminate\Support\Facades\Storage::disk('public')->url($question->media_url);
+                                            $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+                                            $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp'], true);
+                                        @endphp
                                         <div class="mt-3">
-                                            <a href="{{ $question->media_url }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold" target="_blank" rel="noopener">Buka media</a>
+                                            @if($isImage)
+                                                <img src="{{ $url }}" alt="Media soal" class="max-w-md h-auto rounded border shadow-sm mb-2">
+                                            @endif
+                                            <a href="{{ $url }}" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold" target="_blank" rel="noopener">Buka lampiran</a>
                                         </div>
                                     @endif
 
@@ -86,4 +95,3 @@
         </div>
     </div>
 </x-app-layout>
-

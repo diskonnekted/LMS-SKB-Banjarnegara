@@ -157,7 +157,7 @@
                 <div class="p-6 text-gray-900" x-data="{type: @js(old('type', 'multiple_choice'))}">
                     <h3 class="text-lg font-bold mb-4">Tambah Soal</h3>
 
-                    <form id="questionForm" method="POST" action="{{ $baseUrl . route('teacher.exams.questions.store', $exam, false) }}" class="space-y-4">
+                    <form id="questionForm" method="POST" action="{{ $baseUrl . route('teacher.exams.questions.store', $exam, false) }}" class="space-y-4" enctype="multipart/form-data">
                         @csrf
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -182,8 +182,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Media URL (opsional)</label>
-                            <input type="text" name="media_url" form="questionForm" value="{{ old('media_url') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://example.com/image.jpg">
+                            <label class="block text-sm font-medium text-gray-700">Lampiran Soal (opsional)</label>
+                            <input type="file" name="media_file" form="questionForm" class="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" accept="image/*,application/pdf">
+                            <div class="mt-1 text-xs text-gray-500">Format: JPG/PNG/GIF/WEBP/PDF • Maks 10MB</div>
                         </div>
 
                         <div>

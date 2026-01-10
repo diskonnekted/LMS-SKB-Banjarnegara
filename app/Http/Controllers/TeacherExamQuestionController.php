@@ -6,6 +6,8 @@ use App\Models\Exam;
 use App\Models\ExamQuestion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class TeacherExamQuestionController extends Controller
@@ -19,17 +21,22 @@ class TeacherExamQuestionController extends Controller
             'question' => 'required|string',
             'points' => 'required|integer|min:1|max:1000',
             'order' => 'nullable|integer|min:0|max:100000',
-            'media_url' => 'nullable|string',
+            'media_file' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,webp,pdf',
         ]);
 
         [$options, $correctAnswer] = $this->buildOptionsAndCorrect($request);
+
+        $mediaPath = null;
+        if ($request->hasFile('media_file')) {
+            $mediaPath = $request->file('media_file')->store('exam-questions', 'public');
+        }
 
         $exam->questions()->create([
             'type' => $request->type,
             'question' => $request->question,
             'options' => $options,
             'correct_answer' => $correctAnswer,
-            'media_url' => $request->media_url,
+            'media_url' => $mediaPath,
             'points' => $request->points,
             'order' => (int) ($request->order ?? 0),
         ]);
@@ -65,17 +72,31 @@ class TeacherExamQuestionController extends Controller
             'question' => 'required|string',
             'points' => 'required|integer|min:1|max:1000',
             'order' => 'nullable|integer|min:0|max:100000',
-            'media_url' => 'nullable|string',
+            'media_file' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,webp,pdf',
+            'remove_media' => 'nullable|boolean',
         ]);
 
         [$options, $correctAnswer] = $this->buildOptionsAndCorrect($request);
+
+        $mediaPath = $examQuestion->media_url;
+        if ($request->hasFile('media_file')) {
+            if (is_string($mediaPath) && $mediaPath !== '' && ! Str::startsWith($mediaPath, ['http://', 'https://'])) {
+                Storage::disk('public')->delete($mediaPath);
+            }
+            $mediaPath = $request->file('media_file')->store('exam-questions', 'public');
+        } elseif ($request->boolean('remove_media')) {
+            if (is_string($mediaPath) && $mediaPath !== '' && ! Str::startsWith($mediaPath, ['http://', 'https://'])) {
+                Storage::disk('public')->delete($mediaPath);
+            }
+            $mediaPath = null;
+        }
 
         $examQuestion->update([
             'type' => $request->type,
             'question' => $request->question,
             'options' => $options,
             'correct_answer' => $correctAnswer,
-            'media_url' => $request->media_url,
+            'media_url' => $mediaPath,
             'points' => $request->points,
             'order' => (int) ($request->order ?? 0),
         ]);
