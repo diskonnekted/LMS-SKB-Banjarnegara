@@ -32,6 +32,7 @@ class ProfileController extends Controller
     public function show(Request $request): View
     {
         $user = $request->user();
+        $user->load('enrolledCourses.teacher');
         $certificates = Certificate::with('course')
             ->where('user_id', $user->id)
             ->orderByDesc('created_at')

@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ExamAttemptController;
 use App\Http\Controllers\IconController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\LearningController;
@@ -13,6 +14,9 @@ use App\Http\Controllers\NewsController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\QuizController;
+use App\Http\Controllers\TeacherExamAttemptController;
+use App\Http\Controllers\TeacherExamController;
+use App\Http\Controllers\TeacherExamQuestionController;
 use App\Http\Controllers\TeacherQuizAttemptController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -90,10 +94,47 @@ Route::get('/dashboard', function () {
         $data['teacher_courses'] = $teacherCourses;
         $data['my_students'] = $teacherCourses->flatMap->students->unique('id')->count();
     } elseif ($user->hasRole('student')) {
-        $data['enrolled_courses_count'] = $user->enrolledCourses()->count();
-        $data['completed_courses_count'] = $user->enrolledCourses()->wherePivotNotNull('completed_at')->count();
-        $data['my_courses'] = $user->enrolledCourses()->with('teacher')->get();
-        $data['student_grade_levels'] = $user->enrolledCourses()->pluck('grade_level')->filter()->unique()->values();
+        $myCourses = $user->enrolledCourses()->with('teacher')->get();
+        $data['enrolled_courses_count'] = $myCourses->count();
+        $data['completed_courses_count'] = $myCourses->filter(fn ($course) => $course->pivot && $course->pivot->completed_at)->count();
+        $data['my_courses'] = $myCourses;
+        $data['student_grade_levels'] = $myCourses->pluck('grade_level')->filter()->unique()->values();
+
+        $enrolledCourseIds = $myCourses->pluck('id')->values();
+        $studentGradeLevels = $data['student_grade_levels'];
+        $now = now();
+
+        $data['available_exams'] = \App\Models\Exam::query()
+            ->with(['teacher', 'course'])
+            ->where('is_published', true)
+            ->where(function ($q) use ($now) {
+                $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
+            })
+            ->where(function ($q) use ($now) {
+                $q->whereNull('ends_at')->orWhere('ends_at', '>=', $now);
+            })
+            ->where(function ($q) use ($enrolledCourseIds) {
+                $q->whereNull('course_id');
+                if ($enrolledCourseIds->isNotEmpty()) {
+                    $q->orWhereIn('course_id', $enrolledCourseIds);
+                }
+            })
+            ->where(function ($q) use ($studentGradeLevels) {
+                $q->whereNull('grade_level');
+                if ($studentGradeLevels->isNotEmpty()) {
+                    $q->orWhereIn('grade_level', $studentGradeLevels);
+                }
+            })
+            ->orderBy('starts_at')
+            ->orderBy('id', 'desc')
+            ->get();
+
+        $data['exam_attempts'] = \App\Models\ExamAttempt::query()
+            ->where('user_id', $user->id)
+            ->with(['exam.teacher', 'exam.course'])
+            ->latest('submitted_at')
+            ->take(10)
+            ->get();
     }
 
     return view('dashboard', $data);
@@ -118,6 +159,21 @@ Route::middleware('auth')->group(function () {
         Route::get('/teacher/latex-guide', function () {
             return view('teacher.latex-guide');
         })->name('teacher.latex-guide');
+
+        Route::get('/teacher/exams', [TeacherExamController::class, 'index'])->name('teacher.exams.index');
+        Route::get('/teacher/exams/create', [TeacherExamController::class, 'create'])->name('teacher.exams.create');
+        Route::post('/teacher/exams', [TeacherExamController::class, 'store'])->name('teacher.exams.store');
+        Route::get('/teacher/exams/{exam}/edit', [TeacherExamController::class, 'edit'])->name('teacher.exams.edit');
+        Route::put('/teacher/exams/{exam}', [TeacherExamController::class, 'update'])->name('teacher.exams.update');
+        Route::delete('/teacher/exams/{exam}', [TeacherExamController::class, 'destroy'])->name('teacher.exams.destroy');
+
+        Route::post('/teacher/exams/{exam}/questions', [TeacherExamQuestionController::class, 'store'])->name('teacher.exams.questions.store');
+        Route::get('/teacher/exam-questions/{examQuestion}/edit', [TeacherExamQuestionController::class, 'edit'])->name('teacher.exam-questions.edit');
+        Route::put('/teacher/exam-questions/{examQuestion}', [TeacherExamQuestionController::class, 'update'])->name('teacher.exam-questions.update');
+        Route::delete('/teacher/exam-questions/{examQuestion}', [TeacherExamQuestionController::class, 'destroy'])->name('teacher.exam-questions.destroy');
+
+        Route::get('/teacher/exams/{exam}/attempts', [TeacherExamAttemptController::class, 'index'])->name('teacher.exams.attempts.index');
+        Route::get('/teacher/exam-attempts/{attempt}', [TeacherExamAttemptController::class, 'show'])->name('teacher.exams.attempts.show');
 
         Route::resource('courses.modules', ModuleController::class)->shallow();
         Route::resource('modules.lessons', LessonController::class)->shallow();
@@ -164,6 +220,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/learning/{course}/modules/{module}/quizzes/{quiz}', [LearningController::class, 'submitQuiz'])->name('learning.quiz.submit');
 
     Route::get('/courses/{course}/certificate', [App\Http\Controllers\CertificateController::class, 'download'])->name('certificates.download');
+
+    Route::get('/exams/{code}', [ExamAttemptController::class, 'take'])->name('exams.take');
+    Route::post('/exams/{code}', [ExamAttemptController::class, 'submit'])->name('exams.submit');
+    Route::get('/exams/attempts/{attempt}', [ExamAttemptController::class, 'result'])->name('exams.result');
+    Route::get('/exams/attempts/{attempt}/pdf', [ExamAttemptController::class, 'downloadPdf'])->name('exams.attempts.pdf');
 });
 
 require __DIR__.'/auth.php';

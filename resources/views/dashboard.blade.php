@@ -69,6 +69,24 @@
                         </div>
                         <x-heroicon name="cog" class="absolute right-2 top-2 h-20 w-20 opacity-10 text-text-light" />
                     </a>
+
+                    @role('student')
+                        @if(isset($available_exams) && $available_exams->count() > 0)
+                            <a href="#ujian" class="relative rounded-xl overflow-hidden p-4 text-text-light shadow hover:shadow-lg transition bg-gradient-to-br from-warning to-warning">
+                                <div class="absolute inset-0 bg-black/10"></div>
+                                <div class="relative flex items-center gap-4">
+                                    <div class="h-12 w-12 rounded-full bg-white/15 flex items-center justify-center">
+                                        <x-heroicon name="clipboard-list" class="h-7 w-7" />
+                                    </div>
+                                    <div>
+                                        <div class="text-xs uppercase">Ujian</div>
+                                        <div class="text-lg font-bold">{{ $available_exams->count() }} tersedia</div>
+                                    </div>
+                                </div>
+                                <x-heroicon name="clipboard-list" class="absolute right-2 top-2 h-20 w-20 opacity-10 text-text-light" />
+                            </a>
+                        @endif
+                    @endrole
                 </div>
             </div>
 
@@ -283,6 +301,98 @@
                 <x-stat-card title="Pelajaran Selesai" :value="$completed_courses_count ?? 0" icon="rectangle-stack" scheme="success-secondary" />
             </div>
 
+            @if(isset($available_exams) && $available_exams->count() > 0)
+                <div id="ujian" class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Ujian</h3>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-warning/10 text-warning">{{ $available_exams->count() }} tersedia</span>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        @foreach($available_exams as $exam)
+                            <div class="bg-white overflow-hidden rounded-2xl shadow hover:shadow-xl transition transform hover:-translate-y-0.5 flex flex-col h-full">
+                                <div class="p-6 flex-1 flex flex-col">
+                                    <h4 class="font-bold text-lg mb-1">{{ $exam->title }}</h4>
+                                    @if($exam->description)
+                                        <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ $exam->description }}</p>
+                                    @endif
+                                    <div class="text-xs text-gray-500 mb-4 space-y-1">
+                                        @if($exam->course)
+                                            <div>Mata pelajaran: {{ $exam->course->title }}</div>
+                                        @endif
+                                        <div>Guru: {{ optional($exam->teacher)->name ?? '-' }}</div>
+                                        <div>KKM: {{ (int) $exam->passing_score }}%</div>
+                                        @if($exam->duration_minutes)
+                                            <div>Durasi: {{ (int) $exam->duration_minutes }} menit</div>
+                                        @endif
+                                    </div>
+                                    <div class="mt-auto">
+                                        <a href="{{ route('exams.take', $exam->access_code) }}" class="block w-full text-center bg-tertiary hover:bg-[#5a4dd6] text-white font-semibold py-2 rounded-lg">
+                                            Mulai Ujian
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
+            @if(isset($exam_attempts) && $exam_attempts->count() > 0)
+                <div class="mb-8">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-gray-900">Ujian Yang Diikuti</h3>
+                    </div>
+                    <div class="bg-white overflow-hidden rounded-2xl shadow">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-100">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Ujian</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Tanggal</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Nilai</th>
+                                        <th class="px-6 py-3 text-left text-xs font-semibold text-gray-600 uppercase">Status</th>
+                                        <th class="px-6 py-3 text-right text-xs font-semibold text-gray-600 uppercase">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-100">
+                                    @foreach($exam_attempts as $attempt)
+                                        @php $exam = $attempt->exam; @endphp
+                                        <tr class="hover:bg-gray-50 transition">
+                                            <td class="px-6 py-4">
+                                                <div class="text-sm font-semibold text-gray-900">{{ $exam->title }}</div>
+                                                <div class="text-xs text-gray-500">
+                                                    {{ $exam->course ? $exam->course->title : 'Ujian Mandiri' }}
+                                                    @if($exam->grade_level)
+                                                        — {{ $exam->grade_level }}
+                                                    @endif
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                                {{ optional($attempt->submitted_at)->format('d/m/Y H:i') ?? '-' }}
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-tertiary/10 text-tertiary">{{ $attempt->score }}%</span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap">
+                                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold {{ $attempt->passed ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger' }}">
+                                                    {{ $attempt->passed ? 'Lulus' : 'Tidak lulus' }}
+                                                </span>
+                                            </td>
+                                            <td class="px-6 py-4 whitespace-nowrap text-right">
+                                                <div class="inline-flex items-center gap-2">
+                                                    <a href="{{ route('exams.result', $attempt) }}" class="px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 text-xs font-semibold hover:bg-gray-200">Lihat</a>
+                                                    <a href="{{ route('exams.attempts.pdf', $attempt) }}" class="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700">PDF</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <h3 class="text-lg font-bold text-gray-900 mb-4">Pelajaran Saya</h3>
             @if(isset($my_courses) && $my_courses->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -297,7 +407,7 @@
                         @endif
                         <div class="p-6 flex-1 flex flex-col">
                             <h4 class="font-bold text-lg mb-1">{{ $course->title }}</h4>
-                            <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ $course->description }}</p>
+                            <p class="text-sm text-gray-600 mb-4 line-clamp-2">{{ \Illuminate\Support\Str::limit(strip_tags((string) $course->description), 140) }}</p>
                             
                             <div class="mt-auto">
                                 <div class="text-xs text-gray-500 mb-2">Instruktur: {{ $course->teacher->name }}</div>

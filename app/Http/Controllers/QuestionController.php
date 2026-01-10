@@ -55,9 +55,9 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
-                    'option_c' => 'required|string',
-                    'option_d' => 'required|string',
-                    'option_e' => 'required|string',
+                    'option_c' => 'nullable|string',
+                    'option_d' => 'nullable|string',
+                    'option_e' => 'nullable|string',
                     'correct_answer' => 'required|in:a,b,c,d,e',
                 ]);
                 $options = [
@@ -74,9 +74,9 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
-                    'option_c' => 'required|string',
-                    'option_d' => 'required|string',
-                    'option_e' => 'required|string',
+                    'option_c' => 'nullable|string',
+                    'option_d' => 'nullable|string',
+                    'option_e' => 'nullable|string',
                     'correct_answers' => 'required|array',
                     'correct_answers.*' => 'in:a,b,c,d,e|distinct',
                 ]);
@@ -136,6 +136,22 @@ class QuestionController extends Controller
             });
         }
 
+        if ($request->type === 'multiple_choice' && ! array_key_exists($correct_answer, $options)) {
+            return back()->withErrors([
+                'correct_answer' => 'Kunci jawaban harus sesuai opsi yang diisi.',
+            ])->withInput();
+        }
+
+        if ($request->type === 'multiple_response') {
+            $picked = json_decode((string) $correct_answer, true) ?? [];
+            $missing = array_filter($picked, fn ($k) => ! array_key_exists($k, $options));
+            if (! empty($missing)) {
+                return back()->withErrors([
+                    'correct_answers' => 'Kunci jawaban harus sesuai opsi yang diisi.',
+                ])->withInput();
+            }
+        }
+
         $question->update([
             'question' => $request->question,
             'type' => $request->type,
@@ -166,9 +182,9 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
-                    'option_c' => 'required|string',
-                    'option_d' => 'required|string',
-                    'option_e' => 'required|string',
+                    'option_c' => 'nullable|string',
+                    'option_d' => 'nullable|string',
+                    'option_e' => 'nullable|string',
                     'correct_answer' => 'required|in:a,b,c,d,e',
                 ]);
                 $options = [
@@ -185,9 +201,9 @@ class QuestionController extends Controller
                 $request->validate([
                     'option_a' => 'required|string',
                     'option_b' => 'required|string',
-                    'option_c' => 'required|string',
-                    'option_d' => 'required|string',
-                    'option_e' => 'required|string',
+                    'option_c' => 'nullable|string',
+                    'option_d' => 'nullable|string',
+                    'option_e' => 'nullable|string',
                     'correct_answers' => 'required|array',
                     'correct_answers.*' => 'in:a,b,c,d,e|distinct',
                 ]);
@@ -247,6 +263,22 @@ class QuestionController extends Controller
             $options = array_filter($options, function ($value) {
                 return ! is_null($value) && $value !== '';
             });
+        }
+
+        if ($request->type === 'multiple_choice' && ! array_key_exists($correct_answer, $options)) {
+            return back()->withErrors([
+                'correct_answer' => 'Kunci jawaban harus sesuai opsi yang diisi.',
+            ])->withInput();
+        }
+
+        if ($request->type === 'multiple_response') {
+            $picked = json_decode((string) $correct_answer, true) ?? [];
+            $missing = array_filter($picked, fn ($k) => ! array_key_exists($k, $options));
+            if (! empty($missing)) {
+                return back()->withErrors([
+                    'correct_answers' => 'Kunci jawaban harus sesuai opsi yang diisi.',
+                ])->withInput();
+            }
         }
 
         $quiz->questions()->create([

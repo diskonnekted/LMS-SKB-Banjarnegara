@@ -15,6 +15,9 @@ class ProfileUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $user = $this->user();
+        $isStaff = $user?->hasAnyRole(['admin', 'teacher']) ?? false;
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'email' => [
@@ -27,6 +30,17 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'avatar' => ['nullable', 'image', 'max:2048'],
             'bio' => ['nullable', 'string', 'max:1000'],
+            'date_of_birth' => [Rule::prohibitedIf($isStaff), 'nullable', 'date', 'before_or_equal:today'],
+            'place_of_birth' => ['nullable', 'string', 'max:255'],
+            'gender' => ['nullable', 'string', 'max:20'],
+            'grade_level' => [Rule::prohibitedIf($isStaff), 'nullable', 'string', 'max:100'],
+            'whatsapp_number' => ['nullable', 'string', 'max:30'],
+            'school_name' => [Rule::prohibitedIf($isStaff), 'nullable', 'string', 'max:255'],
+            'nisn' => [Rule::prohibitedIf($isStaff), 'nullable', 'string', 'max:30'],
+            'nip' => [Rule::prohibitedIf(! $isStaff), 'nullable', 'string', 'max:30'],
+            'classes_taught' => [Rule::prohibitedIf(! $isStaff), 'nullable', 'string', 'max:255'],
+            'nik' => ['nullable', 'string', 'max:30'],
+            'address' => ['nullable', 'string', 'max:1000'],
         ];
     }
 }
