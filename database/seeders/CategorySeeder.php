@@ -14,17 +14,26 @@ class CategorySeeder extends Seeder
     public function run(): void
     {
         $categories = [
+            'Tematik',
             'Matematika',
             'Bahasa Indonesia',
             'Bahasa Inggris',
+            'Bahasa Daerah',
             'Ilmu Pengetahuan Alam (IPA)',
             'Ilmu Pengetahuan Sosial (IPS)',
-            'Pendidikan Kewarganegaraan (PKn)',
-            'Pendidikan Agama',
+            'Pendidikan Pancasila dan Kewarganegaraan (PPKn)',
+            'Pendidikan Agama dan Budi Pekerti',
             'Seni Budaya',
             'Pendidikan Jasmani, Olahraga, dan Kesehatan (PJOK)',
-            'Prakarya',
-            'Informatika',
+            'Prakarya dan Kewirausahaan',
+            'Informatika (TIK)',
+            'Fisika',
+            'Kimia',
+            'Biologi',
+            'Ekonomi',
+            'Geografi',
+            'Sosiologi',
+            'Sejarah Indonesia',
         ];
 
         foreach ($categories as $category) {

@@ -164,6 +164,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/teacher/exams/create', [TeacherExamController::class, 'create'])->name('teacher.exams.create');
         Route::post('/teacher/exams', [TeacherExamController::class, 'store'])->name('teacher.exams.store');
         Route::get('/teacher/exams/{exam}/edit', [TeacherExamController::class, 'edit'])->name('teacher.exams.edit');
+        Route::get('/teacher/exams/{exam}/qr', [TeacherExamController::class, 'downloadQr'])->name('teacher.exams.qr.download');
         Route::put('/teacher/exams/{exam}', [TeacherExamController::class, 'update'])->name('teacher.exams.update');
         Route::delete('/teacher/exams/{exam}', [TeacherExamController::class, 'destroy'])->name('teacher.exams.destroy');
 
@@ -176,12 +177,16 @@ Route::middleware('auth')->group(function () {
         Route::get('/teacher/exam-attempts/{attempt}', [TeacherExamAttemptController::class, 'show'])->name('teacher.exams.attempts.show');
 
         Route::resource('courses.modules', ModuleController::class)->shallow();
+        Route::post('/modules/{module}/lessons/editor-images', [LessonController::class, 'uploadEditorImage'])->name('modules.lessons.editor-images');
         Route::resource('modules.lessons', LessonController::class)->shallow();
         Route::resource('lessons.quizzes', QuizController::class)->shallow();
         Route::resource('quizzes.questions', QuestionController::class)->shallow();
 
+        Route::get('/teacher/quizzes/{quiz}/qr', [QuizController::class, 'downloadQr'])->name('teacher.quizzes.qr.download');
+
         Route::get('/teacher/quizzes/{quiz}/attempts', [TeacherQuizAttemptController::class, 'index'])->name('teacher.quizzes.attempts.index');
         Route::get('/teacher/quiz-attempts/{attempt}', [TeacherQuizAttemptController::class, 'show'])->name('teacher.quizzes.attempts.show');
+        Route::post('/teacher/quiz-attempt-answers/{answer}/grade', [TeacherQuizAttemptController::class, 'gradeAnswer'])->name('teacher.quiz-attempt-answers.grade');
     });
 
     // Admin Only

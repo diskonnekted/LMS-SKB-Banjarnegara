@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use App\Models\Course;
+use Database\Seeders\CategorySeeder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -41,7 +42,11 @@ class CourseController extends Controller
         if (! Auth::user()->hasRole('admin|teacher')) {
             abort(403);
         }
-        $categories = Category::all();
+        if (Category::query()->count() === 0) {
+            app()->make(CategorySeeder::class)->run();
+        }
+
+        $categories = Category::query()->orderBy('name')->get();
 
         return view('courses.create', compact('categories'));
     }
@@ -128,7 +133,11 @@ class CourseController extends Controller
         if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
-        $categories = Category::all();
+        if (Category::query()->count() === 0) {
+            app()->make(CategorySeeder::class)->run();
+        }
+
+        $categories = Category::query()->orderBy('name')->get();
 
         return view('courses.edit', compact('course', 'categories'));
     }

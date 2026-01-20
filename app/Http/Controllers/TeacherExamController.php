@@ -6,6 +6,8 @@ use App\Models\Course;
 use App\Models\Exam;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 class TeacherExamController extends Controller
@@ -92,7 +94,40 @@ class TeacherExamController extends Controller
         $courses = $this->getSelectableCourses();
         $gradeLevels = $this->getGradeLevels();
 
-        return view('teacher.exams.edit', compact('exam', 'courses', 'gradeLevels'));
+        $baseUrl = request()->getBaseUrl();
+        $studentLink = url($baseUrl.route('exams.take', $exam->access_code, false));
+
+        $qrBase64 = null;
+        try {
+            $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data='.urlencode($studentLink);
+            $response = Http::timeout(5)->get($qrUrl);
+            if ($response->successful()) {
+                $qrBase64 = base64_encode($response->body());
+            }
+        } catch (\Throwable $e) {
+        }
+
+        return view('teacher.exams.edit', compact('exam', 'courses', 'gradeLevels', 'baseUrl', 'studentLink', 'qrBase64'));
+    }
+
+    public function downloadQr(Exam $exam)
+    {
+        $this->authorizeOwner($exam);
+
+        $baseUrl = request()->getBaseUrl();
+        $studentLink = url($baseUrl.route('exams.take', $exam->access_code, false));
+
+        $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data='.urlencode($studentLink);
+        $response = Http::timeout(10)->get($qrUrl);
+        if (! $response->successful()) {
+            abort(503, 'QR tidak tersedia.');
+        }
+
+        $filename = 'qr-ujian-'.Str::slug((string) $exam->title).'-'.$exam->access_code.'.png';
+
+        return response($response->body(), 200)
+            ->header('Content-Type', 'image/png')
+            ->header('Content-Disposition', 'attachment; filename="'.$filename.'"');
     }
 
     public function update(Request $request, Exam $exam)

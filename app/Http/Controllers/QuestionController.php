@@ -6,6 +6,8 @@ use App\Models\Question;
 use App\Models\Quiz;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class QuestionController extends Controller
 {
@@ -45,6 +47,9 @@ class QuestionController extends Controller
         $request->validate([
             'question' => 'required|string',
             'type' => 'required|string',
+            'media_file' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,webp,pdf',
+            'remove_media' => 'nullable|boolean',
+            'media_url' => 'nullable|string',
         ]);
 
         $options = [];
@@ -152,12 +157,27 @@ class QuestionController extends Controller
             }
         }
 
+        $mediaPath = $question->media_url;
+        if ($request->hasFile('media_file')) {
+            if (is_string($mediaPath) && $mediaPath !== '' && ! Str::startsWith($mediaPath, ['http://', 'https://', '/'])) {
+                Storage::disk('public')->delete($mediaPath);
+            }
+            $mediaPath = $request->file('media_file')->store('quiz-questions', 'public');
+        } elseif ($request->boolean('remove_media')) {
+            if (is_string($mediaPath) && $mediaPath !== '' && ! Str::startsWith($mediaPath, ['http://', 'https://', '/'])) {
+                Storage::disk('public')->delete($mediaPath);
+            }
+            $mediaPath = null;
+        } elseif ($request->filled('media_url')) {
+            $mediaPath = $request->media_url;
+        }
+
         $question->update([
             'question' => $request->question,
             'type' => $request->type,
             'options' => $options,
             'correct_answer' => $correct_answer,
-            'media_url' => $request->media_url,
+            'media_url' => $mediaPath,
         ]);
 
         return redirect()->route('quizzes.edit', $question->quiz)->with('success', 'Question updated.');
@@ -172,6 +192,8 @@ class QuestionController extends Controller
         $request->validate([
             'question' => 'required|string',
             'type' => 'required|string',
+            'media_file' => 'nullable|file|max:10240|mimes:jpg,jpeg,png,gif,webp,pdf',
+            'media_url' => 'nullable|string',
         ]);
 
         $options = [];
@@ -281,12 +303,19 @@ class QuestionController extends Controller
             }
         }
 
+        $mediaPath = null;
+        if ($request->hasFile('media_file')) {
+            $mediaPath = $request->file('media_file')->store('quiz-questions', 'public');
+        } elseif ($request->filled('media_url')) {
+            $mediaPath = $request->media_url;
+        }
+
         $quiz->questions()->create([
             'question' => $request->question,
             'type' => $request->type,
             'options' => $options,
             'correct_answer' => $correct_answer,
-            'media_url' => $request->media_url,
+            'media_url' => $mediaPath,
         ]);
 
         return back()->with('success', 'Question added.');

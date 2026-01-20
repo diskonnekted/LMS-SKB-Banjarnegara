@@ -41,7 +41,7 @@
                     addSequenceItem() { this.sequence_items.push(''); },
                     removeSequenceItem(index) { this.sequence_items.splice(index, 1); }
                 }">
-                    <form method="POST" action="{{ route('questions.update', $question) }}">
+                    <form method="POST" action="{{ route('questions.update', $question) }}" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
 
@@ -61,8 +61,30 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Media URL (Opsional)</label>
-                            <input type="text" name="media_url" value="{{ old('media_url', $question->media_url) }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" placeholder="https://example.com/image.jpg">
+                            <label class="block text-sm font-medium text-gray-700">Lampiran (Opsional)</label>
+
+                            @if($question->media_url)
+                                @php
+                                    $isRemote = \Illuminate\Support\Str::startsWith($question->media_url, ['http://', 'https://', '/']);
+                                    $url = $isRemote ? $question->media_url : \Illuminate\Support\Facades\Storage::disk('public')->url($question->media_url);
+                                    $ext = strtolower(pathinfo($url, PATHINFO_EXTENSION));
+                                    $isImage = in_array($ext, ['jpg','jpeg','png','gif','webp'], true);
+                                @endphp
+
+                                <div class="mt-2 flex flex-col gap-2">
+                                    @if($isImage)
+                                        <img src="{{ $url }}" alt="Lampiran soal" class="max-w-md h-auto rounded border shadow-sm">
+                                    @endif
+                                    <a href="{{ $url }}" target="_blank" rel="noopener" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Buka lampiran saat ini</a>
+                                    <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                        <input type="checkbox" name="remove_media" value="1" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
+                                        Hapus lampiran
+                                    </label>
+                                </div>
+                            @endif
+
+                            <input type="file" name="media_file" class="mt-2 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" accept="image/*,application/pdf">
+                            <div class="mt-1 text-xs text-gray-500">Upload file baru akan mengganti lampiran lama • Maks 10MB</div>
                         </div>
 
                         <div class="mb-4">

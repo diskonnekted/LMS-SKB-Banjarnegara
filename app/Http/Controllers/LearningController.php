@@ -122,11 +122,12 @@ class LearningController extends Controller
         $user = Auth::user();
         $questions = $quiz->questions;
         $score = 0;
-        $total = $questions->count();
+        $total = 0;
+        $pendingManual = false;
         $answerRows = [];
         $now = now();
 
-        if ($total == 0) {
+        if ($questions->count() == 0) {
             return back()->with('error', 'Quiz has no questions.');
         }
 
@@ -134,94 +135,92 @@ class LearningController extends Controller
             $submitted = $request->input('q_'.$question->id);
             $isCorrect = false;
 
-            switch ($question->type) {
-                case 'multiple_choice':
-                case 'true_false':
-                    if ($submitted == $question->correct_answer) {
-                        $isCorrect = true;
-                    }
-                    break;
-
-                case 'multiple_response':
-                    $corrects = json_decode($question->correct_answer, true) ?? [];
-                    if (is_array($submitted)) {
-                        sort($submitted);
-                        sort($corrects);
-                        if ($submitted == $corrects) {
-                            $isCorrect = true;
-                        }
-                    }
-                    break;
-
-                case 'short_answer':
-                case 'numeric':
-                    if (strcasecmp(trim((string) $submitted), trim((string) $question->correct_answer)) === 0) {
-                        $isCorrect = true;
-                    }
-                    break;
-
-                case 'matching':
-                case 'drag_drop':
-                    $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
-                    $allMatch = true;
-                    if (is_array($submitted)) {
-                        foreach ($options as $idx => $pair) {
-                            $userVal = $submitted[$idx] ?? null;
-                            if ($userVal !== $pair['right']) {
-                                $allMatch = false;
-                                break;
-                            }
-                        }
-                        if ($allMatch) {
-                            $isCorrect = true;
-                        }
-                    }
-                    break;
-
-                case 'sequencing':
-                    $correctOrder = json_decode($question->correct_answer, true) ?? [];
-                    $allCorrect = true;
-                    if (is_array($submitted)) {
-                        foreach ($correctOrder as $index => $item) {
-                            $expectedOrder = $index + 1;
-                            // Handle PHP's input name mangling (spaces/dots to underscores)
-                            $lookupKey = str_replace([' ', '.'], '_', $item);
-                            // Try both mangled and raw just in case
-                            $userOrder = $submitted[$lookupKey] ?? $submitted[$item] ?? null;
-
-                            if ($userOrder != $expectedOrder) {
-                                $allCorrect = false;
-                                break;
-                            }
-                        }
-                        if ($allCorrect) {
-                            $isCorrect = true;
-                        }
-                    } else {
-                        $allCorrect = false;
-                    }
-                    break;
-
-                case 'essay':
-                    // Auto-grade participation for now
-                    if (! empty(trim($submitted)) && strlen(trim($submitted)) > 5) {
-                        $isCorrect = true;
-                    }
-                    break;
-
-                default:
-                    // Fallback for legacy data
-                    $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
-                    $isLetter = in_array($submitted, ['a', 'b', 'c', 'd', 'e'], true);
-                    $submittedText = $isLetter ? ($options[$submitted] ?? null) : $submitted;
-                    if ($submitted === $question->correct_answer || $submittedText === $question->correct_answer) {
-                        $isCorrect = true;
-                    }
-                    break;
+            if ($question->type === 'essay') {
+                $isCorrect = null;
+                $pendingManual = true;
             }
 
-            if ($isCorrect) {
-                $score++;
+            if ($question->type !== 'essay') {
+                switch ($question->type) {
+                    case 'multiple_choice':
+                    case 'true_false':
+                        if ($submitted == $question->correct_answer) {
+                            $isCorrect = true;
+                        }
+                        break;
+
+                    case 'multiple_response':
+                        $corrects = json_decode($question->correct_answer, true) ?? [];
+                        if (is_array($submitted)) {
+                            sort($submitted);
+                            sort($corrects);
+                            if ($submitted == $corrects) {
+                                $isCorrect = true;
+                            }
+                        }
+                        break;
+
+                    case 'short_answer':
+                    case 'numeric':
+                        if (strcasecmp(trim((string) $submitted), trim((string) $question->correct_answer)) === 0) {
+                            $isCorrect = true;
+                        }
+                        break;
+
+                    case 'matching':
+                    case 'drag_drop':
+                        $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
+                        $allMatch = true;
+                        if (is_array($submitted)) {
+                            foreach ($options as $idx => $pair) {
+                                $userVal = $submitted[$idx] ?? null;
+                                if ($userVal !== $pair['right']) {
+                                    $allMatch = false;
+                                    break;
+                                }
+                            }
+                            if ($allMatch) {
+                                $isCorrect = true;
+                            }
+                        }
+                        break;
+
+                    case 'sequencing':
+                        $correctOrder = json_decode($question->correct_answer, true) ?? [];
+                        $allCorrect = true;
+                        if (is_array($submitted)) {
+                            foreach ($correctOrder as $index => $item) {
+                                $expectedOrder = $index + 1;
+                                $lookupKey = str_replace([' ', '.'], '_', $item);
+                                $userOrder = $submitted[$lookupKey] ?? $submitted[$item] ?? null;
+
+                                if ($userOrder != $expectedOrder) {
+                                    $allCorrect = false;
+                                    break;
+                                }
+                            }
+                            if ($allCorrect) {
+                                $isCorrect = true;
+                            }
+                        } else {
+                            $allCorrect = false;
+                        }
+                        break;
+
+                    default:
+                        $options = is_array($question->options) ? $question->options : (json_decode($question->options, true) ?? []);
+                        $isLetter = in_array($submitted, ['a', 'b', 'c', 'd', 'e'], true);
+                        $submittedText = $isLetter ? ($options[$submitted] ?? null) : $submitted;
+                        if ($submitted === $question->correct_answer || $submittedText === $question->correct_answer) {
+                            $isCorrect = true;
+                        }
+                        break;
+                }
+
+                $total++;
+                if ($isCorrect) {
+                    $score++;
+                }
             }
 
             $storedAnswer = null;
@@ -240,14 +239,15 @@ class LearningController extends Controller
             ];
         }
 
-        $percentage = ($score / $total) * 100;
-        $passed = $percentage >= $quiz->passing_score;
+        $percentage = $total > 0 ? (($score / $total) * 100) : 0;
+        $percentageInt = (int) round($percentage);
+        $passed = ($total === 0 && $pendingManual) ? true : ($percentageInt >= $quiz->passing_score);
 
-        \DB::transaction(function () use ($user, $quiz, $percentage, $passed, $answerRows) {
+        \DB::transaction(function () use ($user, $quiz, $percentageInt, $passed, $answerRows) {
             $attempt = QuizAttempt::create([
                 'user_id' => $user->id,
                 'quiz_id' => $quiz->id,
-                'score' => $percentage,
+                'score' => $percentageInt,
                 'passed' => $passed,
             ]);
 
@@ -262,7 +262,14 @@ class LearningController extends Controller
             }
         });
 
-        return view('learning.quiz-result', compact('course', 'module', 'quiz', 'percentage', 'passed'));
+        return view('learning.quiz-result', [
+            'course' => $course,
+            'module' => $module,
+            'quiz' => $quiz,
+            'percentage' => $percentageInt,
+            'passed' => $passed,
+            'pendingManual' => $pendingManual,
+        ]);
     }
 
     private function canAccessModule(User $user, Course $course, Module $targetModule)

@@ -47,6 +47,28 @@
                             </button>
                         </div>
                     </form>
+
+                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700">Link Siswa</label>
+                            <input id="quiz-student-link" type="text" value="{{ $studentLink }}" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm" readonly>
+                            <div class="text-xs text-gray-500 mt-1">Bagikan link atau QR code ini ke siswa untuk membuka kuis.</div>
+                        </div>
+                        <div class="border rounded bg-gray-50 p-4 flex flex-col items-center gap-3">
+                            <div class="text-sm font-semibold text-gray-700">QR Code Siswa</div>
+                            <div id="quiz-qrcode" class="bg-white p-2 border rounded">
+                                @if(!empty($qrBase64))
+                                    <img src="data:image/png;base64,{{ $qrBase64 }}" width="180" height="180" alt="QR Code">
+                                @else
+                                    <div class="text-xs text-gray-500">QR tidak tersedia</div>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" id="copy-quiz-link" class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">Salin Link</button>
+                                <a id="download-quiz-qr" href="{{ $baseUrl . route('teacher.quizzes.qr.download', $quiz, false) }}" class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold">Unduh QR</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -89,7 +111,7 @@
 
                                     @elseif($question->type === 'multiple_response')
                                          <div class="grid grid-cols-2 gap-2 text-sm">
-                                            @php $corrects = json_decode($question->correct_answer, true) ?? []; @endphp
+                                            @php($corrects = json_decode($question->correct_answer, true) ?? [])
                                             @foreach(['a', 'b', 'c', 'd', 'e'] as $opt)
                                                 @if(isset($question->options[$opt]))
                                                     <div class="{{ in_array($opt, $corrects) ? 'text-green-600 font-bold' : '' }}">
@@ -118,7 +140,7 @@
                                     @elseif(in_array($question->type, ['matching', 'drag_drop']))
                                         <div class="text-sm">
                                             <p class="font-semibold mb-1">Pairs:</p>
-                                            @php $pairs = json_decode($question->options, true) ?? []; @endphp
+                                            @php($pairs = is_array($question->options) ? $question->options : (json_decode((string) $question->options, true) ?? []))
                                             <ul class="list-disc list-inside">
                                                 @foreach($pairs as $pair)
                                                     <li>{{ $pair['left'] }} → {{ $pair['right'] }}</li>
@@ -129,7 +151,7 @@
                                     @elseif($question->type === 'sequencing')
                                         <div class="text-sm">
                                             <p class="font-semibold mb-1">Correct Order:</p>
-                                            @php $sequence = json_decode($question->correct_answer, true) ?? []; @endphp
+                                            @php($sequence = json_decode($question->correct_answer, true) ?? [])
                                             <ol class="list-decimal list-inside">
                                                 @foreach($sequence as $item)
                                                     <li>{{ $item }}</li>
@@ -156,7 +178,7 @@
                     removeSequenceItem(index) { this.sequence_items.splice(index, 1); }
                 }">
                     <h3 class="text-lg font-bold mb-4">Add New Question</h3>
-                    <form method="POST" action="{{ route('quizzes.questions.store', $quiz) }}">
+                    <form method="POST" action="{{ route('quizzes.questions.store', $quiz) }}" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-4">
@@ -175,9 +197,9 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Media URL (Optional - Image/Audio/Video)</label>
-                            <input type="text" name="media_url" placeholder="https://example.com/image.jpg" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                            <p class="text-xs text-gray-500 mt-1">Provide a URL to an image, audio, or video file to make this a Media-Based question.</p>
+                            <label class="block text-sm font-medium text-gray-700">Lampiran Gambar (Opsional)</label>
+                            <input type="file" name="media_file" class="mt-1 block w-full text-sm text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" accept="image/*,application/pdf">
+                            <p class="text-xs text-gray-500 mt-1">Maks 10MB.</p>
                         </div>
 
                         <div class="mb-4">
@@ -337,6 +359,32 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+    <script>
+        (function () {
+            const linkInput = document.getElementById('quiz-student-link');
+            const copyBtn = document.getElementById('copy-quiz-link');
+            if (copyBtn && linkInput) {
+                copyBtn.addEventListener('click', async function () {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(linkInput.value);
+                        } else {
+                            linkInput.focus();
+                            linkInput.select();
+                            document.execCommand('copy');
+                            linkInput.setSelectionRange(0, 0);
+                            linkInput.blur();
+                        }
+                        copyBtn.textContent = 'Tersalin';
+                        setTimeout(function () {
+                            copyBtn.textContent = 'Salin Link';
+                        }, 1200);
+                    } catch (e) {
+                    }
+                });
+            }
+        })();
+    </script>
     <script>
         (function(){
             const ta = document.querySelector('textarea[name="question"]');

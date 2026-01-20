@@ -27,26 +27,28 @@
                                 @if($q->media_url)
                                     <div class="mb-4">
                                         @php 
-                                            $ext = pathinfo($q->media_url, PATHINFO_EXTENSION);
+                                            $isRemote = \Illuminate\Support\Str::startsWith($q->media_url, ['http://', 'https://', '/']);
+                                            $url = $isRemote ? $q->media_url : \Illuminate\Support\Facades\Storage::disk('public')->url($q->media_url);
+                                            $ext = pathinfo($url, PATHINFO_EXTENSION);
                                             $isImage = in_array(strtolower($ext), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
                                             $isAudio = in_array(strtolower($ext), ['mp3', 'wav', 'ogg']);
                                             $isVideo = in_array(strtolower($ext), ['mp4', 'webm']);
                                         @endphp
                                         
                                         @if($isImage)
-                                            <img src="{{ $q->media_url }}" alt="Question Media" class="max-w-md h-auto rounded border shadow-sm">
+                                            <img src="{{ $url }}" alt="Question Media" class="max-w-md h-auto rounded border shadow-sm">
                                         @elseif($isAudio)
                                             <audio controls class="w-full max-w-md">
-                                                <source src="{{ $q->media_url }}">
+                                                <source src="{{ $url }}">
                                                 Your browser does not support the audio element.
                                             </audio>
                                         @elseif($isVideo)
                                             <video controls class="w-full max-w-md">
-                                                <source src="{{ $q->media_url }}">
+                                                <source src="{{ $url }}">
                                                 Your browser does not support the video element.
                                             </video>
                                         @else
-                                            <a href="{{ $q->media_url }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                            <a href="{{ $url }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                                                 View Attached Media
                                             </a>

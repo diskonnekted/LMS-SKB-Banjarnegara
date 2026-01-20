@@ -3,8 +3,6 @@
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">Kelola Ujian: {{ $exam->title }}</h2>
     </x-slot>
 
-    @php($baseUrl = request()->getBaseUrl())
-
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <x-auth-session-status class="mb-4" :status="session('success')" />
@@ -112,7 +110,27 @@
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Link Siswa</label>
-                                <input type="text" value="{{ $baseUrl . route('exams.take', $exam->access_code, false) }}" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm" readonly>
+                                <input id="student-link" type="text" value="{{ $studentLink }}" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm" readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <div class="text-xs text-gray-500 mt-1">Bagikan link atau QR code ini ke siswa untuk membuka ujian.</div>
+                            </div>
+                            <div class="border rounded bg-gray-50 p-4 flex flex-col items-center gap-3">
+                                <div class="text-sm font-semibold text-gray-700">QR Code Siswa</div>
+                                <div id="exam-qrcode" class="bg-white p-2 border rounded">
+                                    @if(!empty($qrBase64))
+                                        <img src="data:image/png;base64,{{ $qrBase64 }}" width="180" height="180" alt="QR Code">
+                                    @else
+                                        <div class="text-xs text-gray-500">QR tidak tersedia</div>
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" id="copy-student-link" class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">Salin Link</button>
+                                    <a id="download-exam-qr" href="{{ $baseUrl . route('teacher.exams.qr.download', $exam, false) }}" class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold">Unduh QR</a>
+                                </div>
                             </div>
                         </div>
 
@@ -269,3 +287,30 @@
         </div>
     </div>
 </x-app-layout>
+
+<script>
+    (function () {
+        const linkInput = document.getElementById('student-link');
+        const copyBtn = document.getElementById('copy-student-link');
+        if (copyBtn && linkInput) {
+            copyBtn.addEventListener('click', async function () {
+                try {
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(linkInput.value);
+                    } else {
+                        linkInput.focus();
+                        linkInput.select();
+                        document.execCommand('copy');
+                        linkInput.setSelectionRange(0, 0);
+                        linkInput.blur();
+                    }
+                    copyBtn.textContent = 'Tersalin';
+                    setTimeout(function () {
+                        copyBtn.textContent = 'Salin Link';
+                    }, 1200);
+                } catch (e) {
+                }
+            });
+        }
+    })();
+</script>

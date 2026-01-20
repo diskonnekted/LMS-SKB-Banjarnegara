@@ -6,6 +6,7 @@ use App\Models\Lesson;
 use App\Models\Module;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class LessonController extends Controller
@@ -60,6 +61,23 @@ class LessonController extends Controller
         ]);
 
         return redirect()->route('courses.modules.index', $module->course)->with('success', 'Lesson created successfully.');
+    }
+
+    public function uploadEditorImage(Request $request, Module $module)
+    {
+        if (! Auth::user()->hasRole('admin') && $module->course->teacher_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $request->validate([
+            'image' => 'required|image|max:5120',
+        ]);
+
+        $path = $request->file('image')->store('lesson-editor-images/'.$module->id, 'public');
+
+        return response()->json([
+            'url' => Storage::url($path),
+        ]);
     }
 
     public function edit(Lesson $lesson)

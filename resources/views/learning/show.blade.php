@@ -179,10 +179,17 @@
                                 </div>
                             @endif
                         @endif
-                        
-                        @if($lesson->type !== 'video')
+
+                        @php
+                            $renderContent = (string) ($lesson->content ?? '');
+                            if ($lesson->type === 'video') {
+                                $renderContent = preg_replace('/<iframe\b[^>]*><\/iframe>/i', '', $renderContent, 1);
+                            }
+                            $renderContent = trim($renderContent);
+                        @endphp
+                        @if($renderContent !== '')
                             <div class="prose max-w-none mt-6">
-                                {!! \App\Helpers\ContentParser::parse($lesson->content) !!}
+                                {!! \App\Helpers\ContentParser::parse($renderContent) !!}
                             </div>
                         @endif
 
