@@ -182,7 +182,6 @@ Route::middleware('auth')->group(function () {
         Route::resource('lessons.quizzes', QuizController::class)->shallow();
         Route::resource('quizzes.questions', QuestionController::class)->shallow();
 
-        Route::get('/teacher/quizzes/{quiz}/qr', [QuizController::class, 'downloadQr'])->name('teacher.quizzes.qr.download');
 
         Route::get('/teacher/quizzes/{quiz}/attempts', [TeacherQuizAttemptController::class, 'index'])->name('teacher.quizzes.attempts.index');
         Route::get('/teacher/quiz-attempts/{attempt}', [TeacherQuizAttemptController::class, 'show'])->name('teacher.quizzes.attempts.show');

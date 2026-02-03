@@ -28,3 +28,5 @@ Thumbs.db
 *.zip
 /arsip
 /tmp
+/php82
+composer.phar

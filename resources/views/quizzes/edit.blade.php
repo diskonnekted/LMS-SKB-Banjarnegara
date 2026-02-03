@@ -48,27 +48,7 @@
                         </div>
                     </form>
 
-                    <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="md:col-span-2">
-                            <label class="block text-sm font-medium text-gray-700">Link Siswa</label>
-                            <input id="quiz-student-link" type="text" value="{{ $studentLink }}" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm" readonly>
-                            <div class="text-xs text-gray-500 mt-1">Bagikan link atau QR code ini ke siswa untuk membuka kuis.</div>
-                        </div>
-                        <div class="border rounded bg-gray-50 p-4 flex flex-col items-center gap-3">
-                            <div class="text-sm font-semibold text-gray-700">QR Code Siswa</div>
-                            <div id="quiz-qrcode" class="bg-white p-2 border rounded">
-                                @if(!empty($qrBase64))
-                                    <img src="data:image/png;base64,{{ $qrBase64 }}" width="180" height="180" alt="QR Code">
-                                @else
-                                    <div class="text-xs text-gray-500">QR tidak tersedia</div>
-                                @endif
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <button type="button" id="copy-quiz-link" class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">Salin Link</button>
-                                <a id="download-quiz-qr" href="{{ $baseUrl . route('teacher.quizzes.qr.download', $quiz, false) }}" class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold">Unduh QR</a>
-                            </div>
-                        </div>
-                    </div>
+
                 </div>
             </div>
 
