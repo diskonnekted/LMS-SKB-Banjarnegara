@@ -77,13 +77,15 @@ class LearningController extends Controller
     public function complete(Course $course, Module $module, Lesson $lesson)
     {
         $user = Auth::user();
-        if (! $user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
-            $user->completedLessons()->attach($lesson->id, ['completed' => true]);
-        }
 
         // If current lesson has a quiz, go to quiz first
         if ($lesson->quiz) {
             return redirect()->route('learning.quiz', [$course, $module, $lesson->quiz]);
+        }
+
+        // Only mark as complete if there is no quiz
+        if (! $user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
+            $user->completedLessons()->attach($lesson->id, ['completed' => true]);
         }
 
         // Find next lesson
@@ -259,6 +261,14 @@ class LearningController extends Controller
                 }, $answerRows);
 
                 \DB::table('quiz_attempt_answers')->insert($rows);
+            }
+
+            // Mark lesson as complete if quiz is passed
+            if ($passed) {
+                $lessonId = $quiz->lesson_id;
+                if ($lessonId && ! $user->completedLessons()->where('lesson_id', $lessonId)->exists()) {
+                    $user->completedLessons()->attach($lessonId, ['completed' => true]);
+                }
             }
         });
 
