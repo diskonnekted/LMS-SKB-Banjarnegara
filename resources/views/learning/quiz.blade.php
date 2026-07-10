@@ -9,7 +9,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+        <div class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
             <div class="max-w-3xl mx-auto bg-white shadow-sm rounded-lg p-4 md:p-8">
                 <h1 class="text-xl md:text-2xl font-bold mb-2">Kuis: {{ $quiz->title }}</h1>
                 <p class="text-gray-500 mb-6">Nilai Kelulusan: {{ $quiz->passing_score }}%</p>

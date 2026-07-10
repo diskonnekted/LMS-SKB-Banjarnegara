@@ -96,7 +96,7 @@
                 </div>
             </header>
             
-            <main class="flex-1 overflow-y-auto p-4 md:p-8">
+            <main class="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
                 <div class="max-w-5xl mx-auto">
                     <!-- Error Message -->
                     @if(session('error'))
