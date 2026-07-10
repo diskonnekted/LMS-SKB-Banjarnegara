@@ -86,7 +86,7 @@
                 <div class="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
                     <form action="{{ route('learning.complete', [$course, $module, $lesson]) }}" method="POST" class="flex-1 sm:flex-none">
                         @csrf
-                        <button id="complete-btn" type="submit" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed text-center" {{ $lesson->type === 'video' ? 'disabled' : '' }}>
+                        <button id="complete-btn" type="submit" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed text-center" {{ ($lesson->type === 'video' && !$isCompleted) ? 'disabled' : '' }}>
                             {{ $isCompleted ? 'Pelajaran Berikutnya' : 'Tandai Selesai & Lanjut' }}
                         </button>
                     </form>
@@ -115,7 +115,7 @@
                                         $iframeSrc = trim(str_replace(['`', ' '], '', $match[1] ?? ''));
                                     }
                                 }
-                                $content = trim($lesson->content ?? '');
+                                $content = trim(strip_tags(html_entity_decode($lesson->content ?? '')));
                                 $videoId = null;
                                 if (!$iframeSrc && !empty($content)) {
                                     if (Str::startsWith($content, ['https://youtu.be/', 'http://youtu.be/'])) {
