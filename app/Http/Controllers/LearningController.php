@@ -81,6 +81,11 @@ class LearningController extends Controller
             $user->completedLessons()->attach($lesson->id, ['completed' => true]);
         }
 
+        // If current lesson has a quiz, go to quiz first
+        if ($lesson->quiz) {
+            return redirect()->route('learning.quiz', [$course, $module, $lesson->quiz]);
+        }
+
         // Find next lesson
         $nextLesson = $module->lessons()->where('order', '>', $lesson->order)->orderBy('order')->first();
 
@@ -88,12 +93,7 @@ class LearningController extends Controller
             return redirect()->route('learning.lesson', [$course, $module, $nextLesson]);
         }
 
-        // If no next lesson in module, check for quiz
-        if ($lesson->quiz) {
-            return redirect()->route('learning.quiz', [$course, $module, $lesson->quiz]);
-        }
-
-        // If no quiz, check next module
+        // If no next lesson in module, check next module
         $nextModule = $course->modules()->where('order', '>', $module->order)->orderBy('order')->first();
 
         if ($nextModule) {

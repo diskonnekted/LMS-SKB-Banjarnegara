@@ -393,7 +393,16 @@
                 </div>
             @endif
 
-            <h3 class="text-lg font-bold text-gray-900 mb-4">Pelajaran Saya</h3>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+                <h3 class="text-lg font-bold text-gray-900">Pelajaran Saya</h3>
+                <form action="{{ route('dashboard') }}" method="GET" class="flex items-center gap-2 w-full sm:w-auto">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari pelajaran..." class="border-gray-300 focus:border-tertiary focus:ring-tertiary rounded-lg shadow-sm text-sm flex-1 sm:w-64">
+                    <button type="submit" class="bg-tertiary hover:bg-[#5a4dd6] text-white px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">Cari</button>
+                    @if(request('search'))
+                        <a href="{{ route('dashboard') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg text-sm font-semibold shadow-sm transition">Reset</a>
+                    @endif
+                </form>
+            </div>
             @if(isset($my_courses) && $my_courses->count() > 0)
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     @foreach($my_courses as $course)

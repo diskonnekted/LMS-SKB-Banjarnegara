@@ -94,13 +94,21 @@ Route::get('/dashboard', function () {
         $data['teacher_courses'] = $teacherCourses;
         $data['my_students'] = $teacherCourses->flatMap->students->unique('id')->count();
     } elseif ($user->hasRole('student')) {
-        $myCourses = $user->enrolledCourses()->with('teacher')->get();
-        $data['enrolled_courses_count'] = $myCourses->count();
-        $data['completed_courses_count'] = $myCourses->filter(fn ($course) => $course->pivot && $course->pivot->completed_at)->count();
-        $data['my_courses'] = $myCourses;
-        $data['student_grade_levels'] = $myCourses->pluck('grade_level')->filter()->unique()->values();
-
-        $enrolledCourseIds = $myCourses->pluck('id')->values();
+        $myCoursesAll = $user->enrolledCourses()->with('teacher')->get();
+        $data['enrolled_courses_count'] = $myCoursesAll->count();
+        $data['completed_courses_count'] = $myCoursesAll->filter(fn ($course) => $course->pivot && $course->pivot->completed_at)->count();
+        
+        $search = request('search');
+        if ($search) {
+            $data['my_courses'] = $myCoursesAll->filter(function($c) use ($search) {
+                return stripos($c->title, $search) !== false;
+            })->values();
+        } else {
+            $data['my_courses'] = $myCoursesAll;
+        }
+        
+        $data['student_grade_levels'] = $myCoursesAll->pluck('grade_level')->filter()->unique()->values();
+        $enrolledCourseIds = $myCoursesAll->pluck('id')->values();
         $studentGradeLevels = $data['student_grade_levels'];
         $now = now();
 
