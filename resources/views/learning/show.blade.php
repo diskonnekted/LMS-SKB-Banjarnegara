@@ -1,7 +1,10 @@
 <x-app-layout>
-    <div class="flex h-[calc(100vh-65px)] bg-gray-100 overflow-hidden">
+    <div x-data="{ sidebarOpen: false }" class="flex h-[calc(100vh-65px)] bg-gray-100 overflow-hidden relative">
+        <!-- Mobile Overlay -->
+        <div x-show="sidebarOpen" x-transition.opacity class="fixed inset-0 bg-gray-900/50 z-20 md:hidden" @click="sidebarOpen = false" style="display: none;"></div>
+        
         <!-- Sidebar -->
-        <div class="w-80 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden shrink-0">
+        <div :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}" class="absolute z-30 md:relative md:translate-x-0 transition-transform duration-300 w-80 bg-white border-r border-gray-200 flex flex-col h-full overflow-hidden shrink-0">
             <div class="p-4 border-b border-gray-200">
                 <h2 class="font-bold text-lg text-gray-800 truncate" title="{{ $course->title }}">
                     {{ $course->title }}
@@ -73,17 +76,24 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col h-full overflow-hidden relative w-full">
-            <header class="bg-white shadow-sm z-10 p-4 flex justify-between items-center shrink-0">
-                <h1 class="text-xl font-semibold text-gray-800 truncate">{{ $lesson->title }}</h1>
-                <form action="{{ route('learning.complete', [$course, $module, $lesson]) }}" method="POST">
-                    @csrf
-                    <button id="complete-btn" type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed" {{ $lesson->type === 'video' ? 'disabled' : '' }}>
-                        {{ $isCompleted ? 'Pelajaran Berikutnya' : 'Tandai Selesai & Lanjut' }}
+            <header class="bg-white shadow-sm z-10 p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center shrink-0 gap-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto overflow-hidden">
+                    <button @click="sidebarOpen = true" class="md:hidden p-2 -ml-2 rounded-md hover:bg-gray-100 text-gray-600 focus:outline-none shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                     </button>
-                </form>
-                <a href="{{ route('dashboard') }}" class="ml-3 px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition shadow-sm font-medium text-sm">
-                    Stop Belajar
-                </a>
+                    <h1 class="text-xl font-semibold text-gray-800 truncate" title="{{ $lesson->title }}">{{ $lesson->title }}</h1>
+                </div>
+                <div class="flex items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                    <form action="{{ route('learning.complete', [$course, $module, $lesson]) }}" method="POST" class="flex-1 sm:flex-none">
+                        @csrf
+                        <button id="complete-btn" type="submit" class="w-full px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition shadow-sm font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed text-center" {{ $lesson->type === 'video' ? 'disabled' : '' }}>
+                            {{ $isCompleted ? 'Pelajaran Berikutnya' : 'Tandai Selesai & Lanjut' }}
+                        </button>
+                    </form>
+                    <a href="{{ route('dashboard') }}" class="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 transition shadow-sm font-medium text-sm whitespace-nowrap text-center">
+                        Stop
+                    </a>
+                </div>
             </header>
             
             <main class="flex-1 overflow-y-auto p-4 md:p-8">

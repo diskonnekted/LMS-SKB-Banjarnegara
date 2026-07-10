@@ -9,9 +9,9 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-1 overflow-y-auto p-8">
-            <div class="max-w-3xl mx-auto bg-white shadow-sm rounded-lg p-8">
-                <h1 class="text-2xl font-bold mb-2">Kuis: {{ $quiz->title }}</h1>
+        <div class="flex-1 overflow-y-auto p-4 md:p-8">
+            <div class="max-w-3xl mx-auto bg-white shadow-sm rounded-lg p-4 md:p-8">
+                <h1 class="text-xl md:text-2xl font-bold mb-2">Kuis: {{ $quiz->title }}</h1>
                 <p class="text-gray-500 mb-6">Nilai Kelulusan: {{ $quiz->passing_score }}%</p>
                 
                 <form action="{{ route('learning.quiz.submit', [$course, $module, $quiz]) }}" method="POST">
@@ -66,9 +66,9 @@
                                 @if($q->type === 'multiple_choice' || !$q->type)
                                     @foreach(['a','b','c','d','e'] as $key)
                                         @if(isset($options[$key]))
-                                            <label class="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-sm cursor-pointer transition">
-                                                <input type="radio" name="q_{{ $q->id }}" value="{{ $key }}" class="form-radio h-5 w-5 text-blue-600">
-                                                <span class="text-gray-800">{{ $options[$key] }}</span>
+                                            <label class="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-sm cursor-pointer transition">
+                                                <input type="radio" name="q_{{ $q->id }}" value="{{ $key }}" class="form-radio h-5 w-5 text-blue-600 mt-0.5 shrink-0">
+                                                <span class="text-gray-800 break-words">{{ $options[$key] }}</span>
                                             </label>
                                         @endif
                                     @endforeach
@@ -76,9 +76,9 @@
                                 @elseif($q->type === 'multiple_response')
                                     @foreach(['a','b','c','d','e'] as $key)
                                         @if(isset($options[$key]))
-                                            <label class="flex items-center space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-sm cursor-pointer transition">
-                                                <input type="checkbox" name="q_{{ $q->id }}[]" value="{{ $key }}" class="form-checkbox h-5 w-5 text-blue-600 rounded">
-                                                <span class="text-gray-800">{{ $options[$key] }}</span>
+                                            <label class="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 hover:bg-white hover:shadow-sm cursor-pointer transition">
+                                                <input type="checkbox" name="q_{{ $q->id }}[]" value="{{ $key }}" class="form-checkbox h-5 w-5 text-blue-600 rounded mt-0.5 shrink-0">
+                                                <span class="text-gray-800 break-words">{{ $options[$key] }}</span>
                                             </label>
                                         @endif
                                     @endforeach

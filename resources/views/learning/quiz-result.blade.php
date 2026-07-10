@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg text-center p-10">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg text-center p-6 sm:p-10 mx-4 sm:mx-0">
                 @if(!empty($pendingManual))
                     <h1 class="text-3xl font-bold text-gray-900 mb-2">Jawaban Terkirim</h1>
                     <p class="text-xl text-gray-600 mb-6">Jawaban esai akan dinilai manual oleh guru/admin.</p>
@@ -23,21 +23,21 @@
                     {{ (int) $percentage }}%
                 </div>
 
-                <div class="space-x-4">
-                    <a href="{{ route('learning.course', $course) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
+                <div class="flex flex-col sm:flex-row justify-center gap-4 mt-6">
+                    <a href="{{ route('learning.course', $course) }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-3 sm:py-2 px-4 rounded w-full sm:w-auto">
                         Kembali ke Pelajaran
                     </a>
                     @if(!empty($pendingManual))
-                         <a href="{{ route('learning.course', $course) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                         <a href="{{ route('learning.course', $course) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 sm:py-2 px-4 rounded w-full sm:w-auto">
                             Lanjut Belajar
                         </a>
                     @elseif(!$passed)
-                        <a href="{{ route('learning.quiz', [$course, $module, $quiz]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                        <a href="{{ route('learning.quiz', [$course, $module, $quiz]) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 sm:py-2 px-4 rounded w-full sm:w-auto">
                             Ulangi Kuis
                         </a>
                     @else
                          <!-- Logic to go to next lesson/module -->
-                         <a href="{{ route('learning.course', $course) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                         <a href="{{ route('learning.course', $course) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-3 sm:py-2 px-4 rounded w-full sm:w-auto">
                             Lanjut Belajar
                         </a>
                     @endif
