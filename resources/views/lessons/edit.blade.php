@@ -345,6 +345,26 @@
                 return null;
             };
 
+            const BlockEmbed = Quill.import('blots/block/embed');
+            class CustomVideoBlot extends BlockEmbed {
+                static create(value) {
+                    let node = super.create(value);
+                    node.setAttribute('frameborder', '0');
+                    node.setAttribute('allowfullscreen', 'true');
+                    node.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+                    node.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+                    node.setAttribute('src', value);
+                    return node;
+                }
+                static value(node) {
+                    return node.getAttribute('src');
+                }
+            }
+            CustomVideoBlot.blotName = 'video';
+            CustomVideoBlot.tagName = 'iframe';
+            CustomVideoBlot.className = 'ql-video';
+            Quill.register(CustomVideoBlot, true);
+
             const initQuill = () => {
                 if (!quill) {
                     quill = new Quill('#content-editor-quill', {
