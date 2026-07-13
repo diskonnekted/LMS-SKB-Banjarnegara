@@ -440,4 +440,68 @@ class TeacherExamTest extends TestCase
             'score' => 100,
         ]);
     }
+
+    public function test_lesson_complete_bypasses_empty_quiz(): void
+    {
+        Role::create(['name' => 'student']);
+        Role::create(['name' => 'teacher']);
+
+        $teacher = User::factory()->create();
+        $teacher->assignRole('teacher');
+
+        $student = User::factory()->create();
+        $student->assignRole('student');
+
+        $course = \App\Models\Course::create([
+            'title' => 'Matematika Paket A 4',
+            'slug' => Str::slug('Matematika Paket A 4'),
+            'teacher_id' => $teacher->id,
+            'is_published' => true,
+            'grade_level' => 'Kesetaraan Paket A Kelas 4',
+        ]);
+
+        $module = Module::create([
+            'course_id' => $course->id,
+            'title' => 'Modul 1',
+            'slug' => Str::slug('Modul 1'),
+            'order' => 1,
+        ]);
+
+        $lesson1 = Lesson::create([
+            'module_id' => $module->id,
+            'title' => 'Pelajaran 1',
+            'slug' => Str::slug('Pelajaran 1'),
+            'type' => 'text',
+            'content' => '<p>Konten 1</p>',
+            'order' => 1,
+        ]);
+
+        $lesson2 = Lesson::create([
+            'module_id' => $module->id,
+            'title' => 'Pelajaran 2',
+            'slug' => Str::slug('Pelajaran 2'),
+            'type' => 'text',
+            'content' => '<p>Konten 2</p>',
+            'order' => 2,
+        ]);
+
+        // Create empty quiz for lesson 1
+        $quiz = Quiz::create([
+            'lesson_id' => $lesson1->id,
+            'title' => 'Kuis Kosong',
+            'passing_score' => 70,
+        ]);
+
+        // Enroll student
+        $student->enrolledCourses()->attach($course->id);
+
+        // Click complete on lesson 1
+        $response = $this->actingAs($student)
+            ->post(route('learning.complete', [$course, $module, $lesson1], absolute: false));
+
+        // It should bypass the quiz, mark lesson 1 complete, and redirect directly to lesson 2
+        $response->assertRedirect(route('learning.lesson', [$course, $module, $lesson2], absolute: false));
+
+        $this->assertTrue($student->completedLessons()->where('lesson_id', $lesson1->id)->exists());
+    }
 }

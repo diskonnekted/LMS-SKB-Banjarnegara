@@ -78,8 +78,8 @@ class LearningController extends Controller
     {
         $user = Auth::user();
 
-        // If current lesson has a quiz, go to quiz first
-        if ($lesson->quiz) {
+        // If current lesson has a quiz (with questions), go to quiz first
+        if ($lesson->quiz && $lesson->quiz->questions()->count() > 0) {
             return redirect()->route('learning.quiz', [$course, $module, $lesson->quiz]);
         }
 
@@ -116,6 +116,15 @@ class LearningController extends Controller
             return redirect()->route('learning.course', $course)->with('error', 'Access denied.');
         }
 
+        // If quiz has no questions, mark complete and bypass
+        if ($quiz->questions()->count() === 0) {
+            $lesson = $quiz->lesson;
+            if ($lesson && ! $user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
+                $user->completedLessons()->attach($lesson->id, ['completed' => true]);
+            }
+            return redirect()->route('learning.complete', [$course, $module, $lesson])->with('success', 'Kuis kosong dilewati.');
+        }
+
         return view('learning.quiz', compact('course', 'module', 'quiz'));
     }
 
@@ -130,7 +139,11 @@ class LearningController extends Controller
         $now = now();
 
         if ($questions->count() == 0) {
-            return back()->with('error', 'Quiz has no questions.');
+            $lesson = $quiz->lesson;
+            if ($lesson && ! $user->completedLessons()->where('lesson_id', $lesson->id)->exists()) {
+                $user->completedLessons()->attach($lesson->id, ['completed' => true]);
+            }
+            return redirect()->route('learning.complete', [$course, $module, $lesson]);
         }
 
         foreach ($questions as $question) {
