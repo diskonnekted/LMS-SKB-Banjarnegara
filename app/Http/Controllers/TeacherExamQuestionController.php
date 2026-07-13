@@ -17,7 +17,7 @@ class TeacherExamQuestionController extends Controller
         $this->authorizeOwner($exam);
 
         $request->validate([
-            'type' => 'required|in:multiple_choice,multiple_response,true_false,short_answer,numeric',
+            'type' => 'required|in:multiple_choice,multiple_response,true_false,short_answer,numeric,matching',
             'question' => 'required|string',
             'points' => 'required|integer|min:1|max:1000',
             'order' => 'nullable|integer|min:0|max:100000',
@@ -68,7 +68,7 @@ class TeacherExamQuestionController extends Controller
         $this->authorizeOwner($examQuestion->exam);
 
         $request->validate([
-            'type' => 'required|in:multiple_choice,multiple_response,true_false,short_answer,numeric',
+            'type' => 'required|in:multiple_choice,multiple_response,true_false,short_answer,numeric,matching',
             'question' => 'required|string',
             'points' => 'required|integer|min:1|max:1000',
             'order' => 'nullable|integer|min:0|max:100000',
@@ -209,6 +209,16 @@ class TeacherExamQuestionController extends Controller
             ]);
             $options = null;
             $correctAnswer = $request->correct_answer_text;
+        }
+
+        if ($type === 'matching') {
+            $request->validate([
+                'pairs' => 'required|array|min:2',
+                'pairs.*.left' => 'required|string',
+                'pairs.*.right' => 'required|string',
+            ]);
+            $options = array_values($request->pairs);
+            $correctAnswer = 'matching';
         }
 
         return [$options, $correctAnswer];

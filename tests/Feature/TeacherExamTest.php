@@ -357,4 +357,87 @@ class TeacherExamTest extends TestCase
             'correct_answer' => 'false',
         ]);
     }
+
+    public function test_teacher_can_create_matching_exam_question_and_student_can_submit(): void
+    {
+        Role::create(['name' => 'student']);
+        Role::create(['name' => 'teacher']);
+
+        $teacher = User::factory()->create();
+        $teacher->assignRole('teacher');
+
+        $student = User::factory()->create();
+        $student->assignRole('student');
+
+        $this->actingAs($teacher)
+            ->post(route('teacher.exams.store', absolute: false), [
+                'title' => 'Ujian Menjodohkan',
+                'passing_score' => 70,
+                'is_published' => 1,
+            ])
+            ->assertRedirect();
+
+        $exam = Exam::query()->firstOrFail();
+
+        $this->actingAs($teacher)
+            ->post(route('teacher.exams.questions.store', $exam, absolute: false), [
+                'type' => 'matching',
+                'question' => 'Pasangkan ibukota negara berikut:',
+                'points' => 10,
+                'pairs' => [
+                    ['left' => 'Indonesia', 'right' => 'Jakarta'],
+                    ['left' => 'Malaysia', 'right' => 'Kuala Lumpur'],
+                ],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('exam_questions', [
+            'exam_id' => $exam->id,
+            'type' => 'matching',
+            'correct_answer' => 'matching',
+        ]);
+
+        $question = $exam->questions()->firstOrFail();
+        $options = $question->options;
+        $this->assertCount(2, $options);
+        $this->assertSame('Indonesia', $options[0]['left']);
+        $this->assertSame('Jakarta', $options[0]['right']);
+
+        // Test editing matching question
+        $this->actingAs($teacher)
+            ->put(route('teacher.exam-questions.update', $question, absolute: false), [
+                'type' => 'matching',
+                'question' => 'Pasangkan ibukota negara berikut (edited):',
+                'points' => 8,
+                'pairs' => [
+                    ['left' => 'Indonesia', 'right' => 'Jakarta'],
+                    ['left' => 'Malaysia', 'right' => 'Kuala Lumpur'],
+                    ['left' => 'Jepang', 'right' => 'Tokyo'],
+                ],
+            ])
+            ->assertRedirect();
+
+        $question->refresh();
+        $this->assertSame(8, (int) $question->points);
+        $this->assertCount(3, $question->options);
+
+        // Test student taking and submitting matching answers
+        $this->actingAs($student)
+            ->get(route('exams.take', $exam->access_code, absolute: false))
+            ->assertOk();
+
+        // Submit correct answers
+        $this->actingAs($student)
+            ->post(route('exams.submit', $exam->access_code, absolute: false), [
+                'q_'.$question->id => ['Jakarta', 'Kuala Lumpur', 'Tokyo'],
+            ])
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('exam_attempts', [
+            'user_id' => $student->id,
+            'exam_id' => $exam->id,
+            'earned_points' => 8,
+            'score' => 100,
+        ]);
+    }
 }

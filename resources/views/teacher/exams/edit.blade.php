@@ -172,7 +172,12 @@
             </div>
 
             <div id="questionFormSection" class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900" x-data="{type: @js(old('type', 'multiple_choice'))}">
+                <div class="p-6 text-gray-900" x-data="{
+                    type: @js(old('type', 'multiple_choice')),
+                    pairs: [{left: '', right: ''}, {left: '', right: ''}],
+                    addPair() { this.pairs.push({left: '', right: ''}); },
+                    removePair(index) { this.pairs.splice(index, 1); }
+                }">
                     <h3 class="text-lg font-bold mb-4">Tambah Soal</h3>
 
                     <form id="questionForm" method="POST" action="{{ $baseUrl . route('teacher.exams.questions.store', $exam, false) }}" class="space-y-4" enctype="multipart/form-data">
@@ -187,6 +192,7 @@
                                     <option value="true_false">True / False</option>
                                     <option value="short_answer">Short Answer</option>
                                     <option value="numeric">Numeric</option>
+                                    <option value="matching">Menjodohkan (Matching)</option>
                                 </select>
                             </div>
                             <div>
@@ -272,6 +278,21 @@
                         <div x-show="type === 'short_answer' || type === 'numeric'">
                             <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             <input type="text" name="correct_answer_text" form="questionForm" value="{{ old('correct_answer_text') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        </div>
+
+                        <!-- Matching Fields -->
+                        <div class="mb-4" x-show="type === 'matching'">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pasangan (Item - Jodohnya)</label>
+                            <template x-for="(pair, index) in pairs" :key="index">
+                                <div class="flex gap-2 mb-2">
+                                    <input type="text" :name="'pairs['+index+'][left]'" x-model="pair.left" placeholder="Item kiri (misal: Kucing)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" form="questionForm">
+                                    <span class="self-center">→</span>
+                                    <input type="text" :name="'pairs['+index+'][right]'" x-model="pair.right" placeholder="Jodoh kanan (misal: Hewan)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" form="questionForm">
+                                    <button type="button" @click="removePair(index)" class="text-red-500 hover:text-red-700" x-show="pairs.length > 2" form="questionForm">×</button>
+                                </div>
+                            </template>
+                            <button type="button" @click="addPair()" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold" form="questionForm">+ Tambah Pasangan</button>
+                            <p class="text-xs text-gray-500 mt-1">Siswa akan memasangkan item di sebelah kiri dengan pilihan drop-down di sebelah kanan sesuai pasangan di atas.</p>
                         </div>
 
                         <div class="flex justify-end">

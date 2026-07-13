@@ -78,6 +78,25 @@ class ExamAttemptController extends Controller
                         $isCorrect = strcasecmp(trim((string) $submitted), trim((string) $question->correct_answer)) === 0;
                     }
                     break;
+
+                case 'matching':
+                    $options = is_array($question->options) ? $question->options : (json_decode((string) $question->options, true) ?? []);
+                    $allMatch = true;
+                    if (is_array($submitted)) {
+                        foreach ($options as $idx => $pair) {
+                            $userVal = $submitted[$idx] ?? null;
+                            if ($userVal !== $pair['right']) {
+                                $allMatch = false;
+                                break;
+                            }
+                        }
+                        if ($allMatch) {
+                            $isCorrect = true;
+                        }
+                    } else {
+                        $isCorrect = false;
+                    }
+                    break;
             }
 
             if ($isCorrect === true) {
