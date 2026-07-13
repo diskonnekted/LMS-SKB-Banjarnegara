@@ -40,7 +40,6 @@
                                 <label class="block text-sm font-medium text-gray-700">Passing Score</label>
                                 <input type="number" name="passing_score" value="{{ $quiz->passing_score }}" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                             </div>
-                        </div>
                         <div class="flex justify-end">
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
                                 Update Details
@@ -48,6 +47,34 @@
                         </div>
                     </form>
 
+                    <div class="mt-6 border-t pt-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Link Siswa</label>
+                                <input id="quiz-link" type="text" value="{{ $quizLink }}" class="mt-1 block w-full rounded-md border-gray-300 bg-gray-50 shadow-sm" readonly>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="md:col-span-2">
+                                <div class="text-xs text-gray-500 mt-1">Bagikan link atau QR code ini ke siswa untuk membuka kuis.</div>
+                            </div>
+                            <div class="border rounded bg-gray-50 p-4 flex flex-col items-center gap-3">
+                                <div class="text-sm font-semibold text-gray-700">QR Code Siswa</div>
+                                <div id="quiz-qrcode" class="bg-white p-2 border rounded">
+                                    @if(!empty($qrBase64))
+                                        <img src="data:image/png;base64,{{ $qrBase64 }}" width="180" height="180" alt="QR Code">
+                                    @else
+                                        <div class="text-xs text-gray-500">QR tidak tersedia</div>
+                                    @endif
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <button type="button" id="copy-quiz-link" class="inline-flex items-center px-3 py-2 bg-white border border-gray-300 rounded-md text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50">Salin Link</button>
+                                    <a id="download-quiz-qr" href="{{ $baseUrl . route('teacher.quizzes.qr.download', $quiz, false) }}" class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold">Unduh QR</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
             </div>
@@ -437,6 +464,30 @@
                         throwOnError: false
                     });
                 } catch(e){}
+            }
+
+            // Copy Quiz Link functionality
+            const linkInput = document.getElementById('quiz-link');
+            const copyBtn = document.getElementById('copy-quiz-link');
+            if (copyBtn && linkInput) {
+                copyBtn.addEventListener('click', async function () {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(linkInput.value);
+                        } else {
+                            linkInput.focus();
+                            linkInput.select();
+                            document.execCommand('copy');
+                            linkInput.setSelectionRange(0, 0);
+                            linkInput.blur();
+                        }
+                        copyBtn.textContent = 'Tersalin';
+                        setTimeout(function () {
+                            copyBtn.textContent = 'Salin Link';
+                        }, 1200);
+                    } catch (e) {
+                    }
+                });
             }
         })();
     </script>

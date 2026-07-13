@@ -188,6 +188,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/modules/{module}/lessons/editor-images', [LessonController::class, 'uploadEditorImage'])->name('modules.lessons.editor-images');
         Route::resource('modules.lessons', LessonController::class)->shallow();
         Route::resource('lessons.quizzes', QuizController::class)->shallow();
+        Route::get('/teacher/quizzes/{quiz}/qr', [QuizController::class, 'downloadQr'])->name('teacher.quizzes.qr.download');
         Route::resource('quizzes.questions', QuestionController::class)->shallow();
 
 
