@@ -27,7 +27,7 @@
                             @foreach($questions as $index => $question)
                                 <div class="border rounded p-4">
                                     <div class="flex items-start justify-between gap-4">
-                                        <div class="font-semibold">{{ $index + 1 }}. {!! nl2br(e($question->question)) !!}</div>
+                                        <div class="font-semibold">{{ $index + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseLinks(e($question->question))) !!}</div>
                                         <div class="text-sm text-gray-600">{{ $question->points }} poin</div>
                                     </div>
 
@@ -78,23 +78,35 @@
                                                 <input type="radio" name="{{ $name }}" value="false" class="rounded-full border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" required>
                                                 <span>False</span>
                                             </label>
-                                        @elseif($question->type === 'matching')
-                                            <div class="grid grid-cols-1 gap-4">
-                                                @foreach(($question->options ?? []) as $idx => $pair)
-                                                    <div class="flex flex-col md:flex-row md:items-center gap-4 p-3 border rounded bg-white">
-                                                        <div class="flex-1 font-medium">{{ $pair['left'] }}</div>
-                                                        <div class="hidden md:block text-gray-400">→</div>
-                                                        <div class="flex-1">
-                                                            <select name="{{ $name }}[{{ $idx }}]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                                                                <option value="">Pilih pasangan...</option>
-                                                                @foreach(($question->options ?? []) as $p)
-                                                                    <option value="{{ $p['right'] }}">{{ $p['right'] }}</option>
-                                                                @endforeach
-                                                            </select>
-                                                        </div>
-                                                    </div>
-                                                @endforeach
-                                            </div>
+                                         @elseif($question->type === 'matching')
+                                             @php
+                                                 $pairs = [];
+                                                 foreach (($question->options ?? []) as $idx => $pair) {
+                                                     $pairs[] = [
+                                                         'index' => $idx,
+                                                         'left' => $pair['left'] ?? '',
+                                                         'right' => $pair['right'] ?? ''
+                                                     ];
+                                                 }
+                                                 $shuffledPairs = collect($pairs)->shuffle();
+                                                 $shuffledRights = collect($question->options ?? [])->pluck('right')->shuffle();
+                                             @endphp
+                                             <div class="grid grid-cols-1 gap-4">
+                                                 @foreach($shuffledPairs as $pair)
+                                                     <div class="flex flex-col md:flex-row md:items-center gap-4 p-3 border rounded bg-white">
+                                                         <div class="flex-1 font-medium">{{ $pair['left'] }}</div>
+                                                         <div class="hidden md:block text-gray-400">→</div>
+                                                         <div class="flex-1">
+                                                             <select name="{{ $name }}[{{ $pair['index'] }}]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
+                                                                 <option value="">Pilih pasangan...</option>
+                                                                 @foreach($shuffledRights as $rightVal)
+                                                                     <option value="{{ $rightVal }}">{{ $rightVal }}</option>
+                                                                 @endforeach
+                                                             </select>
+                                                         </div>
+                                                     </div>
+                                                 @endforeach
+                                             </div>
                                         @elseif(in_array($question->type, ['short_answer','numeric'], true))
                                             <input type="text" name="{{ $name }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                         @endif

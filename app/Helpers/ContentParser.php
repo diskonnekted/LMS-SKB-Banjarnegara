@@ -26,6 +26,18 @@ class ContentParser
         return $content;
     }
 
+    public static function parseLinks($text)
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // Match URLs starting with http:// or https://
+        $pattern = '/(https?:\/\/[^\s\<>\"]+)/';
+
+        return preg_replace($pattern, '<a href="$1" target="_blank" class="text-blue-600 hover:underline font-semibold">$1</a>', $text);
+    }
+
     public static function excerpt($content, $limit = 150)
     {
         $text = self::toPlainText($content);

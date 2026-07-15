@@ -155,8 +155,17 @@
                                 @endif
                             </div>
                         @elseif($lesson->type === 'pdf')
-                            <div class="h-[800px] mb-6">
+                            <div class="h-[600px] md:h-[800px] mb-6">
                                 <iframe src="{{ Storage::url($lesson->file_path) }}" class="w-full h-full rounded-lg border border-gray-200"></iframe>
+                            </div>
+                            <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div class="text-sm text-gray-600">
+                                    <strong>Catatan:</strong> Jika dokumen PDF tidak terbuka otomatis di HP Anda, silakan unduh atau buka langsung menggunakan tautan di samping.
+                                </div>
+                                <a href="{{ Storage::url($lesson->file_path) }}" target="_blank" class="shrink-0 inline-flex items-center justify-center px-4 py-2 border border-blue-600 rounded-md text-blue-600 bg-white hover:bg-blue-50 text-sm font-semibold shadow-sm transition">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                                    Buka/Unduh PDF
+                                </a>
                             </div>
                         @elseif(in_array($lesson->type, ['doc','xls','ppt']))
                             @php

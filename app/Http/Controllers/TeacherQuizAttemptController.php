@@ -50,11 +50,14 @@ class TeacherQuizAttemptController extends Controller
         }
 
         $data = $request->validate([
-            'is_correct' => 'required|boolean',
+            'score' => 'required|integer|min:0|max:100',
         ]);
 
+        $score = (int) $data['score'];
+
         $answer->update([
-            'is_correct' => (bool) $data['is_correct'],
+            'score' => $score,
+            'is_correct' => $score >= 70,
         ]);
 
         $attempt = $answer->attempt;
@@ -68,13 +71,23 @@ class TeacherQuizAttemptController extends Controller
         if ($essayQuestionIds->isNotEmpty()) {
             $pendingEssays = $attempt->answers
                 ->whereIn('question_id', $essayQuestionIds)
-                ->filter(fn ($row) => is_null($row->is_correct))
+                ->filter(fn ($row) => is_null($row->score))
                 ->count();
 
             if ($pendingEssays === 0) {
                 $total = $attempt->quiz->questions->count();
-                $correct = $attempt->answers->where('is_correct', true)->count();
-                $newScore = $total > 0 ? (int) round(($correct / $total) * 100) : 0;
+                $totalPoints = 0;
+                foreach ($attempt->quiz->questions as $q) {
+                    $ans = $attempt->answers->where('question_id', $q->id)->first();
+                    if ($ans) {
+                        if ($q->type === 'essay') {
+                            $totalPoints += (int) ($ans->score ?? 0);
+                        } else {
+                            $totalPoints += $ans->is_correct ? 100 : 0;
+                        }
+                    }
+                }
+                $newScore = $total > 0 ? (int) round($totalPoints / $total) : 0;
 
                 $attempt->update([
                     'score' => $newScore,

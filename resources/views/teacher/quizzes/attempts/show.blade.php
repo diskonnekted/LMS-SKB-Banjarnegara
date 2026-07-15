@@ -48,7 +48,7 @@
                                     return false;
                                 }
 
-                                return is_null($row->is_correct);
+                                return is_null($row->score);
                             })
                             ->count();
                     @endphp
@@ -82,12 +82,20 @@
                                             {{ $index + 1 }}. {{ $q->question }}
                                             <span class="text-xs font-normal text-gray-500 ml-2">({{ ucfirst(str_replace('_', ' ', $q->type ?? 'multiple_choice')) }})</span>
                                         </div>
-                                        @if(!is_null($answerRow) && !is_null($answerRow->is_correct))
+                                        @if(!is_null($answerRow))
                                             <div class="shrink-0">
-                                                @if($answerRow->is_correct)
-                                                    <span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-700">Benar</span>
-                                                @else
-                                                    <span class="inline-flex items-center px-2 py-1 rounded bg-red-100 text-red-700">Salah</span>
+                                                @if($q->type === 'essay')
+                                                    @if(!is_null($answerRow->score))
+                                                        <span class="inline-flex items-center px-2 py-1 rounded bg-blue-100 text-blue-700 font-semibold">Skor: {{ $answerRow->score }}</span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-1 rounded bg-yellow-100 text-yellow-700 font-semibold">Belum Dinilai</span>
+                                                    @endif
+                                                @elseif(!is_null($answerRow->is_correct))
+                                                    @if($answerRow->is_correct)
+                                                        <span class="inline-flex items-center px-2 py-1 rounded bg-green-100 text-green-700">Benar</span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-1 rounded bg-red-100 text-red-700">Salah</span>
+                                                    @endif
                                                 @endif
                                             </div>
                                         @endif
@@ -132,15 +140,11 @@
                                             @if(!is_null($answerRow))
                                                 <div class="mt-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                                     <div class="text-sm text-gray-600">
-                                                        Status: <span class="font-semibold">{{ is_null($answerRow->is_correct) ? 'Belum dinilai' : ($answerRow->is_correct ? 'Benar' : 'Salah') }}</span>
+                                                        Status: <span class="font-semibold">{{ is_null($answerRow->score) ? 'Belum dinilai' : 'Nilai: ' . $answerRow->score }}</span>
                                                     </div>
                                                     <form method="POST" action="{{ route('teacher.quiz-attempt-answers.grade', $answerRow) }}" class="flex items-center gap-2">
                                                         @csrf
-                                                        <select name="is_correct" class="rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
-                                                            <option value="" disabled @selected(is_null($answerRow->is_correct))>Pilih penilaian</option>
-                                                            <option value="1" @selected($answerRow->is_correct === true)>Benar</option>
-                                                            <option value="0" @selected($answerRow->is_correct === false)>Salah</option>
-                                                        </select>
+                                                        <input type="number" name="score" min="0" max="100" value="{{ $answerRow->score }}" placeholder="Nilai (0-100)" class="w-32 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                                                         <button type="submit" class="inline-flex items-center px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md text-sm font-semibold">
                                                             Simpan
                                                         </button>

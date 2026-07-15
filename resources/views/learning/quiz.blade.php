@@ -21,7 +21,7 @@
                         <div class="mb-6 p-4 border rounded bg-gray-50">
                             <!-- Question Header & Text -->
                             <div class="mb-4">
-                                <p class="font-bold text-lg mb-2">{{ $index + 1 }}. {{ $q->question }}</p>
+                                <p class="font-bold text-lg mb-2">{{ $index + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseLinks(e($q->question))) !!}</p>
                                 
                                 <!-- Media Display -->
                                 @if($q->media_url)
@@ -105,16 +105,28 @@
                                     <textarea name="q_{{ $q->id }}" rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Type your essay here..."></textarea>
 
                                 @elseif(in_array($q->type, ['matching', 'drag_drop']))
+                                    @php
+                                        $pairs = [];
+                                        foreach ($options as $idx => $pair) {
+                                            $pairs[] = [
+                                                'index' => $idx,
+                                                'left' => $pair['left'] ?? '',
+                                                'right' => $pair['right'] ?? ''
+                                            ];
+                                        }
+                                        $shuffledPairs = collect($pairs)->shuffle();
+                                        $shuffledRights = collect($options)->pluck('right')->shuffle();
+                                    @endphp
                                     <div class="grid grid-cols-1 gap-4">
-                                        @foreach($options as $idx => $pair)
+                                        @foreach($shuffledPairs as $pair)
                                             <div class="flex flex-col md:flex-row md:items-center gap-4 p-3 border rounded bg-white">
                                                 <div class="flex-1 font-medium">{{ $pair['left'] }}</div>
                                                 <div class="hidden md:block text-gray-400">→</div>
                                                 <div class="flex-1">
-                                                    <select name="q_{{ $q->id }}[{{ $idx }}]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                                    <select name="q_{{ $q->id }}[{{ $pair['index'] }}]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                                                         <option value="">Select match...</option>
-                                                        @foreach($options as $p)
-                                                            <option value="{{ $p['right'] }}">{{ $p['right'] }}</option>
+                                                        @foreach($shuffledRights as $rightVal)
+                                                            <option value="{{ $rightVal }}">{{ $rightVal }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
