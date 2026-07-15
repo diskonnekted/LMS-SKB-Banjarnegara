@@ -152,7 +152,7 @@
                                 <li class="border p-4 rounded bg-gray-50">
                                     <div class="flex items-start justify-between gap-4">
                                         <div>
-                                            <div class="font-bold">{{ $i + 1 }}. {{ $q->question }}</div>
+                                            <div class="font-bold">{{ $i + 1 }}. {!! nl2br(e($q->question)) !!}</div>
                                             <div class="text-xs text-gray-500 mt-1">{{ ucfirst(str_replace('_', ' ', $q->type)) }} • {{ $q->points }} poin</div>
                                         </div>
                                         <div class="flex items-center gap-3">

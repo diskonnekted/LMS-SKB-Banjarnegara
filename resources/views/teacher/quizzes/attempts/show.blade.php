@@ -79,7 +79,7 @@
                                 <div class="p-5 border rounded bg-gray-50">
                                     <div class="flex items-start justify-between gap-4">
                                         <div class="font-bold text-lg">
-                                            {{ $index + 1 }}. {{ $q->question }}
+                                            {{ $index + 1 }}. {!! nl2br(e($q->question)) !!}
                                             <span class="text-xs font-normal text-gray-500 ml-2">({{ ucfirst(str_replace('_', ' ', $q->type ?? 'multiple_choice')) }})</span>
                                         </div>
                                         @if(!is_null($answerRow))

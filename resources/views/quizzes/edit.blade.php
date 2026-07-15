@@ -19,16 +19,16 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900">
                     <div class="flex items-center justify-between gap-4 mb-4">
-                        <h3 class="text-lg font-bold">Quiz Details</h3>
+                        <h3 class="text-lg font-bold">Detail Kuis</h3>
                         <div class="flex items-center gap-3">
                             <a href="{{ route('teacher.quizzes.attempts.index', $quiz) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50">
                                 Lihat Jawaban Siswa
                             </a>
-                            <form action="{{ route('quizzes.destroy', $quiz) }}" method="POST" onsubmit="return confirm('Delete entire quiz?');" class="inline">
+                            <form action="{{ route('quizzes.destroy', $quiz) }}" method="POST" onsubmit="return confirm('Hapus seluruh kuis?');" class="inline">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="inline-flex items-center px-4 py-2 bg-white border border-red-300 rounded-md font-semibold text-xs text-red-700 uppercase tracking-widest shadow-sm hover:bg-red-50">
-                                    Delete Quiz
+                                    Hapus Kuis
                                 </button>
                             </form>
                         </div>
@@ -38,16 +38,17 @@
                         @method('PUT')
                         <div class="flex gap-4 mb-4">
                             <div class="flex-1">
-                                <label class="block text-sm font-medium text-gray-700">Title</label>
+                                <label class="block text-sm font-medium text-gray-700">Judul</label>
                                 <input type="text" name="title" value="{{ $quiz->title }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                             </div>
                             <div class="w-32">
-                                <label class="block text-sm font-medium text-gray-700">Passing Score</label>
+                                <label class="block text-sm font-medium text-gray-700">Nilai Kelulusan</label>
                                 <input type="number" name="passing_score" value="{{ $quiz->passing_score }}" min="0" max="100" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required>
                             </div>
+                        </div>
                         <div class="flex justify-end">
                             <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                Update Details
+                                Perbarui Detail
                             </button>
                         </div>
                     </form>
@@ -87,24 +88,24 @@
             <!-- Questions List -->
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                 <div class="p-6 text-gray-900 quiz-questions-container" id="questions-list">
-                    <h3 class="text-lg font-bold mb-4">Questions ({{ $quiz->questions->count() }})</h3>
+                    <h3 class="text-lg font-bold mb-4">Daftar Soal ({{ $quiz->questions->count() }})</h3>
                     @if($quiz->questions->isEmpty())
-                        <p class="text-gray-500">No questions yet.</p>
+                        <p class="text-gray-500">Belum ada soal.</p>
                     @else
                         <ul class="space-y-4">
                             @foreach($quiz->questions as $index => $question)
                                 <li class="border p-4 rounded bg-gray-50">
                                     <div class="flex justify-between gap-2">
                                         <p class="font-bold mb-2">
-                                            {{ $index + 1 }}. {{ $question->question }}
+                                            {{ $index + 1 }}. {!! nl2br(e($question->question)) !!}
                                             <span class="text-xs font-normal text-gray-500 ml-2">({{ ucfirst(str_replace('_', ' ', $question->type ?? 'multiple_choice')) }})</span>
                                         </p>
                                         <div class="flex items-center gap-3">
                                             <a href="{{ route('questions.edit', $question) }}" class="text-blue-600 hover:text-blue-800 text-sm font-semibold">Edit</a>
-                                            <form action="{{ route('questions.destroy', $question) }}" method="POST" onsubmit="return confirm('Delete question?');">
+                                            <form action="{{ route('questions.destroy', $question) }}" method="POST" onsubmit="return confirm('Hapus soal ini?');">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Delete</button>
+                                                <button type="submit" class="text-red-500 hover:text-red-700 text-sm">Hapus</button>
                                             </form>
                                         </div>
                                     </div>
@@ -189,21 +190,21 @@
                     addSequenceItem() { this.sequence_items.push(''); },
                     removeSequenceItem(index) { this.sequence_items.splice(index, 1); }
                 }">
-                    <h3 class="text-lg font-bold mb-4">Add New Question</h3>
+                    <h3 class="text-lg font-bold mb-4">Tambah Soal Baru</h3>
                     <form method="POST" action="{{ route('quizzes.questions.store', $quiz) }}" enctype="multipart/form-data">
                         @csrf
                         
                         <div class="mb-4">
-                            <label class="block text-sm font-medium text-gray-700">Question Type</label>
+                            <label class="block text-sm font-medium text-gray-700">Tipe Soal</label>
                             <select x-model="type" name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="multiple_choice">Multiple Choice</option>
-                                <option value="multiple_response">Multiple Response</option>
-                                <option value="true_false">True / False</option>
-                                <option value="short_answer">Short Answer</option>
-                                <option value="numeric">Numeric</option>
-                                <option value="essay">Essay</option>
-                                <option value="matching">Matching</option>
-                                <option value="sequencing">Sequencing</option>
+                                <option value="multiple_choice">Pilihan Ganda</option>
+                                <option value="multiple_response">Jawaban Majemuk</option>
+                                <option value="true_false">Benar / Salah</option>
+                                <option value="short_answer">Isian Singkat</option>
+                                <option value="numeric">Angka</option>
+                                <option value="essay">Esai</option>
+                                <option value="matching">Menjodohkan (Matching)</option>
+                                <option value="sequencing">Mengurutkan (Sequencing)</option>
                                 <option value="drag_drop">Drag & Drop</option>
                             </select>
                         </div>
@@ -216,13 +217,13 @@
 
                         <div class="mb-4">
                             <div class="flex items-center justify-between gap-3">
-                                <label class="block text-sm font-medium text-gray-700">Question Text / Instruction</label>
+                                <label class="block text-sm font-medium text-gray-700">Teks Soal / Instruksi</label>
                                 <a href="{{ route('teacher.latex-guide') }}" target="_blank" rel="noopener" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Contoh LaTeX</a>
                             </div>
                             <textarea name="question" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX"></textarea>
                             <div class="mt-2 p-3 rounded border bg-gray-50">
                                 <div class="text-xs text-gray-500 mb-2">Preview</div>
-                                <div id="question-preview" class="prose"></div>
+                                <div id="question-preview" class="prose whitespace-pre-wrap"></div>
                             </div>
                         </div>
 

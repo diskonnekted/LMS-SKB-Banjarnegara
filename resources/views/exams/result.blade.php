@@ -26,7 +26,7 @@
                         @foreach($attempt->answers->sortBy('question.order') as $ans)
                             <div class="border rounded p-4 bg-gray-50">
                                 <div class="flex items-start justify-between gap-4">
-                                    <div class="font-semibold">{{ $ans->question->question }}</div>
+                                    <div class="font-semibold">{!! nl2br(e($ans->question->question)) !!}</div>
                                     <div class="text-sm font-semibold">{{ $ans->earned_points }} / {{ $ans->question->points }} poin</div>
                                 </div>
                                 <div class="mt-2 text-sm">
