@@ -50,7 +50,7 @@
                                         @else
                                             <a href="{{ $url }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
-                                                View Attached Media
+                                                Lihat Media Lampiran
                                             </a>
                                         @endif
                                     </div>
@@ -87,22 +87,22 @@
                                     <div class="flex gap-4">
                                         <label class="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 bg-white hover:shadow-sm cursor-pointer w-full">
                                             <input type="radio" name="q_{{ $q->id }}" value="true" class="form-radio h-5 w-5 text-green-600">
-                                            <span class="font-bold">True</span>
+                                            <span class="font-bold">Benar</span>
                                         </label>
                                         <label class="flex items-center space-x-2 p-3 rounded-lg border border-gray-200 bg-white hover:shadow-sm cursor-pointer w-full">
                                             <input type="radio" name="q_{{ $q->id }}" value="false" class="form-radio h-5 w-5 text-red-600">
-                                            <span class="font-bold">False</span>
+                                            <span class="font-bold">Salah</span>
                                         </label>
                                     </div>
 
                                 @elseif($q->type === 'short_answer')
-                                    <input type="text" name="q_{{ $q->id }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Type your answer here...">
+                                    <input type="text" name="q_{{ $q->id }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ketik jawaban Anda di sini...">
 
                                 @elseif($q->type === 'numeric')
-                                    <input type="number" step="any" name="q_{{ $q->id }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Enter a number...">
+                                    <input type="number" step="any" name="q_{{ $q->id }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Masukkan angka...">
 
                                 @elseif($q->type === 'essay')
-                                    <textarea name="q_{{ $q->id }}" rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Type your essay here..."></textarea>
+                                    <textarea name="q_{{ $q->id }}" rows="4" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500" placeholder="Ketik esai Anda di sini..."></textarea>
 
                                 @elseif(in_array($q->type, ['matching', 'drag_drop']))
                                     @php
@@ -124,7 +124,7 @@
                                                 <div class="hidden md:block text-gray-400">→</div>
                                                 <div class="flex-1">
                                                     <select name="q_{{ $q->id }}[{{ $pair['index'] }}]" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
-                                                        <option value="">Select match...</option>
+                                                        <option value="">Pilih pasangan...</option>
                                                         @foreach($shuffledRights as $rightVal)
                                                             <option value="{{ $rightVal }}">{{ $rightVal }}</option>
                                                         @endforeach
@@ -136,7 +136,7 @@
 
                                 @elseif($q->type === 'sequencing')
                                     <div class="space-y-2">
-                                        <p class="text-sm text-gray-600 mb-2">Assign the correct order number to each item:</p>
+                                        <p class="text-sm text-gray-600 mb-2">Tentukan nomor urutan yang benar untuk setiap item:</p>
                                         @php 
                                             // Shuffle options for display if they are not already shuffled? 
                                             // Actually $options contains the correct order from DB. We should shuffle them for display.

@@ -48,14 +48,14 @@
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Tipe Soal</label>
                             <select x-model="type" name="type" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <option value="multiple_choice">Multiple Choice</option>
-                                <option value="multiple_response">Multiple Response</option>
-                                <option value="true_false">True / False</option>
-                                <option value="short_answer">Short Answer</option>
-                                <option value="numeric">Numeric</option>
-                                <option value="essay">Essay</option>
-                                <option value="matching">Matching</option>
-                                <option value="sequencing">Sequencing</option>
+                                <option value="multiple_choice">Pilihan Ganda</option>
+                                <option value="multiple_response">Jawaban Majemuk</option>
+                                <option value="true_false">Benar / Salah</option>
+                                <option value="short_answer">Isian Singkat</option>
+                                <option value="numeric">Angka</option>
+                                <option value="essay">Esai</option>
+                                <option value="matching">Menjodohkan</option>
+                                <option value="sequencing">Mengurutkan</option>
                                 <option value="drag_drop">Drag & Drop</option>
                             </select>
                         </div>
@@ -97,23 +97,23 @@
 
                         <div x-show="type === 'multiple_choice' || type === 'multiple_response'" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option A</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi A</label>
                                 <input type="text" name="option_a" value="{{ old('option_a', $options['a'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option B</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi B</label>
                                 <input type="text" name="option_b" value="{{ old('option_b', $options['b'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option C</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi C</label>
                                 <input type="text" name="option_c" value="{{ old('option_c', $options['c'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option D</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi D</label>
                                 <input type="text" name="option_d" value="{{ old('option_d', $options['d'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700">Option E</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi E</label>
                                 <input type="text" name="option_e" value="{{ old('option_e', $options['e'] ?? '') }}" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                         </div>
@@ -122,11 +122,11 @@
                             <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             <select name="correct_answer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :disabled="type !== 'multiple_choice'">
                                 @php $picked = old('correct_answer', $question->correct_answer); @endphp
-                                <option value="a" @selected($picked==='a')>Option A</option>
-                                <option value="b" @selected($picked==='b')>Option B</option>
-                                <option value="c" @selected($picked==='c')>Option C</option>
-                                <option value="d" @selected($picked==='d')>Option D</option>
-                                <option value="e" @selected($picked==='e')>Option E</option>
+                                <option value="a" @selected($picked==='a')>Opsi A</option>
+                                <option value="b" @selected($picked==='b')>Opsi B</option>
+                                <option value="c" @selected($picked==='c')>Opsi C</option>
+                                <option value="d" @selected($picked==='d')>Opsi D</option>
+                                <option value="e" @selected($picked==='e')>Opsi E</option>
                             </select>
                         </div>
 
@@ -137,7 +137,7 @@
                                 @foreach(['a','b','c','d','e'] as $k)
                                     <label class="inline-flex items-center">
                                         <input type="checkbox" name="correct_answers[]" value="{{ $k }}" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" @checked(is_array($picked) && in_array($k, $picked, true))>
-                                        <span class="ml-2">Option {{ strtoupper($k) }}</span>
+                                        <span class="ml-2">Opsi {{ strtoupper($k) }}</span>
                                     </label>
                                 @endforeach
                             </div>
@@ -147,8 +147,8 @@
                             <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             @php $picked = old('correct_answer', $question->correct_answer); @endphp
                             <select name="correct_answer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :disabled="type !== 'true_false'">
-                                <option value="true" @selected($picked==='true')>True</option>
-                                <option value="false" @selected($picked==='false')>False</option>
+                                <option value="true" @selected($picked==='true')>Benar</option>
+                                <option value="false" @selected($picked==='false')>Salah</option>
                             </select>
                         </div>
 
@@ -162,16 +162,16 @@
                         </div>
 
                         <div class="mb-4" x-show="type === 'matching' || type === 'drag_drop'">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Pairs (Item - Match)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pasangan (Item - Pasangan)</label>
                             <template x-for="(pair, index) in pairs" :key="index">
                                 <div class="flex gap-2 mb-2">
                                     <input type="text" :name="'pairs['+index+'][left]'" x-model="pair.left" placeholder="Item" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <span class="self-center">→</span>
-                                    <input type="text" :name="'pairs['+index+'][right]'" x-model="pair.right" placeholder="Match" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="'pairs['+index+'][right]'" x-model="pair.right" placeholder="Pasangan" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <button type="button" @click="removePair(index)" class="text-red-500 hover:text-red-700" x-show="pairs.length > 2">×</button>
                                 </div>
                             </template>
-                            <button type="button" @click="addPair()" class="text-sm text-blue-600 hover:text-blue-800">+ Tambah Pair</button>
+                            <button type="button" @click="addPair()" class="text-sm text-blue-600 hover:text-blue-800">+ Tambah Pasangan</button>
                         </div>
 
                         <div class="mb-4" x-show="type === 'sequencing'">

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between gap-4">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ __('Manage Quiz: ') . $quiz->title }}
+                {{ __('Kelola Kuis: ') . $quiz->title }}
             </h2>
             <a href="{{ route('courses.modules.index', $quiz->lesson->module->course) }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50">
                 Kembali
@@ -147,12 +147,12 @@
 
                                     @elseif($question->type === 'essay')
                                          <div class="text-sm text-gray-500 italic">
-                                            (Essay question - manual grading)
+                                            (Soal esai - penilaian manual)
                                         </div>
 
                                     @elseif(in_array($question->type, ['matching', 'drag_drop']))
                                         <div class="text-sm">
-                                            <p class="font-semibold mb-1">Pairs:</p>
+                                            <p class="font-semibold mb-1">Pasangan:</p>
                                             @php($pairs = is_array($question->options) ? $question->options : (json_decode((string) $question->options, true) ?? []))
                                             <ul class="list-disc list-inside">
                                                 @foreach($pairs as $pair)
@@ -163,7 +163,7 @@
 
                                     @elseif($question->type === 'sequencing')
                                         <div class="text-sm">
-                                            <p class="font-semibold mb-1">Correct Order:</p>
+                                            <p class="font-semibold mb-1">Urutan yang Benar:</p>
                                             @php($sequence = json_decode($question->correct_answer, true) ?? [])
                                             <ol class="list-decimal list-inside">
                                                 @foreach($sequence as $item)
@@ -230,7 +230,7 @@
                         <!-- Options for MC and MR -->
                         <div x-show="type === 'multiple_choice' || type === 'multiple_response'" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option A</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi A</label>
                                 <input type="text" name="option_a" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :required="type === 'multiple_choice' || type === 'multiple_response'">
                                 <div class="mt-2 p-2 rounded border bg-gray-50">
                                     <div class="text-xs text-gray-500 mb-1">Preview</div>
@@ -238,7 +238,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option B</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi B</label>
                                 <input type="text" name="option_b" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :required="type === 'multiple_choice' || type === 'multiple_response'">
                                 <div class="mt-2 p-2 rounded border bg-gray-50">
                                     <div class="text-xs text-gray-500 mb-1">Preview</div>
@@ -246,7 +246,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option C</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi C</label>
                                 <input type="text" name="option_c" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <div class="mt-2 p-2 rounded border bg-gray-50">
                                     <div class="text-xs text-gray-500 mb-1">Preview</div>
@@ -254,7 +254,7 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Option D</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi D</label>
                                 <input type="text" name="option_d" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <div class="mt-2 p-2 rounded border bg-gray-50">
                                     <div class="text-xs text-gray-500 mb-1">Preview</div>
@@ -262,7 +262,7 @@
                                 </div>
                             </div>
                             <div class="md:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700">Option E</label>
+                                <label class="block text-sm font-medium text-gray-700">Opsi E</label>
                                 <input type="text" name="option_e" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <div class="mt-2 p-2 rounded border bg-gray-50">
                                     <div class="text-xs text-gray-500 mb-1">Preview</div>
@@ -273,77 +273,77 @@
 
                         <!-- Correct Answer for MC -->
                         <div class="mb-4" x-show="type === 'multiple_choice'">
-                            <label class="block text-sm font-medium text-gray-700">Correct Answer</label>
+                            <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             <select name="correct_answer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :disabled="type !== 'multiple_choice'">
-                                <option value="a">Option A</option>
-                                <option value="b">Option B</option>
-                                <option value="c">Option C</option>
-                                <option value="d">Option D</option>
-                                <option value="e">Option E</option>
+                                <option value="a">Opsi A</option>
+                                <option value="b">Opsi B</option>
+                                <option value="c">Opsi C</option>
+                                <option value="d">Opsi D</option>
+                                <option value="e">Opsi E</option>
                             </select>
                         </div>
 
                         <!-- Correct Answer for MR -->
                         <div class="mb-4" x-show="type === 'multiple_response'">
-                            <label class="block text-sm font-medium text-gray-700">Correct Answers</label>
+                            <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             <div class="flex gap-4 mt-2">
                                 <label class="inline-flex items-center">
                                     <input type="checkbox" name="correct_answers[]" value="a" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    <span class="ml-2">Option A</span>
+                                    <span class="ml-2">Opsi A</span>
                                 </label>
                                 <label class="inline-flex items-center">
                                     <input type="checkbox" name="correct_answers[]" value="b" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    <span class="ml-2">Option B</span>
+                                    <span class="ml-2">Opsi B</span>
                                 </label>
                                 <label class="inline-flex items-center">
                                     <input type="checkbox" name="correct_answers[]" value="c" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    <span class="ml-2">Option C</span>
+                                    <span class="ml-2">Opsi C</span>
                                 </label>
                                 <label class="inline-flex items-center">
                                     <input type="checkbox" name="correct_answers[]" value="d" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    <span class="ml-2">Option D</span>
+                                    <span class="ml-2">Opsi D</span>
                                 </label>
                                 <label class="inline-flex items-center">
                                     <input type="checkbox" name="correct_answers[]" value="e" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500">
-                                    <span class="ml-2">Option E</span>
+                                    <span class="ml-2">Opsi E</span>
                                 </label>
                             </div>
                         </div>
 
                         <!-- Correct Answer for True/False -->
                         <div class="mb-4" x-show="type === 'true_false'">
-                            <label class="block text-sm font-medium text-gray-700">Correct Answer</label>
+                            <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             <select name="correct_answer" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :disabled="type !== 'true_false'">
-                                <option value="true">True</option>
-                                <option value="false">False</option>
+                                <option value="true">Benar</option>
+                                <option value="false">Salah</option>
                             </select>
                         </div>
 
                         <!-- Correct Answer for Short Answer / Numeric -->
                         <div class="mb-4" x-show="type === 'short_answer' || type === 'numeric'">
-                            <label class="block text-sm font-medium text-gray-700">Correct Answer</label>
+                            <label class="block text-sm font-medium text-gray-700">Kunci Jawaban</label>
                             <input type="text" name="correct_answer_text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" :required="type === 'short_answer' || type === 'numeric'">
-                            <p class="text-xs text-gray-500 mt-1" x-show="type === 'numeric'">For numeric answers, enter the exact number.</p>
+                            <p class="text-xs text-gray-500 mt-1" x-show="type === 'numeric'">Untuk jawaban numerik, masukkan angka yang tepat.</p>
                         </div>
 
                         <!-- Matching Fields -->
                         <div class="mb-4" x-show="type === 'matching' || type === 'drag_drop'">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Pairs (Item - Match)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Pasangan (Item - Pasangan)</label>
                             <template x-for="(pair, index) in pairs" :key="index">
                                 <div class="flex gap-2 mb-2">
-                                    <input type="text" :name="'pairs['+index+'][left]'" x-model="pair.left" placeholder="Item (e.g., Cat)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="'pairs['+index+'][left]'" x-model="pair.left" placeholder="Item (contoh: Kucing)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <span class="self-center">→</span>
-                                    <input type="text" :name="'pairs['+index+'][right]'" x-model="pair.right" placeholder="Match (e.g., Animal)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                    <input type="text" :name="'pairs['+index+'][right]'" x-model="pair.right" placeholder="Pasangan (contoh: Hewan)" class="flex-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <button type="button" @click="removePair(index)" class="text-red-500 hover:text-red-700" x-show="pairs.length > 2">×</button>
                                 </div>
                             </template>
-                            <button type="button" @click="addPair()" class="text-sm text-blue-600 hover:text-blue-800">+ Add Pair</button>
-                            <p class="text-xs text-gray-500 mt-1">Students will match the left item to the right item. For Drag & Drop, this defines the target zones and draggable items.</p>
+                            <button type="button" @click="addPair()" class="text-sm text-blue-600 hover:text-blue-800">+ Tambah Pasangan</button>
+                            <p class="text-xs text-gray-500 mt-1">Siswa akan mencocokkan item sebelah kiri dengan item sebelah kanan. Untuk tipe Drag & Drop, ini akan menentukan zona target dan item yang dapat di-drag.</p>
                         </div>
 
                         <!-- Sequencing Fields -->
                         <div class="mb-4" x-show="type === 'sequencing'">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Sequence Order (Correct Order)</label>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Urutan (Urutan yang Benar)</label>
                             <template x-for="(item, index) in sequence_items" :key="index">
                                 <div class="flex gap-2 mb-2">
                                     <span class="self-center font-bold w-6" x-text="index + 1 + '.'"></span>
@@ -351,13 +351,13 @@
                                     <button type="button" @click="removeSequenceItem(index)" class="text-red-500 hover:text-red-700" x-show="sequence_items.length > 2">×</button>
                                 </div>
                             </template>
-                            <button type="button" @click="addSequenceItem()" class="text-sm text-blue-600 hover:text-blue-800">+ Add Step</button>
-                            <p class="text-xs text-gray-500 mt-1">Enter the items in the correct order. They will be shuffled for the student.</p>
+                            <button type="button" @click="addSequenceItem()" class="text-sm text-blue-600 hover:text-blue-800">+ Tambah Langkah</button>
+                            <p class="text-xs text-gray-500 mt-1">Masukkan item dalam urutan yang benar. Pilihan akan diacak saat ditampilkan kepada siswa.</p>
                         </div>
                         
                         <div class="flex items-center gap-4">
                             <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                Add Question
+                                Tambah Soal
                             </button>
                         </div>
                     </form>
@@ -365,7 +365,7 @@
             </div>
 
             <div class="mt-6 flex justify-between">
-                <a href="{{ route('courses.modules.index', $quiz->lesson->module->course) }}" class="text-gray-500 hover:text-gray-700">&larr; Back to Course Modules</a>
+                <a href="{{ route('courses.modules.index', $quiz->lesson->module->course) }}" class="text-gray-500 hover:text-gray-700">&larr; Kembali ke Modul Kursus</a>
             </div>
         </div>
     </div>
