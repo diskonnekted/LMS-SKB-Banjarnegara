@@ -95,7 +95,7 @@ class TeacherExamController extends Controller
         $gradeLevels = $this->getGradeLevels();
 
         $baseUrl = request()->getBaseUrl();
-        $studentLink = url($baseUrl.route('exams.take', $exam->access_code, false));
+        $studentLink = url($baseUrl.route('exams.take', ['code' => $exam->access_code], false));
 
         $qrBase64 = null;
         try {
@@ -115,7 +115,7 @@ class TeacherExamController extends Controller
         $this->authorizeOwner($exam);
 
         $baseUrl = request()->getBaseUrl();
-        $studentLink = url($baseUrl.route('exams.take', $exam->access_code, false));
+        $studentLink = url($baseUrl.route('exams.take', ['code' => $exam->access_code], false));
 
         $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=512x512&data='.urlencode($studentLink);
         $response = Http::timeout(10)->get($qrUrl);
