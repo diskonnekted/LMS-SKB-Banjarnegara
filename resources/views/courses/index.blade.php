@@ -122,7 +122,16 @@
                                                             </svg>
                                                             Modul
                                                         </a>
-                                                        <a href="{{ route('courses.edit', $course) }}" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Edit</a>
+                                                        <div class="flex items-center gap-3">
+                                                            <a href="{{ route('courses.edit', $course) }}" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Edit</a>
+                                                            @if(auth()->user()->hasRole('admin') || auth()->user()->id === $course->teacher_id)
+                                                                <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelajaran ini?');" class="inline">
+                                                                    @csrf
+                                                                    @method('DELETE')
+                                                                    <button type="submit" class="text-red-600 hover:text-red-800 text-sm font-medium">Hapus</button>
+                                                                </form>
+                                                            @endif
+                                                        </div>
                                                     @else
                                                         <a href="{{ route('courses.show', $course) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Lihat Pelajaran</a>
                                                         <span class="text-sm text-gray-500">{{ $course->teacher->name }}</span>

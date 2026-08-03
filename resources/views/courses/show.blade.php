@@ -40,7 +40,7 @@
                                     <a href="{{ route('courses.modules.index', $course) }}" class="flex justify-center items-center w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition">
                                         Kelola Modul
                                     </a>
-                                    @role('admin')
+                                    @if(auth()->user()->hasRole('admin') || auth()->user()->id === $course->teacher_id)
                                     <form action="{{ route('courses.destroy', $course) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pelajaran ini?');">
                                         @csrf
                                         @method('DELETE')
@@ -48,7 +48,7 @@
                                             Hapus Pelajaran
                                         </button>
                                     </form>
-                                    @endrole
+                                    @endif
                                 @else
                                     @php
                                         $enrolled = auth()->check() ? auth()->user()->enrolledCourses()->where('course_id', $course->id)->exists() : false;

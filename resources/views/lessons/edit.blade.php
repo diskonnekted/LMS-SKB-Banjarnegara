@@ -115,9 +115,17 @@
                                     </div>
                                     <div class="mt-1">
                                         @if($lesson->file_path)
-                                            <a href="{{ asset('storage/' . $lesson->file_path) }}" target="_blank" class="inline-flex items-center rounded-full bg-hover-tertiary px-3 py-1 text-xs font-semibold text-tertiary">
-                                                {{ __('Lihat file saat ini') }}
-                                            </a>
+                                            <div class="flex flex-wrap items-center gap-4">
+                                                <a href="{{ asset('storage/' . $lesson->file_path) }}" target="_blank" class="inline-flex items-center rounded-full bg-hover-tertiary px-3 py-1 text-xs font-semibold text-tertiary">
+                                                    {{ __('Lihat file saat ini') }}
+                                                </a>
+                                                <div class="flex items-center gap-1.5">
+                                                    <input type="checkbox" name="delete_file" id="delete_file" value="1" class="rounded border-gray-300 text-red-600 shadow-sm focus:ring-red-500">
+                                                    <label for="delete_file" class="text-xs font-semibold text-red-600 cursor-pointer">
+                                                        {{ __('Hapus file lampiran saat ini') }}
+                                                    </label>
+                                                </div>
+                                            </div>
                                         @else
                                             <div class="text-xs text-gray-600">{{ __('Belum ada file diunggah.') }}</div>
                                         @endif

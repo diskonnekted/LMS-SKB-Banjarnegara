@@ -186,8 +186,13 @@ class CourseController extends Controller
         if (! Auth::user()->hasRole('admin') && $course->teacher_id !== Auth::id()) {
             abort(403);
         }
+
+        if ($course->thumbnail) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($course->thumbnail);
+        }
+
         $course->delete();
 
-        return redirect()->route('courses.index')->with('success', 'Course deleted successfully.');
+        return redirect()->route('courses.index')->with('success', 'Pelajaran berhasil dihapus.');
     }
 }

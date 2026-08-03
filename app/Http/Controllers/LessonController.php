@@ -105,8 +105,16 @@ class LessonController extends Controller
         ]);
 
         if ($request->hasFile('file')) {
+            if ($lesson->file_path) {
+                Storage::disk('public')->delete($lesson->file_path);
+            }
             $filePath = $request->file('file')->store('lessons', 'public');
             $lesson->file_path = $filePath;
+        } elseif ($request->boolean('delete_file')) {
+            if ($lesson->file_path) {
+                Storage::disk('public')->delete($lesson->file_path);
+                $lesson->file_path = null;
+            }
         }
 
         $content = $request->content;
@@ -124,6 +132,9 @@ class LessonController extends Controller
             'learning_objectives' => $request->learning_objectives,
         ]);
 
+        // Save file_path change if file was uploaded or deleted
+        $lesson->save();
+
         return redirect()->route('courses.modules.index', $lesson->module->course)->with('success', 'Lesson updated successfully.');
     }
 
@@ -132,9 +143,14 @@ class LessonController extends Controller
         if (! Auth::user()->hasRole('admin') && $lesson->module->course->teacher_id !== Auth::id()) {
             abort(403);
         }
+
+        if ($lesson->file_path) {
+            Storage::disk('public')->delete($lesson->file_path);
+        }
+
         $lesson->delete();
 
-        return back()->with('success', 'Lesson deleted.');
+        return back()->with('success', 'Pelajaran berhasil dihapus.');
     }
 
     private function youtubeEmbedHtml(string $input): string
