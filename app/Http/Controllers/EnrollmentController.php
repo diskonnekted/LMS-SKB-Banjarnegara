@@ -18,4 +18,26 @@ class EnrollmentController extends Controller
 
         return redirect()->route('learning.course', $course);
     }
+
+    public function destroy(Course $course, \App\Models\User $user)
+    {
+        $currentUser = Auth::user();
+        if (! $currentUser->hasRole('admin') && $course->teacher_id !== $currentUser->id) {
+            abort(403);
+        }
+
+        // Detach course enrollment
+        $course->students()->detach($user->id);
+
+        // Delete lesson progress
+        $lessonIds = $course->modules->flatMap->lessons->pluck('id');
+        if ($lessonIds->isNotEmpty()) {
+            \DB::table('lesson_user')
+                ->where('user_id', $user->id)
+                ->whereIn('lesson_id', $lessonIds)
+                ->delete();
+        }
+
+        return redirect()->back()->with('success', 'Siswa berhasil dihapus dari pelajaran ini.');
+    }
 }

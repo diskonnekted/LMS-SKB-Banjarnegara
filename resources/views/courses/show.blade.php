@@ -172,6 +172,7 @@
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rata-rata Nilai</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nilai Terbaru</th>
                                                 <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Terbaru</th>
+                                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody class="bg-white divide-y divide-gray-200">
@@ -192,10 +193,19 @@
                                                             <span class="px-2 py-1 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold">-</span>
                                                         @endif
                                                     </td>
+                                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                                        <form action="{{ route('courses.students.destroy', [$course, $stat['user']]) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin mengeluarkan siswa ini dari pelajaran?');" class="inline">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" class="text-red-600 hover:text-red-900 font-semibold transition-colors duration-200">
+                                                                Keluarkan
+                                                            </button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                             @empty
                                                 <tr>
-                                                    <td colspan="7" class="px-6 py-8 text-center text-gray-500">Belum ada siswa terdaftar atau belum ada nilai kuis.</td>
+                                                    <td colspan="8" class="px-6 py-8 text-center text-gray-500">Belum ada siswa terdaftar atau belum ada nilai kuis.</td>
                                                 </tr>
                                             @endforelse
                                         </tbody>

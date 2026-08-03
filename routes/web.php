@@ -160,6 +160,8 @@ Route::middleware('auth')->group(function () {
 
     // Admin & Teacher Routes
     Route::middleware(['role:admin|teacher'])->group(function () {
+        Route::delete('/courses/{course}/students/{user}', [EnrollmentController::class, 'destroy'])->name('courses.students.destroy');
+
         Route::get('/teacher/manual', function () {
             return view('teacher.manual.index');
         })->name('teacher.manual.index');
