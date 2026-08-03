@@ -32,7 +32,7 @@ class CourseController extends Controller
             });
         }
 
-        $courses = $query->latest()->paginate(9)->withQueryString();
+        $courses = $query->latest()->get();
 
         return view('courses.index', compact('courses'));
     }

@@ -69,62 +69,71 @@
                                     @endif
                                 </div>
                     @else
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            @foreach($courses as $course)
-                                <div class="border rounded-lg p-4 flex flex-col hover:shadow-lg transition-shadow duration-300">
-                                    <div class="relative w-full h-40 mb-4 overflow-hidden rounded-md bg-gray-100 group">
-                                        @if($course->thumbnail)
-                                            <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
-                                        @else
-                                            <div class="w-full h-full flex items-center justify-center bg-gray-200">
-                                                <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                                </svg>
-                                            </div>
-                                        @endif
-                                        <div class="absolute top-2 right-2">
-                                            <span class="px-2 py-1 text-xs font-semibold rounded-full shadow-sm {{ $course->is_published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
-                                                {{ $course->is_published ? 'Diterbitkan' : 'Draf' }}
-                                            </span>
+                        @php
+                            $groupedCourses = $courses->groupBy(function($course) {
+                                return $course->grade_level ?: 'Umum / Semua Kelas';
+                            });
+                        @endphp
+
+                        <div class="space-y-12">
+                            @foreach($groupedCourses as $gradeLevel => $gradeCourses)
+                                <div class="bg-gray-50/50 rounded-2xl p-6 border border-gray-100">
+                                    <h3 class="text-lg font-bold text-gray-900 border-b border-gray-200 pb-3 mb-6 flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <span class="w-3.5 h-6 bg-indigo-600 rounded-md"></span>
+                                            <span>{{ $gradeLevel }}</span>
                                         </div>
-                                    </div>
+                                        <span class="text-sm font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">{{ $gradeCourses->count() }} Pelajaran</span>
+                                    </h3>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                        @foreach($gradeCourses as $course)
+                                            <div class="bg-white border rounded-xl p-4 flex flex-col hover:shadow-lg transition-all duration-300">
+                                                <div class="relative w-full h-40 mb-4 overflow-hidden rounded-md bg-gray-100 group">
+                                                    @if($course->thumbnail)
+                                                        <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                                    @else
+                                                        <div class="w-full h-full flex items-center justify-center bg-gray-200">
+                                                            <svg class="h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                            </svg>
+                                                        </div>
+                                                    @endif
+                                                    <div class="absolute top-2 right-2">
+                                                        <span class="px-2 py-1 text-xs font-semibold rounded-full shadow-sm {{ $course->is_published ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
+                                                            {{ $course->is_published ? 'Diterbitkan' : 'Draf' }}
+                                                        </span>
+                                                    </div>
+                                                </div>
 
-                                    <div class="mb-2">
-                                        <span class="text-xs font-bold text-indigo-600 uppercase tracking-wide">
-                                            {{ $course->category->name ?? 'Umum' }}
-                                        </span>
-                                        <span class="text-xs text-gray-500">
-                                            &bull; {{ $course->grade_level ?? 'Semua Kelas' }}
-                                        </span>
-                                    </div>
+                                                <div class="mb-2">
+                                                    <span class="text-xs font-bold text-indigo-600 uppercase tracking-wide">
+                                                        {{ $course->category->name ?? 'Umum' }}
+                                                    </span>
+                                                </div>
 
-                                    <h3 class="text-lg font-bold mb-2 text-gray-900 line-clamp-1" title="{{ $course->title }}">{{ $course->title }}</h3>
-                                    <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ \App\Helpers\ContentParser::excerpt($course->description, 150) }}</p>
-                                    
-                                    <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
-                                        @role('admin|teacher')
-                                            <a href="{{ route('courses.modules.index', $course) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
-                                                </svg>
-                                                Modul
-                                            </a>
-                                            <a href="{{ route('courses.edit', $course) }}" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Edit</a>
-                                        @else
-                                            <a href="{{ route('courses.show', $course) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Lihat Pelajaran</a>
-                                            <span class="text-sm text-gray-500">{{ $course->teacher->name }}</span>
-                                        @endrole
+                                                <h3 class="text-lg font-bold mb-2 text-gray-900 line-clamp-1" title="{{ $course->title }}">{{ $course->title }}</h3>
+                                                <p class="text-sm text-gray-500 mb-4 line-clamp-2">{{ \App\Helpers\ContentParser::excerpt($course->description, 150) }}</p>
+                                                
+                                                <div class="mt-auto pt-4 border-t border-gray-100 flex justify-between items-center">
+                                                    @role('admin|teacher')
+                                                        <a href="{{ route('courses.modules.index', $course) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium flex items-center gap-1">
+                                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+                                                            </svg>
+                                                            Modul
+                                                        </a>
+                                                        <a href="{{ route('courses.edit', $course) }}" class="text-gray-500 hover:text-gray-700 text-sm font-medium">Edit</a>
+                                                    @else
+                                                        <a href="{{ route('courses.show', $course) }}" class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">Lihat Pelajaran</a>
+                                                        <span class="text-sm text-gray-500">{{ $course->teacher->name }}</span>
+                                                    @endrole
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
                             @endforeach
                         </div>
-                        
-                        <!-- Pagination if needed -->
-                        @if($courses instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                            <div class="mt-6">
-                                {{ $courses->links() }}
-                            </div>
-                        @endif
                     @endif
                 </div>
             </div>

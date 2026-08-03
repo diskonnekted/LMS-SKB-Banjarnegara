@@ -20,6 +20,27 @@
                         </div>
                     @endif
 
+                    <div class="mb-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+                        <form action="{{ route('admin.users.index') }}" method="GET" class="w-full sm:w-auto flex items-center gap-2">
+                            <div class="relative w-full sm:w-80">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama, email, atau peran..." class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm shadow-sm">
+                            </div>
+                            <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-150">
+                                Cari
+                            </button>
+                            @if(request('search'))
+                                <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-500 hover:text-gray-700 font-medium ml-2">
+                                    Reset
+                                </a>
+                            @endif
+                        </form>
+                    </div>
+
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
@@ -52,7 +73,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="4" class="px-6 py-8 text-center text-gray-500">Belum ada pengguna.</td>
+                                        <td colspan="5" class="px-6 py-8 text-center text-gray-500">Belum ada pengguna atau hasil tidak ditemukan.</td>
                                     </tr>
                                 @endforelse
                             </tbody>

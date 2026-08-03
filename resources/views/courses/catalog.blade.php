@@ -42,50 +42,67 @@
                 </div>
             </form>
 
-            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-                @forelse($courses as $course)
-                    <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 border border-gray-100">
-                        <div class="relative h-48 overflow-hidden">
-                            @if($course->thumbnail)
-                                <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}">
-                            @else
-                                <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" src="{{ asset('images/skb2.jpg') }}" alt="{{ $course->title }}">
-                            @endif
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-indigo-600 shadow-lg">
-                                PELAJARAN
-                            </div>
-                        </div>
-                        <div class="p-6">
-                            <div class="flex items-center gap-2 mb-3">
-                                @if($course->teacher && $course->teacher->avatar)
-                                    <img src="{{ Storage::url($course->teacher->avatar) }}" alt="{{ $course->teacher->name }}" class="w-8 h-8 rounded-full object-cover border border-gray-200">
-                                @else
-                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200">
-                                        {{ substr($course->teacher->name ?? 'T', 0, 1) }}
-                                    </div>
-                                @endif
-                                <span class="text-xs font-medium text-gray-500">{{ $course->teacher->name ?? 'Instruktur' }}</span>
-                            </div>
-                            <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-indigo-600 transition-colors">{{ $course->title }}</h3>
-                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ \App\Helpers\ContentParser::excerpt($course->description, 150) }}</p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs text-gray-500">{{ $course->grade_level }}</span>
-                                <a href="{{ route('courses.show', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
-                                    Lihat Pelajaran
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <div class="col-span-3 py-12 text-center bg-white rounded-3xl border border-dashed border-gray-300">
-                        <p class="text-gray-500">Tidak ada pelajaran ditemukan.</p>
-                    </div>
-                @endforelse
-            </div>
+            @if($courses->isEmpty())
+                <div class="py-12 text-center bg-white rounded-3xl border border-dashed border-gray-300">
+                    <p class="text-gray-500">Tidak ada pelajaran ditemukan.</p>
+                </div>
+            @else
+                @php
+                    $groupedCourses = $courses->groupBy(function($course) {
+                        return $course->grade_level ?: 'Umum / Semua Kelas';
+                    });
+                @endphp
 
-            <div class="mt-8">
-                {{ $courses->links() }}
-            </div>
+                <div class="space-y-12">
+                    @foreach($groupedCourses as $gradeLevel => $gradeCourses)
+                        <div class="bg-gray-50/50 rounded-3xl p-6 border border-gray-100">
+                            <h3 class="text-lg font-bold text-gray-900 border-b border-gray-200 pb-3 mb-6 flex items-center justify-between">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-3.5 h-6 bg-indigo-600 rounded-md"></span>
+                                    <span>{{ $gradeLevel }}</span>
+                                </div>
+                                <span class="text-sm font-semibold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full">{{ $gradeCourses->count() }} Pelajaran</span>
+                            </h3>
+                            <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                                @foreach($gradeCourses as $course)
+                                    <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-300 border border-gray-100">
+                                        <div class="relative h-48 overflow-hidden">
+                                            @if($course->thumbnail)
+                                                <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}">
+                                            @else
+                                                <img class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" src="{{ asset('images/skb2.jpg') }}" alt="{{ $course->title }}">
+                                            @endif
+                                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-xs font-bold text-indigo-600 shadow-lg">
+                                                PELAJARAN
+                                            </div>
+                                        </div>
+                                        <div class="p-6">
+                                            <div class="flex items-center gap-2 mb-3">
+                                                @if($course->teacher && $course->teacher->avatar)
+                                                    <img src="{{ Storage::url($course->teacher->avatar) }}" alt="{{ $course->teacher->name }}" class="w-8 h-8 rounded-full object-cover border border-gray-200">
+                                                @else
+                                                    <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-600 border border-gray-200">
+                                                        {{ substr($course->teacher->name ?? 'T', 0, 1) }}
+                                                    </div>
+                                                @endif
+                                                <span class="text-xs font-medium text-gray-500">{{ $course->teacher->name ?? 'Instruktur' }}</span>
+                                            </div>
+                                            <h3 class="text-lg font-bold text-gray-900 mb-1 line-clamp-1 group-hover:text-indigo-600 transition-colors">{{ $course->title }}</h3>
+                                            <p class="text-sm text-gray-600 line-clamp-2 mb-4">{{ \App\Helpers\ContentParser::excerpt($course->description, 150) }}</p>
+                                            <div class="flex items-center justify-between">
+                                                <span class="text-xs text-gray-500">{{ $course->grade_level }}</span>
+                                                <a href="{{ route('courses.show', $course) }}" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700">
+                                                    Lihat Pelajaran
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
         </div>
     </section>
 </x-public-layout>

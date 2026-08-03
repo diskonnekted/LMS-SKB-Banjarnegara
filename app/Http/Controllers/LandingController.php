@@ -50,7 +50,7 @@ class LandingController extends Controller
         if ($request->filled('grade_level')) {
             $query->where('grade_level', $request->string('grade_level')->toString());
         }
-        $courses = $query->latest()->paginate(9)->withQueryString();
+        $courses = $query->latest()->get();
         $categories = \App\Models\Category::orderBy('name')->get();
         $gradeLevels = collect([
             'Kesetaraan Paket A Kelas 3',
