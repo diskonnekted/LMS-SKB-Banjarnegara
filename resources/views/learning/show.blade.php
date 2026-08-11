@@ -105,6 +105,58 @@
                         </div>
                     @endif
 
+                    <!-- Password Verification Modal -->
+                    @if($lesson->password && !$passwordVerified)
+                    <div id="passwordModal" class="fixed inset-0 z-50 flex items-center justify-center" style="display: none;">
+                        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+                        <div class="relative bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4">
+                            <div class="text-center mb-6">
+                                <div class="mx-auto w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-4">
+                                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-xl font-bold text-gray-900">Pelajaran Dilindungi Password</h3>
+                                <p class="mt-2 text-sm text-gray-600">Masukkan password yang diberikan guru untuk mengakses pelajaran ini.</p>
+                            </div>
+
+                            @if($errors->any())
+                                <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
+                                    {{ $errors->first('password') }}
+                                </div>
+                            @endif
+
+                            <form action="{{ route('learning.verify-password', $lesson) }}" method="POST">
+                                @csrf
+                                <div class="mb-6">
+                                    <input type="password" name="password" placeholder="Masukkan password"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 px-4 py-3 text-lg text-center tracking-widest focus:border-indigo-500 focus:ring-indigo-500"
+                                        autofocus required autocomplete="off">
+                                </div>
+
+                                <div class="flex flex-col-reverse gap-3">
+                                    <button type="submit" class="w-full inline-flex items-center justify-center rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 py-3 text-base font-semibold text-white shadow-sm hover:opacity-95">
+                                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path>
+                                        </svg>
+                                        Buka Pelajaran
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            document.getElementById('passwordModal').style.display = 'flex';
+                        });
+                        document.querySelector('#passwordModal input[name="password"]').addEventListener('keydown', function(e) {
+                            if (e.key === 'Enter') {
+                                this.closest('form').submit();
+                            }
+                        });
+                    </script>
+                    @endif
+
                     <div class="bg-white p-6 md:p-8 rounded-lg shadow-sm">
                         @if($lesson->type === 'video')
                             @php

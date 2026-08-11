@@ -58,8 +58,11 @@ class LearningController extends Controller
             return redirect()->route('courses.show', $course);
         }
 
-        // 2. Sequential Access Logic
-        if (! $this->canAccessModule($user, $course, $module)) {
+        // 2. Password check for lesson
+        $passwordVerified = session('lesson_password_'.$lesson->id) === $lesson->password;
+
+        // 3. Sequential Access Logic
+        if (! $this->canAccessModule($user, $course, $module) && !$passwordVerified) {
             return redirect()->back()->with('error', 'You must complete previous modules first.');
         }
 
@@ -71,7 +74,22 @@ class LearningController extends Controller
         // Check if current lesson is completed
         $isCompleted = $user->completedLessons()->where('lesson_id', $lesson->id)->exists();
 
-        return view('learning.show', compact('course', 'module', 'lesson', 'isCompleted'));
+        return view('learning.show', compact('course', 'module', 'lesson', 'isCompleted', 'passwordVerified'));
+    }
+
+    public function verifyPassword(Request $request, Lesson $lesson)
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        if ($lesson->password && $request->password === $lesson->password) {
+            session(['lesson_password_'.$lesson->id => $lesson->password]);
+
+            return redirect()->back()->with('success', 'Password benar. Anda dapat mengakses pelajaran ini.');
+        }
+
+        return back()->withErrors(['password' => 'Password salah.'])->withInput();
     }
 
     public function complete(Course $course, Module $module, Lesson $lesson)

@@ -35,7 +35,7 @@
                         @csrf
                         @method('PUT')
 
-                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
                             <div>
                                 <label class="block text-sm font-semibold text-text-dark">{{ __('Judul Pelajaran') }}</label>
                                 <input type="text" name="title" value="{{ $lesson->title }}" class="mt-2 block w-full rounded-xl border-gray-200 bg-white shadow-sm focus:border-tertiary focus:ring-tertiary" required>
@@ -50,6 +50,17 @@
                                     <option value="xls" {{ $lesson->type == 'xls' ? 'selected' : '' }}>{{ __('Dokumen Excel') }}</option>
                                     <option value="ppt" {{ $lesson->type == 'ppt' ? 'selected' : '' }}>{{ __('PowerPoint / Presentasi') }}</option>
                                 </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-text-dark">{{ __('Password (Opsional)') }}</label>
+                                <input type="password" name="password" value="" placeholder="{{ $lesson->password ? 'Kosongkan untuk tidak mengubah' : 'Kosongkan jika tidak perlu password' }}" class="mt-2 block w-full rounded-xl border-gray-200 bg-white shadow-sm focus:border-tertiary focus:ring-tertiary">
+                                <p class="mt-1 text-xs text-gray-500">
+                                    @if($lesson->password)
+                                        Masukkan password baru atau kosongkan untuk tidak mengubah
+                                    @else
+                                        Siswa perlu memasukkan password ini untuk mengakses pelajaran
+                                    @endif
+                                </p>
                             </div>
                         </div>
 

@@ -243,6 +243,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/learning/{course}', [LearningController::class, 'index'])->name('learning.course');
     Route::get('/learning/{course}/modules/{module}/lessons/{lesson}', [LearningController::class, 'show'])->name('learning.lesson');
+    Route::post('/learning/lessons/{lesson}/verify-password', [LearningController::class, 'verifyPassword'])->name('learning.verify-password');
     Route::post('/learning/{course}/modules/{module}/lessons/{lesson}/complete', [LearningController::class, 'complete'])->name('learning.complete');
 
     Route::get('/learning/{course}/modules/{module}/quizzes/{quiz}', [LearningController::class, 'quiz'])->name('learning.quiz');
