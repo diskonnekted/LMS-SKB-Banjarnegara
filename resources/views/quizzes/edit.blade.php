@@ -220,7 +220,16 @@
                                 <label class="block text-sm font-medium text-gray-700">Teks Soal / Instruksi</label>
                                 <a href="{{ route('teacher.latex-guide') }}" target="_blank" rel="noopener" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Contoh LaTeX</a>
                             </div>
-                            <textarea name="question" rows="2" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX"></textarea>
+                            <div class="flex flex-wrap gap-1 bg-gray-100 p-1.5 rounded-t-md border border-gray-300 border-b-0 mt-1">
+                                <button type="button" onclick="insertFormatTag('quiz-question-textarea', '[b]', '[/b]')" class="px-2.5 py-1 text-xs font-bold bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Tebal (Bold)">B</button>
+                                <button type="button" onclick="insertFormatTag('quiz-question-textarea', '[i]', '[/i]')" class="px-2.5 py-1 text-xs italic bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Miring (Italic)">I</button>
+                                <button type="button" onclick="insertFormatTag('quiz-question-textarea', '[u]', '[/u]')" class="px-2.5 py-1 text-xs underline bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Garis Bawah (Underline)">U</button>
+                                <div class="w-[1px] bg-gray-300 mx-1 self-stretch"></div>
+                                <button type="button" onclick="insertFormatTag('quiz-question-textarea', '[left]', '[/left]')" class="px-2 py-1 text-xs bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Rata Kiri">⫷ Kiri</button>
+                                <button type="button" onclick="insertFormatTag('quiz-question-textarea', '[center]', '[/center]')" class="px-2 py-1 text-xs bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Rata Tengah">〓 Tengah</button>
+                                <button type="button" onclick="insertFormatTag('quiz-question-textarea', '[right]', '[/right]')" class="px-2 py-1 text-xs bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Rata Kanan">Kanan ⫸</button>
+                            </div>
+                            <textarea id="quiz-question-textarea" name="question" rows="2" class="block w-full rounded-b-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX"></textarea>
                             <div class="mt-2 p-3 rounded border bg-gray-50">
                                 <div class="text-xs text-gray-500 mb-2">Preview</div>
                                 <div id="question-preview" class="prose whitespace-pre-wrap"></div>
@@ -399,12 +408,49 @@
         })();
     </script>
     <script>
+        function insertFormatTag(textareaId, startTag, endTag) {
+            const textarea = document.getElementById(textareaId);
+            if (!textarea) return;
+            
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const selected = text.substring(start, end);
+            const replacement = startTag + selected + endTag;
+            
+            textarea.value = text.substring(0, start) + replacement + text.substring(end);
+            textarea.focus();
+            textarea.selectionStart = start + startTag.length;
+            textarea.selectionEnd = start + startTag.length + selected.length;
+            textarea.dispatchEvent(new Event('input'));
+        }
+
+        function parseBBCode(text) {
+            if (!text) return '';
+            let escaped = text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+            
+            escaped = escaped.replace(/(https?:\/\/[^\s\<>\"]+)/g, '<a href="$1" target="_blank" class="text-blue-600 hover:underline font-semibold">$1</a>');
+
+            return escaped
+                .replace(/\[b\](.*?)\[\/b\]/gi, '<strong>$1</strong>')
+                .replace(/\[i\](.*?)\[\/i\]/gi, '<em>$1</em>')
+                .replace(/\[u\](.*?)\[\/u\]/gi, '<u>$1</u>')
+                .replace(/\[left\](.*?)\[\/left\]/gi, '<div style="text-align: left;">$1</div>')
+                .replace(/\[center\](.*?)\[\/center\]/gi, '<div style="text-align: center;">$1</div>')
+                .replace(/\[right\](.*?)\[\/right\]/gi, '<div style="text-align: right;">$1</div>');
+        }
+
         (function(){
             const ta = document.querySelector('textarea[name="question"]');
             const pv = document.getElementById('question-preview');
             const update = () => {
                 if (!pv || !ta) return;
-                pv.textContent = ta.value || '';
+                pv.innerHTML = parseBBCode(ta.value || '');
                 try {
                     renderMathInElement(pv, {
                         delimiters: [

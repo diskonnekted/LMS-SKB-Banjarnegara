@@ -21,7 +21,7 @@
                         <div class="mb-6 p-4 border rounded bg-gray-50">
                             <!-- Question Header & Text -->
                             <div class="mb-4">
-                                <p class="font-bold text-lg mb-2">{{ $index + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseLinks(e($q->question))) !!}</p>
+                                <p class="font-bold text-lg mb-2">{{ $index + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseFormatting($q->question)) !!}</p>
                                 
                                 <!-- Media Display -->
                                 @if($q->media_url)

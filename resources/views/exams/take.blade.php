@@ -27,7 +27,7 @@
                             @foreach($questions as $index => $question)
                                 <div class="border rounded p-4">
                                     <div class="flex items-start justify-between gap-4">
-                                        <div class="font-semibold">{{ $index + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseLinks(e($question->question))) !!}</div>
+                                        <div class="font-semibold">{{ $index + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseFormatting($question->question)) !!}</div>
                                         <div class="text-sm text-gray-600">{{ $question->points }} poin</div>
                                     </div>
 

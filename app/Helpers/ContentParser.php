@@ -38,6 +38,35 @@ class ContentParser
         return preg_replace($pattern, '<a href="$1" target="_blank" class="text-blue-600 hover:underline font-semibold">$1</a>', $text);
     }
 
+    public static function parseFormatting($text)
+    {
+        if (empty($text)) {
+            return '';
+        }
+
+        // Run standard HTML escaping first to ensure XSS safety
+        $text = e($text);
+
+        // Parse links
+        $text = self::parseLinks($text);
+
+        // Parse BBCode formatting tags
+        $bbcode = [
+            '/\[b\](.*?)\[\/b\]/is' => '<strong>$1</strong>',
+            '/\[i\](.*?)\[\/i\]/is' => '<em>$1</em>',
+            '/\[u\](.*?)\[\/u\]/is' => '<u>$1</u>',
+            '/\[left\](.*?)\[\/left\]/is' => '<div style="text-align: left;">$1</div>',
+            '/\[center\](.*?)\[\/center\]/is' => '<div style="text-align: center;">$1</div>',
+            '/\[right\](.*?)\[\/right\]/is' => '<div style="text-align: right;">$1</div>',
+        ];
+
+        foreach ($bbcode as $pattern => $replacement) {
+            $text = preg_replace($pattern, $replacement, $text);
+        }
+
+        return $text;
+    }
+
     public static function excerpt($content, $limit = 150)
     {
         $text = self::toPlainText($content);

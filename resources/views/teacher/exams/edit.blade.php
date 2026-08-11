@@ -152,7 +152,7 @@
                                 <li class="border p-4 rounded bg-gray-50">
                                     <div class="flex items-start justify-between gap-4">
                                         <div>
-                                            <div class="font-bold">{{ $i + 1 }}. {!! nl2br(e($q->question)) !!}</div>
+                                            <div class="font-bold">{{ $i + 1 }}. {!! nl2br(\App\Helpers\ContentParser::parseFormatting($q->question)) !!}</div>
                                             <div class="text-xs text-gray-500 mt-1">{{ ucfirst(str_replace('_', ' ', $q->type)) }} • {{ $q->points }} poin</div>
                                         </div>
                                         <div class="flex items-center gap-3">
@@ -216,7 +216,16 @@
                                 <label class="block text-sm font-medium text-gray-700">Question Text / Instruction</label>
                                 <a href="{{ $baseUrl . route('teacher.latex-guide', [], false) }}" target="_blank" rel="noopener" class="text-sm text-indigo-600 hover:text-indigo-800 font-semibold">Contoh LaTeX</a>
                             </div>
-                            <textarea name="question" form="questionForm" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX">{{ old('question') }}</textarea>
+                            <div class="flex flex-wrap gap-1 bg-gray-100 p-1.5 rounded-t-md border border-gray-300 border-b-0 mt-1">
+                                <button type="button" onclick="insertFormatTag('exam-question-textarea', '[b]', '[/b]')" class="px-2.5 py-1 text-xs font-bold bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Tebal (Bold)">B</button>
+                                <button type="button" onclick="insertFormatTag('exam-question-textarea', '[i]', '[/i]')" class="px-2.5 py-1 text-xs italic bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Miring (Italic)">I</button>
+                                <button type="button" onclick="insertFormatTag('exam-question-textarea', '[u]', '[/u]')" class="px-2.5 py-1 text-xs underline bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Garis Bawah (Underline)">U</button>
+                                <div class="w-[1px] bg-gray-300 mx-1 self-stretch"></div>
+                                <button type="button" onclick="insertFormatTag('exam-question-textarea', '[left]', '[/left]')" class="px-2 py-1 text-xs bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Rata Kiri">⫷ Kiri</button>
+                                <button type="button" onclick="insertFormatTag('exam-question-textarea', '[center]', '[/center]')" class="px-2 py-1 text-xs bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Rata Tengah">〓 Tengah</button>
+                                <button type="button" onclick="insertFormatTag('exam-question-textarea', '[right]', '[/right]')" class="px-2 py-1 text-xs bg-white rounded border border-gray-200 hover:bg-gray-50 focus:outline-none" title="Rata Kanan">Kanan ⫸</button>
+                            </div>
+                            <textarea id="exam-question-textarea" name="question" form="questionForm" rows="3" class="block w-full rounded-b-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" required placeholder="Gunakan $...$ atau \\[...\\] untuk rumus LaTeX">{{ old('question') }}</textarea>
                         </div>
 
                         <div x-show="type === 'multiple_choice' || type === 'multiple_response'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -310,6 +319,23 @@
 </x-app-layout>
 
 <script>
+    function insertFormatTag(textareaId, startTag, endTag) {
+        const textarea = document.getElementById(textareaId);
+        if (!textarea) return;
+        
+        const start = textarea.selectionStart;
+        const end = textarea.selectionEnd;
+        const text = textarea.value;
+        const selected = text.substring(start, end);
+        const replacement = startTag + selected + endTag;
+        
+        textarea.value = text.substring(0, start) + replacement + text.substring(end);
+        textarea.focus();
+        textarea.selectionStart = start + startTag.length;
+        textarea.selectionEnd = start + startTag.length + selected.length;
+        textarea.dispatchEvent(new Event('input'));
+    }
+
     (function () {
         const linkInput = document.getElementById('student-link');
         const copyBtn = document.getElementById('copy-student-link');
