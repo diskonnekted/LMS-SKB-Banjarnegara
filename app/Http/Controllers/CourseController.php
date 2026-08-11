@@ -64,6 +64,7 @@ class CourseController extends Controller
             'thumbnail' => 'nullable|image|max:2048',
             'category_id' => 'required|exists:categories,id',
             'grade_level' => 'required|string',
+            'password' => 'nullable|string|max:50',
         ]);
 
         $slug = Str::slug($request->title);
@@ -88,6 +89,7 @@ class CourseController extends Controller
             'is_published' => $request->has('is_published'),
             'category_id' => $request->category_id,
             'grade_level' => $request->grade_level,
+            'password' => $request->password,
         ]);
 
         return redirect()->route('courses.index')->with('success', 'Course created successfully.');
@@ -156,11 +158,17 @@ class CourseController extends Controller
             'thumbnail' => 'nullable|image|max:2048',
             'category_id' => 'required|exists:categories,id',
             'grade_level' => 'required|string',
+            'password' => 'nullable|string|max:50',
         ]);
 
         if ($request->hasFile('thumbnail')) {
             $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
             $course->thumbnail = $thumbnailPath;
+        }
+
+        // Handle password: clear if empty string, otherwise set new password
+        if ($request->filled('password')) {
+            $course->password = $request->password;
         }
 
         $course->update([

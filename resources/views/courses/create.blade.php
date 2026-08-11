@@ -61,6 +61,11 @@
                             </div>
                         </div>
                         <div class="mb-4">
+                            <label class="block text-sm font-medium text-gray-700">Password (Opsional)</label>
+                            <input type="password" name="password" placeholder="Masukkan password untuk melindungi pelajaran" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <p class="mt-1 text-xs text-gray-500">Satu password untuk semua pelajaran di mata pelajaran ini</p>
+                        </div>
+                        <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Gambar Sampul</label>
                             <input type="file" name="thumbnail" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600">
                         </div>

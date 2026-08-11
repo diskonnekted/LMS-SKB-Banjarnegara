@@ -15,6 +15,7 @@ class Course extends Model
         'is_published',
         'category_id',
         'grade_level',
+        'password',
         'basic_competency',
         'learning_objectives',
     ];

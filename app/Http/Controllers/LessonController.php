@@ -29,7 +29,6 @@ class LessonController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|in:video,text,pdf,ppt,doc,xls',
-            'password' => 'nullable|string|max:50',
             'content' => 'nullable|string', // For text or embed code
             'file' => 'nullable|file|max:10240', // 10MB limit
             'basic_competency' => 'nullable|string',
@@ -52,7 +51,6 @@ class LessonController extends Controller
 
         $module->lessons()->create([
             'title' => $request->title,
-            'password' => $request->password,
             'slug' => $slug,
             'type' => $request->type,
             'content' => $content,
@@ -100,7 +98,6 @@ class LessonController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'type' => 'required|in:video,text,pdf,ppt,doc,xls',
-            'password' => 'nullable|string|max:50',
             'content' => 'nullable|string',
             'file' => 'nullable|file|max:10240',
             'basic_competency' => 'nullable|string',
@@ -125,11 +122,6 @@ class LessonController extends Controller
             if (! Str::contains($content, '<iframe')) {
                 $content = $this->youtubeEmbedHtml($content);
             }
-        }
-
-        // Handle password: clear if empty string, otherwise set new password
-        if ($request->filled('password')) {
-            $lesson->password = $request->password;
         }
 
         $lesson->update([
