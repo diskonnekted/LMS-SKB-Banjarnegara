@@ -116,10 +116,53 @@
                         </div>
                     </div>
                     
-                    <div class="lg:col-span-6 mt-16 lg:mt-0 relative">
+                    <div class="lg:col-span-6 mt-16 lg:mt-0 relative" x-data="{ 
+                        currentSlide: 0,
+                        slides: [
+                            '{{ asset('images/skb1.jpg') }}',
+                            '{{ asset('images/skb2.jpg') }}',
+                            '{{ asset('images/skb3.jpg') }}',
+                            '{{ asset('images/skb4.jpg') }}'
+                        ],
+                        autoplayInterval: null,
+                        init() {
+                            this.autoplayInterval = setInterval(() => {
+                                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+                            }, 5000);
+                        },
+                        goTo(index) {
+                            this.currentSlide = index;
+                            clearInterval(this.autoplayInterval);
+                            this.autoplayInterval = setInterval(() => {
+                                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+                            }, 5000);
+                        },
+                        pause() { clearInterval(this.autoplayInterval); },
+                        resume() {
+                            this.autoplayInterval = setInterval(() => {
+                                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
+                            }, 5000);
+                        }
+                    }" @mouseenter="pause()" @mouseleave="resume()">
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/20 transform hover:scale-[1.02] transition-all duration-500 group">
                             <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent z-10"></div>
-                            <img src="{{ asset('images/skb1.jpg') }}" alt="Siswa belajar" class="w-full h-[600px] object-cover object-center group-hover:scale-110 transition-transform duration-700">
+                            
+                            <!-- Slider Images with Fade Transition -->
+                            <template x-for="(slide, index) in slides" :key="index">
+                                <img 
+                                    :src="slide" 
+                                    :alt="'Slide ' + (index + 1)" 
+                                    class="w-full h-[600px] object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                                    x-show="currentSlide === index"
+                                    x-transition:enter="transition ease-out duration-1000"
+                                    x-transition:enter-start="opacity-0"
+                                    x-transition:enter-end="opacity-100"
+                                    x-transition:leave="transition ease-in duration-500"
+                                    x-transition:leave-start="opacity-100"
+                                    x-transition:leave-end="opacity-0"
+                                    style="display: none;"
+                                >
+                            </template>
                             
                             <!-- Floating Card -->
                             <div class="absolute bottom-8 left-8 right-8 z-20 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-lg border border-white/20">
@@ -132,6 +175,17 @@
                                         <p class="text-sm text-gray-600">Dapatkan sertifikat resmi setelah selesai.</p>
                                     </div>
                                 </div>
+                            </div>
+                            
+                            <!-- Navigation Dots -->
+                            <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
+                                <template x-for="(slide, index) in slides" :key="index">
+                                    <button 
+                                        @click="goTo(index)" 
+                                        class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none"
+                                        :class="currentSlide === index ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/80'"
+                                    ></button>
+                                </template>
                             </div>
                         </div>
                         
