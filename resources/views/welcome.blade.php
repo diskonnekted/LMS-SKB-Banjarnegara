@@ -119,51 +119,17 @@
                         </div>
                     </div>
                     
-                    <div class="lg:col-span-6 mt-16 lg:mt-0 relative" x-data="{ 
-                        currentSlide: 0,
-                        slides: [
-                            '{{ asset('images/skb1.jpg') }}',
-                            '{{ asset('images/skb2.jpg') }}',
-                            '{{ asset('images/skb3.jpg') }}',
-                            '{{ asset('images/skb4.jpg') }}'
-                        ],
-                        imagesLoaded: [],
-                        autoplayInterval: null,
-                        init() {
-                            // Preload all images
-                            this.slides.forEach((src) => {
-                                const img = new Image();
-                                img.src = src;
-                                this.imagesLoaded.push(true);
-                            });
-                            this.autoplayInterval = setInterval(() => {
-                                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-                            }, 5000);
-                        },
-                        goTo(index) {
-                            this.currentSlide = index;
-                            clearInterval(this.autoplayInterval);
-                            this.autoplayInterval = setInterval(() => {
-                                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-                            }, 5000);
-                        },
-                        pause() { clearInterval(this.autoplayInterval); },
-                        resume() {
-                            this.autoplayInterval = setInterval(() => {
-                                this.currentSlide = (this.currentSlide + 1) % this.slides.length;
-                            }, 5000);
-                        }
-                    }" @mouseenter="pause()" @mouseleave="resume()">
-                        <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/20 transform hover:scale-[1.02] transition-all duration-500 group">
-                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent z-10"></div>
+                    <div class="lg:col-span-6 mt-16 lg:mt-0 relative" x-data="{ currentSlide: 0, slides: {{ json_encode($heroImages) }}, autoplayInterval: null, init() { this.autoplayInterval = setInterval(() => { this.currentSlide = (this.currentSlide + 1) % this.slides.length; }, 5000); }, goTo(index) { this.currentSlide = index; clearInterval(this.autoplayInterval); this.autoplayInterval = setInterval(() => { this.currentSlide = (this.currentSlide + 1) % this.slides.length; }, 5000); }, pause() { clearInterval(this.autoplayInterval); }, resume() { this.autoplayInterval = setInterval(() => { this.currentSlide = (this.currentSlide + 1) % this.slides.length; }, 5000); } }" x-on:mouseenter="pause()" x-on:mouseleave="resume()">
+                        <div class="relative h-[400px] md:h-[500px] lg:h-[600px] rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/20 transform hover:scale-[1.02] transition-all duration-500 group">
+                            <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent z-20"></div>
                             
-                            <!-- Slider Images with Absolute Positioning for Smooth Crossfade -->
+                            <!-- Slider Images -->
                             <template x-for="(slide, index) in slides" :key="index">
                                 <img 
                                     :src="slide" 
                                     :alt="'Slide ' + (index + 1)" 
-                                    class="absolute inset-0 w-full h-[600px] object-cover object-center group-hover:scale-110 transition-transform duration-700 slider-image"
-                                    :style="'opacity: currentSlide === index ? 1 : 0; z-index: currentSlide === index ? 10 : 1; pointer-events: currentSlide === index ? \'auto\' : \'none\';'"
+                                    class="absolute inset-0 w-full h-full object-cover object-center transition-all duration-1000 ease-in-out"
+                                    :class="currentSlide === index ? 'opacity-100 z-10 scale-100' : 'opacity-0 z-0 scale-105'"
                                 >
                             </template>
                             
@@ -184,7 +150,7 @@
                             <div class="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex gap-2">
                                 <template x-for="(slide, index) in slides" :key="index">
                                     <button 
-                                        @click="goTo(index)" 
+                                        x-on:click="goTo(index)" 
                                         class="w-2.5 h-2.5 rounded-full transition-all duration-300 focus:outline-none"
                                         :class="currentSlide === index ? 'bg-white w-8' : 'bg-white/50 hover:bg-white/80'"
                                     ></button>

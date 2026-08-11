@@ -27,11 +27,18 @@ class LandingController extends Controller
         $heroDescription = Setting::where('key', 'hero_description')->value('value') ?? 'Learn anytime, anywhere.';
         $organizerName = Setting::where('key', 'organizer_name')->value('value') ?? 'SKB Institute';
 
+        $heroImages = [
+            asset('images/skb1.jpg'),
+            asset('images/skb2.jpg'),
+            asset('images/skb3.jpg'),
+            asset('images/skb4.jpg'),
+        ];
+
         if ($isMobile) {
             return view('mobile.home', compact('courses', 'news'));
         }
 
-        return view('welcome', compact('courses', 'news', 'heroTitle', 'heroDescription', 'organizerName'));
+        return view('welcome', compact('courses', 'news', 'heroTitle', 'heroDescription', 'organizerName', 'heroImages'));
     }
 
     public function catalog(Request $request)
