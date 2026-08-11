@@ -66,7 +66,7 @@ class LearningController extends Controller
         // Load navigation data
         $course->load(['modules.lessons.usersCompleted' => function ($query) use ($user) {
             $query->where('user_id', $user->id);
-        }]);
+        }, 'modules.lessons.assignments']);
 
         // Check if current lesson is completed
         $isCompleted = $user->completedLessons()->where('lesson_id', $lesson->id)->exists();

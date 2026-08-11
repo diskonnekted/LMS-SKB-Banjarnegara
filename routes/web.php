@@ -18,6 +18,8 @@ use App\Http\Controllers\TeacherExamAttemptController;
 use App\Http\Controllers\TeacherExamController;
 use App\Http\Controllers\TeacherExamQuestionController;
 use App\Http\Controllers\TeacherQuizAttemptController;
+use App\Http\Controllers\AssignmentController;
+use App\Http\Controllers\SubmissionController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -197,6 +199,18 @@ Route::middleware('auth')->group(function () {
         Route::get('/teacher/quizzes/{quiz}/attempts', [TeacherQuizAttemptController::class, 'index'])->name('teacher.quizzes.attempts.index');
         Route::get('/teacher/quiz-attempts/{attempt}', [TeacherQuizAttemptController::class, 'show'])->name('teacher.quizzes.attempts.show');
         Route::post('/teacher/quiz-attempt-answers/{answer}/grade', [TeacherQuizAttemptController::class, 'gradeAnswer'])->name('teacher.quiz-attempt-answers.grade');
+
+        // Assignment routes (Teacher/Admin)
+        Route::get('/modules/{module}/lessons/{lesson}/assignments', [AssignmentController::class, 'index'])->name('modules.lessons.assignments.index');
+        Route::get('/modules/{module}/lessons/{lesson}/assignments/create', [AssignmentController::class, 'create'])->name('modules.lessons.assignments.create');
+        Route::post('/modules/{module}/lessons/{lesson}/assignments', [AssignmentController::class, 'store'])->name('modules.lessons.assignments.store');
+        Route::get('/modules/{module}/lessons/{lesson}/assignments/{assignment}/edit', [AssignmentController::class, 'edit'])->name('modules.lessons.assignments.edit');
+        Route::put('/modules/{module}/lessons/{lesson}/assignments/{assignment}', [AssignmentController::class, 'update'])->name('modules.lessons.assignments.update');
+        Route::delete('/modules/{module}/lessons/{lesson}/assignments/{assignment}', [AssignmentController::class, 'destroy'])->name('modules.lessons.assignments.destroy');
+
+        // Submission viewing for teacher
+        Route::get('/modules/{module}/lessons/{lesson}/assignments/{assignment}/submissions', [SubmissionController::class, 'index'])->name('modules.lessons.assignments.submissions.index');
+        Route::post('/teacher/submissions/{submission}/grade', [SubmissionController::class, 'grade'])->name('submissions.grade');
     });
 
     // Admin Only
@@ -233,6 +247,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/learning/{course}/modules/{module}/quizzes/{quiz}', [LearningController::class, 'quiz'])->name('learning.quiz');
     Route::post('/learning/{course}/modules/{module}/quizzes/{quiz}', [LearningController::class, 'submitQuiz'])->name('learning.quiz.submit');
+
+    // Assignment submission routes (Student)
+    Route::get('/learning/{course}/modules/{module}/lessons/{lesson}/assignments/{assignment}', [SubmissionController::class, 'show'])->name('learning.assignments.show');
+    Route::post('/learning/{course}/modules/{module}/lessons/{lesson}/assignments/{assignment}/submit', [SubmissionController::class, 'store'])->name('learning.assignments.submit');
 
     Route::get('/courses/{course}/certificate', [App\Http\Controllers\CertificateController::class, 'download'])->name('certificates.download');
 

@@ -63,4 +63,9 @@ class User extends Authenticatable
             ->withPivot('completed')
             ->withTimestamps();
     }
+
+    public function submissions()
+    {
+        return $this->hasMany(Submission::class);
+    }
 }

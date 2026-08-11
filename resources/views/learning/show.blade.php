@@ -239,9 +239,49 @@
                             <div class="mt-8 pt-6 border-t border-gray-100">
                                 <h3 class="text-lg font-medium text-gray-900 mb-3">Unduhan</h3>
                                 <a href="{{ Storage::url($lesson->file_path) }}" target="_blank" class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
-                                    <svg class="w-5 h-5 mr-2 -ml-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    <svg class="w-5 h-5 mr-2 -ml-1 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     Unduh Materi
                                 </a>
+                            </div>
+                        @endif
+
+                        @php
+                            $activeAssignments = $lesson->assignments->where('is_active', true);
+                        @endphp
+                        @if($activeAssignments->isNotEmpty())
+                            <div class="mt-8 pt-6 border-t border-gray-100">
+                                <h3 class="text-lg font-medium text-gray-900 mb-4 flex items-center gap-2">
+                                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                                    Tugas
+                                </h3>
+
+                                @foreach($activeAssignments as $assignment)
+                                    <div class="bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100 rounded-xl p-5 mb-4">
+                                        <div class="flex items-start justify-between gap-4">
+                                            <div class="flex-1">
+                                                <a href="{{ route('learning.assignments.show', [$course, $module, $lesson, $assignment]) }}" class="text-base font-semibold text-indigo-900 hover:text-indigo-700">
+                                                    {{ $assignment->title }}
+                                                </a>
+                                                @if($assignment->description)
+                                                    <p class="mt-1 text-sm text-indigo-700/70">{{ Str::limit($assignment->description, 120) }}</p>
+                                                @endif
+                                                @if($assignment->due_date)
+                                                    <div class="mt-2 flex items-center gap-1.5 text-xs text-indigo-600">
+                                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                                        <span>Tenggat: {{ $assignment->due_date->format('d M Y, H:i') }}</span>
+                                                        @if($assignment->due_date->isPast())
+                                                            <span class="text-red-500 font-medium">(Lewat tenggat)</span>
+                                                        @endif
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <a href="{{ route('learning.assignments.show', [$course, $module, $lesson, $assignment]) }}" class="shrink-0 inline-flex items-center px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-700 transition shadow-sm">
+                                                {{ __('Buka') }}
+                                                <svg class="w-4 h-4 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" width="2" d="M9 5l7 7-7 7"></path></svg>
+                                            </a>
+                                        </div>
+                                    </div>
+                                @endforeach
                             </div>
                         @endif
                     </div>

@@ -71,6 +71,15 @@
                                             @endif
                                         </div>
                                         <div class="flex items-center space-x-2">
+                                            @if($lesson->assignments()->exists())
+                                                <a href="{{ route('modules.lessons.assignments.index', [$module, $lesson]) }}" class="px-3 py-1.5 rounded-md bg-indigo-600 text-white text-sm hover:bg-indigo-700">
+                                                    {{ __('Kelola Tugas') }}
+                                                </a>
+                                            @else
+                                                <a href="{{ route('modules.lessons.assignments.create', [$module, $lesson]) }}" class="px-3 py-1.5 rounded-md bg-indigo-100 text-indigo-700 text-sm hover:bg-indigo-200">
+                                                    {{ __('Buat Tugas') }}
+                                                </a>
+                                            @endif
                                             @if($lesson->quiz)
                                                 <a href="{{ route('quizzes.edit', $lesson->quiz) }}" class="px-3 py-1.5 rounded-md bg-purple-600 text-white text-sm hover:bg-purple-700">
                                                     {{ __('Edit Kuis') }}
