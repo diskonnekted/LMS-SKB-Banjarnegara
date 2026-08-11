@@ -27,6 +27,9 @@
                 z-index: -1;
                 opacity: 0.5;
             }
+            .slider-image {
+                transition: opacity 1s ease-in-out;
+            }
         </style>
     </head>
     <body class="font-sans antialiased bg-white text-gray-900 overflow-x-hidden pb-16 md:pb-0">
@@ -124,8 +127,15 @@
                             '{{ asset('images/skb3.jpg') }}',
                             '{{ asset('images/skb4.jpg') }}'
                         ],
+                        imagesLoaded: [],
                         autoplayInterval: null,
                         init() {
+                            // Preload all images
+                            this.slides.forEach((src) => {
+                                const img = new Image();
+                                img.src = src;
+                                this.imagesLoaded.push(true);
+                            });
                             this.autoplayInterval = setInterval(() => {
                                 this.currentSlide = (this.currentSlide + 1) % this.slides.length;
                             }, 5000);
@@ -147,20 +157,13 @@
                         <div class="relative rounded-3xl overflow-hidden shadow-2xl shadow-indigo-500/20 transform hover:scale-[1.02] transition-all duration-500 group">
                             <div class="absolute inset-0 bg-gradient-to-t from-gray-900/40 to-transparent z-10"></div>
                             
-                            <!-- Slider Images with Fade Transition -->
+                            <!-- Slider Images with Absolute Positioning for Smooth Crossfade -->
                             <template x-for="(slide, index) in slides" :key="index">
                                 <img 
                                     :src="slide" 
                                     :alt="'Slide ' + (index + 1)" 
-                                    class="w-full h-[600px] object-cover object-center group-hover:scale-110 transition-transform duration-700"
-                                    x-show="currentSlide === index"
-                                    x-transition:enter="transition ease-out duration-1000"
-                                    x-transition:enter-start="opacity-0"
-                                    x-transition:enter-end="opacity-100"
-                                    x-transition:leave="transition ease-in duration-500"
-                                    x-transition:leave-start="opacity-100"
-                                    x-transition:leave-end="opacity-0"
-                                    style="display: none;"
+                                    class="absolute inset-0 w-full h-[600px] object-cover object-center group-hover:scale-110 transition-transform duration-700 slider-image"
+                                    :style="'opacity: currentSlide === index ? 1 : 0; z-index: currentSlide === index ? 10 : 1; pointer-events: currentSlide === index ? \'auto\' : \'none\';'"
                                 >
                             </template>
                             
