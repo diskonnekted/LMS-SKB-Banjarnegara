@@ -9,21 +9,16 @@ use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
-    public function index(Module $module)
+    public function index(Module $module, Lesson $lesson)
     {
-        $assignments = $module->lessons()
-            ->with('assignments')
-            ->get()
-            ->pluck('assignments')
-            ->flatten()
-            ->where('lesson_id', $module->lessons()->pluck('id'))
+        $assignments = $lesson->assignments()
             ->when(request('search'), function ($query) {
-                return $query->where('title', 'like', '%'.request('search').'%');
+                return $query->where('title', 'like', '%' . request('search') . '%');
             })
-            ->sortBy('due_date')
-            ->values();
+            ->orderBy('due_date')
+            ->get();
 
-        return view('assignments.index', compact('module', 'assignments'));
+        return view('assignments.index', compact('module', 'lesson', 'assignments'));
     }
 
     public function create(Module $module, Lesson $lesson)
