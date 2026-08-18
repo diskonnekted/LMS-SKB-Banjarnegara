@@ -119,7 +119,7 @@
             <table class="header-table">
                 <tr>
                     <td style="width: 15%; text-align: left; vertical-align: middle;">
-                        <img class="logo" src="{{ public_path('images/logo-skb.gif') }}" alt="Logo SKB">
+                        <img class="logo" src="{{ public_path('images/logo-sertifikat.jpeg') }}" alt="Logo SKB">
                     </td>
                     <td style="width: 85%; text-align: left; vertical-align: middle; padding-left: 20px;">
                         <div class="header-title">Sertifikat Kelulusan</div>
